@@ -70,6 +70,7 @@ export default Marionette.View.extend({
       stage: appModel.isAttrLocked('stage', occ.get('stage')),
       status: appModel.isAttrLocked('status', occ.get('status')),
       identifiers: appModel.isAttrLocked('identifiers', occ.get('identifiers')),
+      type: appModel.isAttrLocked('type', occ.get('type')),
       comment: appModel.isAttrLocked('comment', occ.get('comment')),
       activity: appModel.isAttrLocked('activity', sample.get('group')),
     };
@@ -99,6 +100,7 @@ export default Marionette.View.extend({
       status: occ.get('status') && StringHelp.limit(occ.get('status')),
       stage: occ.get('stage') && StringHelp.limit(occ.get('stage')),
       identifiers: occ.get('identifiers') && StringHelp.limit(occ.get('identifiers')),
+      type: appModel.isAttrLocked('type', occ.get('type')),
       comment: occ.get('comment') && StringHelp.limit(occ.get('comment')),
       group_title: group ? group.title : null,
       group,

@@ -140,6 +140,7 @@ const API = {
         }
         break;
       case 'stage':
+      case 'type':
       case 'identifiers':
       case 'comment':
         currentVal = occ.get(attr);

@@ -68,6 +68,7 @@ export default Marionette.View.extend({
       locationName: appModel.isAttrLocked('locationName', location.name),
       stage: appModel.isAttrLocked('stage', occ.get('stage')),
       identifiers: appModel.isAttrLocked('identifiers', occ.get('identifiers')),
+      type: appModel.isAttrLocked('type', occ.get('type')),
       comment: appModel.isAttrLocked('comment', occ.get('comment')),
       activity: appModel.isAttrLocked('activity', sample.get('group')),
     };
@@ -92,6 +93,7 @@ export default Marionette.View.extend({
       number,
       stage: occ.get('stage') && StringHelp.limit(occ.get('stage')),
       identifiers: occ.get('identifiers') && StringHelp.limit(occ.get('identifiers')),
+      type: occ.get('type') && StringHelp.limit(occ.get('type')),
       comment: occ.get('comment') && StringHelp.limit(occ.get('comment')),
       group_title: group ? group.title : null,
       group,

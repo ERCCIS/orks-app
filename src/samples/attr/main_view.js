@@ -71,6 +71,13 @@ export default Marionette.View.extend({
         });
         break;
 
+      case 'type':
+        attrView = new RadioInputView({
+          config: surveyConfig.occurrence.type,
+          default: occ.get('type'),
+        });
+        break;
+
       case 'identifiers':
         attrView = new InputView({
           config: surveyConfig.occurrence.identifiers,
