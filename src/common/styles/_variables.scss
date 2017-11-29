@@ -2,14 +2,16 @@
  * App wide configuration of variables.
  *****************************************************************************/
 
+$color-gray-light-super: #fdfdfd;
+$color-blue-dark: #1962a0;
+$color-red-dark: #a01919;
+
 $color-white: white;
 $color-gray-light: #f7f7f7;
-$color-gray-light-super: #fdfdfd;
 $color-gray: #ddd;
 $color-gray-dark: #868686;
 $color-black: #333;
 $color-blue: #38c;
-$color-blue-dark: #1962a0;
 $color-green-dark: #4e5a0c;
 $color-green: #91a71c;
 $color-green-light: #bbd245;
@@ -18,10 +20,13 @@ $color-orange-light: #ff9935;
 $color-yellow: #ffc019;
 $color-brown: #614705;
 $color-red: #e42012;
-$color-red-dark: #a01919;
-$color-main: $color-green;
-$color-main-light: $color-green-light;
-$color-main-dark: $color-green-dark;
+
+$orks-grey: #9ea2a2;
+$orks-brown: #695b24;
+
+$color-main: #ada400;
+$color-main-light: $orks-grey;
+$color-main-dark: $orks-brown;
 
 $app-max-width: 650px;
 
@@ -42,8 +47,8 @@ $header-font-size: 17px;
 $button-font-size: 16px;
 $text-font-size: 14px;
 
-$OS_MAP_KEY: '28994B5673A86451E0530C6CA40A91A5';
-$OS_MAP_URL: 'https://openspace.ordnancesurvey.co.uk/osmapapi/ts?KEY=#{$OS_MAP_KEY}&URL=file%3A%2F%2F%2F&SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&FORMAT=image%2Fpng&height=200&width=200&srs=EPSG%3A27700';
+$OS_MAP_KEY: "28994B5673A86451E0530C6CA40A91A5";
+$OS_MAP_URL: "https://openspace.ordnancesurvey.co.uk/osmapapi/ts?KEY=#{$OS_MAP_KEY}&URL=file%3A%2F%2F%2F&SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&FORMAT=image%2Fpng&height=200&width=200&srs=EPSG%3A27700";
 
 @mixin empty-list() {
   &.empty {
