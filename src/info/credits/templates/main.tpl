@@ -1,41 +1,24 @@
 <ul class="table-view">
-  <li><img src="images/sponsor_logo.png" alt=""></li>
+  <li><img src="images/cwt-erccis.png" alt=""></li>
   <li>
     <p>
       <strong>We are very grateful for all the people that helped to
-        create this app:</strong>
+        develop this app:</strong>
     </p>
     <p>
     <ul style="list-style-type: none;">
-      <li>David Roy (CEH)</li>
-      <li>Karolis Kazlauskis (CEH)</li>
-      <li>John van Breda (Biodiverse IT)</li>
-      <li>Tom Humphrey (BSBI)</li>
-      <li>Martin Harvey (CEH)</li>
-      <li>Sally Rankin</li>
-      <li>Colin Harrower (CEH)</li>
-      <li>Tom August (CEH)</li>
-      <li>Chris Raper (NHM)</li>
-      <li>Charles Roper (FSC)</li>
-      <li>Matt Smith</li>
-      <li>Alan Rowland</li>
-      <li>David Genney</li>
-      <li>Graham Checkley</li>
+      <li>Richard Frost (principle developer)</li>
+      <li>Niki Clear</li>
+      <li>Laura Guy-Wilkinson</li>
+      <li>Laura Fox</li>
+      <li>John Rance</li>
+      <li>Jenny</li>
+      <li>Alan</li>
+      <li>Stuart</li>
     </ul>
     </p>
     <p>
-      This app was part-funded by the
-      <a href="https://www.ceh.ac.uk/">Centre for Ecology & Hydrology</a>/<a href="http://jncc.defra.gov.uk/">Joint Nature Conservation Committee</a>
-      partnership supporting BRC.
+      This app was funded by <a href="https://www.erccis.org.uk/">ERCCIS</a> and the Alexanda Fund for Recorders.
     </p>
-    <p>
-      <strong>Welcome screen credits:</strong>
-    </p>
-    <ul style="list-style-type: none;">
-      <li>David Kitching</li>
-      <li>Nadine Mitschunas</li>
-      <li>UK Ladybird Survey</li>
-    </ul>
-
   </li>
 </ul>
