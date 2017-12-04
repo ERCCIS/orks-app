@@ -4,7 +4,7 @@
       <div class="swap first">
         <div class="message">
           <h2>Welcome</h2>
-          <p><b>iRecord</b> is a platform for management and
+          <p><b>ORKS</b> is a platform for management and
             sharing of your wildlife observations.
             Learn more by swiping left.</p>
         </div>

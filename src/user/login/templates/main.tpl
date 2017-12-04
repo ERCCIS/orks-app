@@ -1,5 +1,5 @@
 <div class="info-message">
-  <p>Please sign in with your iRecord account or register.</p>
+  <p>Please sign in with your ORKS account or register.</p>
 </div>
 <div class="input-group">
   <div class="input-row">
