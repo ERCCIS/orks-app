@@ -4,31 +4,22 @@
       <strong>Use of your name</strong>
     </p>
 
-    <p>
-      If you choose to create a user account for the app, this will be created
-      on the
-      <a href="http://irecord.org.uk" rel="external">
-        Biological Record Centre's iRecord system
-      </a>. This enables you to log in and see your records and those submitted
-      by other people for all species. Your name, as specified when you create
-      the account, will appear next to your records and will be viewable by
-      other users of iRecord.
-    </p>
+    <p>If you choose to create a user account for the app, this will be created on the
+      <a href="http://orks.org.uk" rel="external">Biological Record Centre's ORKS system</a>.
+      This enables you to log in and see your records and those submitted by other people for all
+      species. Your name, as specified when you create the account, will appear next to your
+      records and will be viewable by other users of ORKS.</p>
   </li>
   <li>
     <p>
       <strong>E-mail address</strong>
     </p>
 
-    <p>
-      To create an account you will need to supply your e-mail address, which
-      will be used in order to validate your account and to send you periodic
-      updates and important information about the project. Your email address
-      will not be shown and disseminated with your records but will be available
-      to the verifying experts if they need to contact you about your sightings.
-      You are able to delete your iRecord account or opt out of receiving emails
-      at any time.
-    </p>
+    <p>To create an account you will need to supply your e-mail address, which will be used in order
+      to validate your account and to send you periodic updates and important information about the
+      project. Your email address will not be shown and disseminated with your records but will be
+      available to the verifying experts if they need to contact you about your sightings. You are
+      able to delete your ORKS account or opt out of receiving emails at any time.</p>
   </li>
   <li>
     <p>

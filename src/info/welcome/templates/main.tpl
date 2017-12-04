@@ -4,10 +4,9 @@
       <div class="swap first">
         <div class="message">
           <h2>Welcome</h2>
-          <p>
-            <b>iRecord</b> is a platform for management and sharing of your
-            wildlife observations. Learn more by swiping left.
-          </p>
+          <p><b>ORKS</b> is a platform for management and
+            sharing of your wildlife observations.
+            Learn more by swiping left.</p>
         </div>
       </div>
       <div class="swap second">
@@ -55,7 +54,5 @@
     <div class="circle" data-id="3" />
     <div class="circle" data-id="4" />
   </div>
-  <button id="exit" class="btn btn-block">
-    Get Started
-  </button>
+  <button id="exit" class="btn btn-block">Get Started</button>
 </div>

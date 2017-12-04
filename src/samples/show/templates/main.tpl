@@ -3,11 +3,11 @@
     <% if (obj.id) { %>
     <a href="<%= obj.site_url %>/record-details?occurrence_id=<%= obj.id %>"
        class="btn btn-block btn-narrow">
-      View on iRecord
+      View on ORKS
       <span class="pull-right icon icon-link-ext"></span>
     </a>
     <% } else { %>
-      Go to the <a href="<%= obj.site_url %>">iRecord website</a> to edit.</p>
+      Go to the <a href="<%= obj.site_url %>">ORKS website</a> to edit.</p>
     <% } %>
 </div>
 <ul class="table-view core inputs info no-top">

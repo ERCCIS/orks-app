@@ -1,10 +1,10 @@
  <div class="info-message">
-        <p>By using iRecord, you agree to these Terms and Conditions of Use. If you do not agree, please do not use the site.</p>
+        <p>By using ORKS, you agree to these Terms and Conditions of Use. If you do not agree, please do not use the site.</p>
     </div>
 
     <ol>
         <li>
-            <p>When you use iRecord, you create and upload content - for instance, wildlife observations, photos of
+            <p>When you use ORKS, you create and upload content - for instance, wildlife observations, photos of
             nature, your descriptions of it, and messages to the forums. By putting this information on the
             site, you are saying that:</p>
             <ol type="a" style="text-indent: 0">
@@ -59,9 +59,9 @@
             publicly available.</p>
         </li>
         <li>
-            <p>iRecord uses cookies to enhance site functionality, for example to remember the positions of maps
+            <p>ORKS uses cookies to enhance site functionality, for example to remember the positions of maps
             and which data input values need to be remembered between usages of a screen. It also uses cookies
             for tracking but not for advertising or any other use. If you do not consent to these cookies being
-            stored on your hard disk either disable cookies or do not sign up to use iRecord.</p>
+            stored on your hard disk either disable cookies or do not sign up to use ORKS.</p>
         </li>
     </ol>
