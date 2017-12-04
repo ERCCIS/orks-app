@@ -1,11 +1,11 @@
 {
-  "name": "irecord-app",
-  "id": "uk.ac.ceh.ir",
-  "title": "iRecord App",
-  "description": "iRecord mobile application.",
-  "version": "3.0.0",
-  "build": "7",
-  "homepage": "https://irecord.org.uk",
+  "name": "orks-app",
+  "id": "uk.org.orks.app",
+  "title": "ORKs App",
+  "description": "ORKs mobile application.",
+  "version": "1.0.3",
+  "build": "4",
+  "homepage": "https://orks.org.uk",
   "scripts": {
     "build": "grunt",
     "build:update": "grunt udpate",
@@ -117,16 +117,16 @@
     "npm": "^5.4.1"
   },
   "author": {
-    "name": "Karolis Kazlauskis",
-    "email": "karolis@kazlauskis.com",
-    "url": "https://kazlauskis.com"
+    "name": "Richard Frost",
+    "email": "richard@ipponsolutions.co.uk",
+    "url": "http://ipponsolutions.co.uk"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/NERC-CEH/irecord-app"
+    "url": "https://github.com/ERCCIS/orks-app"
   },
   "bugs": {
-    "url": "https://github.com/NERC-CEH/irecord-app/issues"
+    "url": "https://github.com/ERCCIS/orks-app/issues"
   },
   "licenses": [
     {
@@ -135,7 +135,8 @@
     }
   ],
   "keywords": [
-    "irecord",
+    "orks",
+    "erccis",
     "biological",
     "recording",
     "mobile",
