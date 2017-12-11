@@ -52,7 +52,7 @@
        class="<%- obj.locks['stage'] ? 'lock' : 'navigate-right' %>">
       <span class="media-object pull-left icon icon-stage"></span>
       <span class="media-object pull-right descript"><%- obj.stage %></span>
-      Life stage/Sex
+      Stage
     </a>
   </li>
   <li class="table-view-cell">
@@ -60,7 +60,7 @@
        class="<%- obj.locks['type'] ? 'lock' : 'navigate-right' %>">
       <span class="media-object pull-left icon icon-download"></span>
       <span class="media-object pull-right descript"><%- obj.type %></span>
-      Record Type
+      Type
     </a>
   </li>
   <li class="table-view-cell">
