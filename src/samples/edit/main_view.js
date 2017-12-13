@@ -57,14 +57,10 @@ export default Marionette.View.extend({
     const locationPrint = sample.printLocation();
     const location = sample.get('location') || {};
 
-    let numberLock = appModel.isAttrLocked('number', occ.get('number'));
-    if (!numberLock) {
-      numberLock = appModel.isAttrLocked('number-ranges', occ.get('number-ranges'));
-    }
     const attrLocks = {
       date: appModel.isAttrLocked('date', sample.get('date')),
       location: appModel.isAttrLocked('location', location),
-      number: numberLock,
+      number: appModel.isAttrLocked('number', occ.get('number')),
       locationName: appModel.isAttrLocked('locationName', location.name),
       stage: appModel.isAttrLocked('stage', occ.get('stage')),
       identifiers: appModel.isAttrLocked('identifiers', occ.get('identifiers')),
@@ -74,9 +70,6 @@ export default Marionette.View.extend({
     };
 
     let number = occ.get('number') && StringHelp.limit(occ.get('number'));
-    if (!number) {
-      number = occ.get('number-ranges') && StringHelp.limit(occ.get('number-ranges'));
-    }
 
     // show activity title.
     const group = sample.get('group');

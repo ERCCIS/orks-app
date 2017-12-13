@@ -75,18 +75,6 @@ const config = {
       id: 93,
       label: 'How many individuals of this type?',
     },
-    'number-ranges': {
-      id: 93,
-      default: 'Present',
-      values: {
-        1: 665,
-        '2-5': 666,
-        '6-20': 667,
-        '21-100': 668,
-        '101-500': 669,
-        '500+': 670,
-      },
-    },
     stage: {
       id: 218,
       label: 'Please indicate the life stage and sex of the organism, if recorded.',

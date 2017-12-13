@@ -51,12 +51,6 @@ export default Marionette.View.extend({
     const locationPrint = sample.printLocation();
     const location = sample.get('location') || {};
 
-    let number = occ.get('number') && StringHelp.limit(occ.get('number'));
-    if (!number) {
-      number = occ.get('number-ranges') && StringHelp.limit(occ.get('number-ranges'));
-    }
-
-
     // show activity title.
     const group = sample.get('group');
 
@@ -72,7 +66,7 @@ export default Marionette.View.extend({
       location: locationPrint,
       locationName: location.name,
       date: DateHelp.print(sample.get('date'), true),
-      number,
+      number: occ.get('number') && StringHelp.limit(occ.get('number')),
       stage: occ.get('stage') && StringHelp.limit(occ.get('stage')),
       identifiers: occ.get('identifiers'),
       type: occ.get('type'),
