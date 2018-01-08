@@ -1,8 +1,8 @@
 {
   "name": "orks-app",
   "id": "uk.org.orks.app",
-  "title": "ORKs App",
-  "description": "ORKs mobile application.",
+  "title": "ORKS App",
+  "description": "ORKS mobile application.",
   "version": "1.0.0",
   "build": "1",
   "homepage": "https://orks.org.uk",
