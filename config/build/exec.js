@@ -45,12 +45,12 @@ module.exports = function (grunt) {
           'mkdir -p dist && ' +
 
           'cordova --release build android && ' +
-          'cd platforms/android/build/outputs/apk &&' +
+          'cd platforms/android/build/outputs/apk && ' +
 
           'jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 ' +
           '-keystore ' + process.env.KEYSTORE +
           ' -storepass ' + pass +
-          ' android-release-unsigned.apk irecord &&' +
+          ' android-release-unsigned.apk orks-android-app-key && ' +
 
           'zipalign -v 4 android-release-unsigned.apk main.apk && ' +
 
@@ -76,14 +76,14 @@ module.exports = function (grunt) {
           'jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 ' +
           '-keystore ' + process.env.KEYSTORE +
           ' -storepass ' + pass +
-          ' android-armv7-release-unsigned.apk irecord &&' +
+          ' android-armv7-release-unsigned.apk orks-android-app-key &&' +
 
           'zipalign -v 4 android-armv7-release-unsigned.apk arm7.apk && ' +
 
           'jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 ' +
           '-keystore ' + process.env.KEYSTORE +
           ' -storepass ' + pass +
-          ' android-x86-release-unsigned.apk irecord &&' +
+          ' android-x86-release-unsigned.apk orks-android-app-key && ' +
           'zipalign -v 4 android-x86-release-unsigned.apk x86.apk && ' +
 
           'mv -f arm7.apk ../../../../../dist/ && ' +
