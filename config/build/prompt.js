@@ -10,4 +10,15 @@ module.exports = {
       ],
     },
   },
+  keypassword: {
+    options: {
+      questions: [
+        {
+          name: 'key-password',
+          type: 'password',
+          message: 'Please enter key password:',
+        },
+      ],
+    },
+  },
 };

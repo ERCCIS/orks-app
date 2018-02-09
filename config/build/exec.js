@@ -40,6 +40,7 @@ module.exports = function (grunt) {
     cordova_android_build: {
       command() {
         const pass = grunt.config('keystore-password');
+        const keypass = grunt.config('key-password');
 
         return 'cd dist/cordova && ' +
           'mkdir -p dist && ' +
@@ -48,8 +49,9 @@ module.exports = function (grunt) {
           'cd platforms/android/build/outputs/apk && ' +
 
           'jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 ' +
-          '-keystore ' + process.env.KEYSTORE +
+          '-keystore ../../../../../../../../orks-android.keystore' +
           ' -storepass ' + pass +
+          ' -keypass ' + keypass +
           ' android-release-unsigned.apk orks-android-app-key && ' +
 
           'zipalign -v 4 android-release-unsigned.apk main.apk && ' +
@@ -63,6 +65,7 @@ module.exports = function (grunt) {
     cordova_android_build_old: {
       command() {
         const pass = grunt.config('keystore-password');
+        const keypass = grunt.config('key-password');
 
         return 'cd dist/cordova && ' +
           'mkdir -p dist && ' +
@@ -74,15 +77,17 @@ module.exports = function (grunt) {
           'cd platforms/android/build/outputs/apk &&' +
 
           'jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 ' +
-          '-keystore ' + process.env.KEYSTORE +
+          '-keystore ../../../../../../../../orks-android.keystore' +
           ' -storepass ' + pass +
+          ' -keypass ' + keypass +
           ' android-armv7-release-unsigned.apk orks-android-app-key &&' +
 
           'zipalign -v 4 android-armv7-release-unsigned.apk arm7.apk && ' +
 
           'jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 ' +
-          '-keystore ' + process.env.KEYSTORE +
+          '-keystore ../../../../../../../../orks-android.keystore' +
           ' -storepass ' + pass +
+          ' -keypass ' + keypass +
           ' android-x86-release-unsigned.apk orks-android-app-key && ' +
           'zipalign -v 4 android-x86-release-unsigned.apk x86.apk && ' +
 
