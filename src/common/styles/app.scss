@@ -670,6 +670,14 @@ a span.pull-left.icon {
   font-size: 20px;
 }
 
+[class*=" icon-inline-"]:before, [class^=icon-inline-]:before {
+  font-size: 15px;
+}
+
+.icon-inline-orks {
+  color: $color-main;
+}
+
 button, input, select, textarea {
   font-size: 14px
 }
