@@ -47,6 +47,12 @@
     <preference name="SplashScreenDelay" value="10000" />
     <preference name="FadeSplashScreen" value="false" />
     <preference name="ShowSplashScreenSpinner" value="false"/>
+    <preference name="StatusBarBackgroundColor" value="#695B24" />
+    <preference name="StatusBarOverlaysWebView" value="false" />
+    <feature name="StatusBar">
+        <param name="ios-package" value="CDVStatusBar" onload="true" />
+    </feature>
+
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />
 
     <platform name="android">
