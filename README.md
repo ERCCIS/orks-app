@@ -1,4 +1,4 @@
-# ORKS App [![Build Status](https://travis-ci.org/NERC-CEH/irecord-app.svg?branch=master)](https://travis-ci.org/NERC-CEH/irecord-app)
+# ORKS App
 
 An application that enables you to get involved in biological
 recording. You can contribute your sightings with GPS acquired coordinates,
