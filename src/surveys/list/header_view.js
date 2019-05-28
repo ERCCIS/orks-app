@@ -15,7 +15,6 @@ export default Marionette.View.extend({
   template: JST['surveys/list/header'],
 
   triggers: {
-    'click #surveys-btn': 'surveys',
     'click #create-new-btn': 'create',
   },
 

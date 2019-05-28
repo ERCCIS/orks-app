@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="{ID}" version="{APP_VER}"
-        android-versionCode="20{MIN_SDK}{ANDROID_BUNDLE_VER}"
+        android-versionCode="21{MIN_SDK}{ANDROID_BUNDLE_VER}"
         ios-CFBundleVersion="{BUNDLE_VER}"
         xmlns="http://www.w3.org/ns/widgets"
         xmlns:cdv="http://cordova.apache.org/ns/1.0">
@@ -59,12 +59,20 @@
     <preference name="SplashScreenDelay" value="10000" />
     <preference name="FadeSplashScreen" value="false" />
     <preference name="ShowSplashScreenSpinner" value="false"/>
+<<<<<<< HEAD
     <preference name="StatusBarBackgroundColor" value="#4E5A0C" />
+=======
+    <preference name="StatusBarBackgroundColor" value="#695B24" />
+>>>>>>> master
     <preference name="StatusBarOverlaysWebView" value="false" />
     <feature name="StatusBar">
         <param name="ios-package" value="CDVStatusBar" onload="true" />
     </feature>
 
+<<<<<<< HEAD
+=======
+    <preference name="AndroidPersistentFileLocation" value="Compatibility" />
+>>>>>>> master
 
     <platform name="android">
         <allow-intent href="market:*" />
@@ -101,7 +109,11 @@
         <!-- iPad Spotlight and Settings Icon -->
         <icon src="../../config/cordova/images/ios/icon/icon-50.png" width="50" height="50" />
         <icon src="../../config/cordova/images/ios/icon/icon-50@2x.png" width="100" height="100" />
+<<<<<<< HEAD
         <icon src="../../config/cordova/images/ios/icon/icon-1024.png" height="1024" width="1024" />
+=======
+        <icon src="../../config/cordova/images/ios/icon/icon-1024.png" width="1024" height="1024" />
+>>>>>>> master
 
         <!-- images are determined by width and height. The following are supported -->
         <splash src="../../config/cordova/images/ios/splash/Default~iphone.png" width="320" height="480"/>

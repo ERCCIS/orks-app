@@ -87,7 +87,7 @@ module.exports = (grunt) => {
         {
           from: /\{ID\}/g, // string replacement
           to: () => {
-            return grunt.option('android') ? 'uk.ac.ceh.irecord' : pkg.id;
+            return grunt.option('android') ? 'uk.org.orks.app' : pkg.id;
           },
         },
         {

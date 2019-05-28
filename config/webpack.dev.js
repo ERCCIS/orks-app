@@ -14,6 +14,7 @@ module.exports = webpackMerge(commonConfig, {
       config: 'common/config/config_dev',
     },
   },
+  devtool: 'inline-source-map',
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {

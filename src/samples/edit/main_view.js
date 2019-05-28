@@ -57,25 +57,19 @@ export default Marionette.View.extend({
     const locationPrint = sample.printLocation();
     const location = sample.get('location') || {};
 
-    let numberLock = appModel.isAttrLocked('number', occ.get('number'));
-    if (!numberLock) {
-      numberLock = appModel.isAttrLocked('number-ranges', occ.get('number-ranges'));
-    }
     const attrLocks = {
       date: appModel.isAttrLocked('date', sample.get('date')),
       location: appModel.isAttrLocked('location', location),
-      number: numberLock,
+      number: appModel.isAttrLocked('number', occ.get('number')),
       locationName: appModel.isAttrLocked('locationName', location.name),
       stage: appModel.isAttrLocked('stage', occ.get('stage')),
       identifiers: appModel.isAttrLocked('identifiers', occ.get('identifiers')),
+      type: appModel.isAttrLocked('type', occ.get('type')),
       comment: appModel.isAttrLocked('comment', occ.get('comment')),
       activity: appModel.isAttrLocked('activity', sample.get('group')),
     };
 
     let number = occ.get('number') && StringHelp.limit(occ.get('number'));
-    if (!number) {
-      number = occ.get('number-ranges') && StringHelp.limit(occ.get('number-ranges'));
-    }
 
     // show activity title.
     const group = sample.get('group');
@@ -92,6 +86,7 @@ export default Marionette.View.extend({
       number,
       stage: occ.get('stage') && StringHelp.limit(occ.get('stage')),
       identifiers: occ.get('identifiers') && StringHelp.limit(occ.get('identifiers')),
+      type: occ.get('type') && StringHelp.limit(occ.get('type')),
       comment: occ.get('comment') && StringHelp.limit(occ.get('comment')),
       group_title: group ? group.title : null,
       group,

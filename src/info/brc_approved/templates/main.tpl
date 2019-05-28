@@ -9,9 +9,9 @@
     <p>This logo indicates that your data is:</p>
 
     <ul>
-      <li><p>Sent to the Biological Record Centre’s data warehouse linked to the iRecord
+      <li><p>Sent to the Biological Record Centre’s data warehouse linked to the ORKS
         system where it is accessible to you as the recorder, to an expert community
-        of verifiers and other users of iRecord.</p>
+        of verifiers and other users of ORKS.</p>
       </li>
       <li>
         <p>Quality assured data is passed onto Local Environmental Records Centres,

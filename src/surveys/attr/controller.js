@@ -90,19 +90,7 @@ const API = {
     const attr = view.options.attr;
     // invert the lock of the attribute
     // real value will be put on exit
-    if (attr === 'number') {
-      if (appModel.getAttrLock(attr, 'plant')) {
-        appModel.setAttrLock(attr, !appModel.getAttrLock(attr, 'plant'), 'plant');
-      } else {
-        appModel.setAttrLock(
-          'number-ranges',
-          !appModel.getAttrLock('number-ranges'),
-          'plant'
-        );
-      }
-    } else {
-      appModel.setAttrLock(attr, !appModel.getAttrLock(attr, 'plant'), 'plant');
-    }
+    appModel.setAttrLock(attr, !appModel.getAttrLock(attr, 'plant'), 'plant');
   },
 
   onExit(mainView, sample, attr, callback) {

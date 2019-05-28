@@ -56,6 +56,14 @@
     </a>
   </li>
   <li class="table-view-cell">
+    <a href="#samples/<%- obj.id %>/edit/type" id="type-button"
+       class="<%- obj.locks['type'] ? 'lock' : 'navigate-right' %>">
+      <span class="media-object pull-left icon icon-download"></span>
+      <span class="media-object pull-right descript"><%- obj.type %></span>
+      Type
+    </a>
+  </li>
+  <li class="table-view-cell">
     <a href="#samples/<%- obj.id %>/edit/comment" id="comment-button"
        class="<%- obj.locks['comment'] ? 'lock' : 'navigate-right' %>">
       <span class="media-object pull-left icon icon-comment"></span>

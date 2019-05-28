@@ -33,10 +33,6 @@ export default Marionette.View.extend({
       case 'number':
         occ = sample.getOccurrence();
         value = occ.get(attr);
-        if (!appModel.isAttrLocked(attr, value, survey)) {
-          attr = 'number-ranges';
-          value = occ.get(attr);
-        }
         break;
       default:
         if (survey === 'general') {

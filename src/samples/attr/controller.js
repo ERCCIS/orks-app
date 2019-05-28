@@ -82,16 +82,7 @@ const API = {
     const attr = view.options.attr;
     // invert the lock of the attribute
     // real value will be put on exit
-    if (attr === 'number') {
-      if (appModel.getAttrLock(attr)) {
-        appModel.setAttrLock(attr, !appModel.getAttrLock(attr));
-      } else {
-        appModel.setAttrLock('number-ranges',
-          !appModel.getAttrLock('number-ranges'));
-      }
-    } else {
-      appModel.setAttrLock(attr, !appModel.getAttrLock(attr));
-    }
+    appModel.setAttrLock(attr, !appModel.getAttrLock(attr));
   },
 
   onExit(mainView, sample, attr, callback) {
@@ -127,19 +118,12 @@ const API = {
 
         // todo: validate before setting up
         if (values.number) {
-          // specific number
           newVal = values.number;
           occ.set('number', newVal);
-          occ.unset('number-ranges');
-        } else {
-          // number ranges
-          attr = 'number-ranges'; // eslint-disable-line
-          newVal = values[attr];
-          occ.set('number-ranges', newVal);
-          occ.unset('number');
         }
         break;
       case 'stage':
+      case 'type':
       case 'identifiers':
       case 'comment':
         currentVal = occ.get(attr);
@@ -175,25 +159,6 @@ const API = {
           appModel.setAttrLock(attr, null);
         } else {
           appModel.setAttrLock(attr, newVal);
-        }
-        break;
-      case 'number-ranges':
-        if (!lockedValue) {
-          lockedValue = appModel.getAttrLock('number');
-        }
-      case 'number':
-        if (!lockedValue) {
-          lockedValue = appModel.getAttrLock('number-ranges');
-        }
-
-        if (!lockedValue) return; // nothing was locked
-
-        if (attr === 'number-ranges') {
-          appModel.setAttrLock(attr, newVal);
-          appModel.setAttrLock('number', null);
-        } else {
-          appModel.setAttrLock(attr, newVal);
-          appModel.setAttrLock('number-ranges', null);
         }
         break;
       default:

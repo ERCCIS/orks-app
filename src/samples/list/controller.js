@@ -89,7 +89,7 @@ const API = {
     Log('Samples:List:Controller: deleting sample.');
 
     const syncStatus = sample.getSyncStatus();
-    let body = 'This record hasn\'t been saved to iRecord yet, ' +
+    let body = 'This record hasn\'t been saved to ORKS yet, ' +
       'are you sure you want to remove it from your device?';
 
     if (syncStatus === Indicia.SYNCED) {

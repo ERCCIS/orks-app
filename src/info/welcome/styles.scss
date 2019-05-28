@@ -16,6 +16,10 @@ $width: 500vw;
     margin: 0;
     width: 80%;
     left: 10%;
+    background-color: #008C95;
+    color: #fff;
+    border: 0px;
+    font-weight: 600;
   }
 
   #swaps-container {
@@ -129,7 +133,7 @@ $width: 500vw;
 
   .message {
     position: absolute;
-    width: 50%;
+    width: 55%;
     padding-left: 10px;
 
     // Hack around the tablet hidden message issue
@@ -143,37 +147,69 @@ $width: 500vw;
   .message h2 {
     padding: 10px;
     color: whitesmoke;
-    background-color: rgba(123,117,55,0.9);
+    background-color: rgba(173,164,0,0.9);
   }
 
   .message p {
     font-size: 0.9em;
   }
 
+  .credit {
+    text-align: left;
+    padding: 10px;
+    top: 0vh;
+    position: absolute;
+  }
+
+  .credit p {
+    color: whitesmoke;
+  }
+
   $bottom: 16vh;
+  $top-sml: 7vh;
+  $top: 22vh;
 
   .first .message {
-    text-align: left;
-    bottom: $bottom;
+    text-align: center;
+    position: inherit;
+    width: 70%;
+    padding-top: 10px;
+    margin: 0 auto;
+  }
+
+  .first .credit {
+    top: 40vh;
   }
 
   .second .message {
     text-align: left;
-    top: 10vh;
+    top: $top;
   }
 
   .third .message {
-    text-align: left;
-    bottom: $bottom;
+    text-align: right;
+    top: $top-sml;
+    right: 0;
+    padding-right: 10px;
   }
 
   .fourth .message {
     text-align: left;
-    bottom: $bottom;
+    top: $top-sml;
+    right: 0;
+    width: 60%;
   }
 
   .fifth .message {
-    text-align: left;
-    bottom: $bottom;
+    text-align: center;
+    position: inherit;
+    padding-top: 20px;
+    width: 80%;
+    margin: 0 auto;
   }
+
+  .fifth .credit {
+    top: 80vh;
+  }
+
 }

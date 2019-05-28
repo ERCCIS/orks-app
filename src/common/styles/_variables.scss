@@ -17,10 +17,20 @@ $color-orange-light: #FF9935;
 $color-yellow:       #FFC019;
 $color-brown:        #614705;
 $color-red:          #e42012;
+<<<<<<< HEAD
 $color-red-dark:     #a01919;
 $color-main:         $color-green;
 $color-main-light:   $color-green-light;
 $color-main-dark:    $color-green-dark;
+=======
+
+$orks-grey:          #9EA2A2;
+$orks-brown:         #695B24;
+
+$color-main:         #ADA400;
+$color-main-light:   $orks-grey;
+$color-main-dark:    $orks-brown;
+>>>>>>> master
 
 
 $app-max-width: 650px;

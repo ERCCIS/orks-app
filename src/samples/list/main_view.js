@@ -122,9 +122,6 @@ const SampleView = Marionette.View.extend({
     const location = sample.get('location') || {};
 
     let number = occ.get('number') && StringHelp.limit(occ.get('number'));
-    if (!number) {
-      number = occ.get('number-ranges') && StringHelp.limit(occ.get('number-ranges'));
-    }
 
     const group = sample.get('group');
 

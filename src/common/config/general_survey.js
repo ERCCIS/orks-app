@@ -6,7 +6,7 @@ import Indicia from 'indicia';
 import DateHelp from 'helpers/date';
 
 const config = {
-  survey_id: 374,
+  survey_id: 490,
   input_form: 'enter-app-record',
 
   sample: {
@@ -72,30 +72,62 @@ const config = {
       },
     },
     number: {
-      id: 16,
+      id: 93,
       label: 'How many individuals of this type?',
     },
-    'number-ranges': {
-      id: 523,
-      default: 'Present',
-      values: {
-        1: 665,
-        '2-5': 666,
-        '6-20': 667,
-        '21-100': 668,
-        '101-500': 669,
-        '500+': 670,
-      },
-    },
     stage: {
-      id: 106,
-      label: 'Please pick the life stage.',
+      id: 218,
+      label: 'Please indicate the life stage and sex of the organism, if recorded.',
       default: 'Not Recorded',
       values: {
-        Adult: 1950,
-        'Pre-adult': 1951,
-        Other: 1952,
+        'Male': 3484,
+        'Female': 3483,
+        'Adult': 3405,
+        'Adult male': 3406,
+        'Adult female': 3407,
+        'Juvenile': 3408,
+        'Juvenile male': 3409,
+        'Juvenile female': 3410,
+        'Breeding pair': 3411,
+        'Mixed group': 5261,
+        'In flower': 3412,
+        'Fruiting': 3413,
+        'Egg': 3956,
+        'Larva': 3957,
+        'Nymph': 3959,
+        'Spawn': 3960,
+        'Pupa': 3958,
+        'Other (please add to comments)': 3414,
+        'Not recorded': 3415
       },
+    },
+    'type': {
+      id: 217,
+      label: 'Select the type of observation that was made.',
+      default: '',
+      values: {
+        'Seen': 3383,
+        'Heard': 3384,
+        'Dead': 3385,
+        'Dead on road': 3386,
+        'Feeding remains': 3387,
+        'Dung or droppings': 3388,
+        'Tracks or trail': 3389,
+        'Burrow': 3391,
+        'Nest': 3392,
+        'Colony': 5667,
+        'Bat Roost': 3924,
+        'Bat Hibernacula': 5294,
+        'Bat Breeding Roost': 5296,
+        'Bat Detected': 5299,
+        'Bat Grounded': 7799,
+        'Bat Seen': 5734,
+        'Trap': 5881,
+        'Light trap': 3390,
+        'Net trap': 5869,
+        'Camera trap': 5870,
+        'Other (please add to comments)': 3393
+      }
     },
     identifiers: {
       id: 18,

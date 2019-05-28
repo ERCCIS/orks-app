@@ -120,9 +120,9 @@ export default {
           occurrence = sample.getOccurrence();
           occurrence.set('number', val);
           break;
-        case 'number-ranges':
+        case 'type':
           occurrence = sample.getOccurrence();
-          occurrence.set('number-ranges', val);
+          occurrence.set('type', val);
           break;
         case 'stage':
           occurrence = sample.getOccurrence();
