@@ -1,28 +1,28 @@
 /** ****************************************************************************
  * Surveys Sample Attr main view.
  **************************************************************************** */
-import _ from 'lodash';
-import Marionette from 'backbone.marionette';
-import Log from 'helpers/log';
-import RadioInputView from 'common/views/radioInputView';
-import InputView from 'common/views/inputView';
-import TextareaView from 'common/views/textareaInputView';
+import _ from "lodash";
+import Marionette from "backbone.marionette";
+import Log from "helpers/log";
+import RadioInputView from "common/views/radioInputView";
+import InputView from "common/views/inputView";
+import TextareaView from "common/views/textareaInputView";
 
 export default Marionette.View.extend({
   template: _.template('<div id="attribute"></div>'),
   regions: {
     attribute: {
-      el: '#attribute',
-      replaceElement: true,
-    },
+      el: "#attribute",
+      replaceElement: true
+    }
   },
 
   onRender() {
     const attrView = this._getAttrView();
 
-    attrView.on('save', () => this.trigger('save'));
+    attrView.on("save", () => this.trigger("save"));
 
-    const mainRegion = this.getRegion('attribute');
+    const mainRegion = this.getRegion("attribute");
     mainRegion.show(attrView);
     this.attrView = attrView;
   },
@@ -38,46 +38,54 @@ export default Marionette.View.extend({
     const surveyAttrs = sample.getSurvey().attrs;
     let attrView;
     switch (this.options.attr) {
-      case 'abundance':
+      case "abundance":
         attrView = new InputView({
-          info: 'Abundance (DAFOR, LA, LF or count).',
+          info: "Abundance (DAFOR, LA, LF or count).",
           default: occ.get(this.options.attr),
           validate(value) {
             const re = /^(\d+|[DAFOR]|LA|LF)$/;
             return re.test(value);
-          },
+          }
         });
         break;
-      case 'identifiers':
+
+      case "identifiers":
         attrView = new InputView({
           config: surveyAttrs.occ.identifiers,
-          default: occ.get('identifiers'),
+          default: occ.get("identifiers")
         });
         break;
 
-      case 'status':
+      case "status":
         attrView = new RadioInputView({
           config: surveyAttrs.occ.status,
-          default: occ.get('status'),
+          default: occ.get("status")
         });
         break;
 
-      case 'stage':
+      case "stage":
         attrView = new RadioInputView({
           config: surveyAttrs.occ.stage,
-          default: occ.get('stage'),
+          default: occ.get("stage")
         });
         break;
 
-      case 'comment':
+      case "type":
+        attrView = new RadioInputView({
+          config: surveyAttrs.occ.type,
+          default: occ.get("type")
+        });
+        break;
+
+      case "comment":
         attrView = new TextareaView({
           config: surveyAttrs.occ.comment,
-          default: occ.get('comment'),
+          default: occ.get("comment")
         });
         break;
 
       default:
-        Log('Surveys:Attr:MainView: no such attribute to show!', 'e');
+        Log("Surveys:Attr:MainView: no such attribute to show!", "e");
     }
 
     return attrView;
@@ -92,5 +100,5 @@ export default Marionette.View.extend({
     values[this.options.attr] = this.attrView.getValues();
 
     return values;
-  },
+  }
 });

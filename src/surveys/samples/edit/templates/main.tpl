@@ -43,6 +43,13 @@
     </a>
   </li>
   <li class="table-view-cell">
+    <a href="#surveys/<%- obj.surveySampleID %>/edit/samples/<%- obj.id %>/edit/type" id="comment-button">
+      <span class="media-object pull-left icon icon-type"></span>
+      <span class="media-object pull-right descript"><%= obj.type %></span>
+      Type
+    </a>
+  </li>
+  <li class="table-view-cell">
     <a href="#surveys/<%- obj.surveySampleID %>/edit/samples/<%- obj.id %>/edit/abundance" id="comment-button">
       <span class="media-object pull-left icon icon-number"></span>
       <span class="media-object pull-right descript"><%= obj.abundance %></span>

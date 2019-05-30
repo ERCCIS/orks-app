@@ -1,19 +1,19 @@
 /** ****************************************************************************
  * Indicia Sample.
  **************************************************************************** */
-import _ from 'lodash';
-import Indicia from 'indicia';
-import bigu from 'bigu';
-import CONFIG from 'config';
-import userModel from 'user_model';
-import appModel from 'app_model';
-import Occurrence from 'occurrence';
-import Log from 'helpers/log';
-import Survey from 'common/config/surveys/Survey';
-import { coreAttributes } from 'common/config/surveys/general';
-import Device from 'helpers/device';
-import store from '../store';
-import GeolocExtension from './sample_geoloc_ext';
+import _ from "lodash";
+import Indicia from "indicia";
+import bigu from "bigu";
+import CONFIG from "config";
+import userModel from "user_model";
+import appModel from "app_model";
+import Occurrence from "occurrence";
+import Log from "helpers/log";
+import Survey from "common/config/surveys/Survey";
+import { coreAttributes } from "common/config/surveys/general";
+import Device from "helpers/device";
+import store from "../store";
+import GeolocExtension from "./sample_geoloc_ext";
 
 let Sample = Indicia.Sample.extend({
   api_key: CONFIG.indicia.api_key,
@@ -27,7 +27,7 @@ let Sample = Indicia.Sample.extend({
 
   metadata() {
     return {
-      training: appModel.get('useTraining'),
+      training: appModel.get("useTraining")
     };
   },
 
@@ -42,13 +42,13 @@ let Sample = Indicia.Sample.extend({
    */
   defaults() {
     return {
-      location: {},
+      location: {}
     };
   },
 
   initialize() {
     this.checkExpiredActivity(); // activities
-    this.listenTo(userModel, 'sync:activities:end', this.checkExpiredActivity);
+    this.listenTo(userModel, "sync:activities:end", this.checkExpiredActivity);
     this._setGPSlocationSetter();
   },
 
@@ -57,15 +57,11 @@ let Sample = Indicia.Sample.extend({
     const verify = survey.verify.bind(this);
     const [attributes, samples, occurrences] = verify(this.attributes);
 
-    if (
-      !_.isEmpty(attributes) ||
-      !_.isEmpty(samples) ||
-      !_.isEmpty(occurrences)
-    ) {
+    if (!_.isEmpty(attributes) || !_.isEmpty(samples) || !_.isEmpty(occurrences)) {
       return {
         attributes,
         samples,
-        occurrences,
+        occurrences
       };
     }
 
@@ -79,7 +75,7 @@ let Sample = Indicia.Sample.extend({
     const surveyConfig = this.getSurvey();
     const newAttrs = {
       survey_id: surveyConfig.id,
-      input_form: surveyConfig.webForm,
+      input_form: surveyConfig.webForm
     };
 
     const smpAttrs = surveyConfig.attrs.smp;
@@ -87,7 +83,7 @@ let Sample = Indicia.Sample.extend({
     updatedSubmission.fields = Object.assign({}, updatedSubmission.fields, {
       [smpAttrs.device.id]: smpAttrs.device.values[Device.getPlatform()],
       [smpAttrs.device_version.id]: Device.getVersion(),
-      [smpAttrs.app_version.id]: `${CONFIG.version}.${CONFIG.build}`,
+      [smpAttrs.app_version.id]: `${CONFIG.version}.${CONFIG.build}`
     });
 
     // add the survey_id to subsamples too
@@ -114,10 +110,7 @@ let Sample = Indicia.Sample.extend({
     // https://www.brc.ac.uk/irecord/node/7194
     if (this.id || this.metadata.server_on) {
       // an error, this should never happen
-      Log(
-        'SampleModel: trying to set a record for submission that is already sent!',
-        'w'
-      );
+      Log("SampleModel: trying to set a record for submission that is already sent!", "w");
     }
 
     this.metadata.saved = true;
@@ -129,7 +122,7 @@ let Sample = Indicia.Sample.extend({
       return false;
     }
 
-    Log('SampleModel: was set to send.');
+    Log("SampleModel: was set to send.");
 
     // save sample
     return this.save();
@@ -142,7 +135,7 @@ let Sample = Indicia.Sample.extend({
 
     if (remote && (this.id || this.metadata.server_on)) {
       // an error, this should never happen
-      Log('SampleModel: trying to send a record that is already sent!', 'w');
+      Log("SampleModel: trying to send a record that is already sent!", "w");
       return Promise.resolve({ data: {} });
     }
 
@@ -158,58 +151,55 @@ let Sample = Indicia.Sample.extend({
     this.setGPSLocation = location => {
       // child samples
       if (this.parent) {
-        this.set('location', location);
+        this.set("location", location);
         return this.save();
       }
 
       const gridSquareUnit = this.metadata.gridSquareUnit;
-      const gridCoords = bigu.latlng_to_grid_coords(
-        location.latitude,
-        location.longitude
-      );
+      const gridCoords = bigu.latlng_to_grid_coords(location.latitude, location.longitude);
 
       if (!gridCoords) {
         return null;
       }
 
-      location.source = 'gridref'; // eslint-disable-line
-      if (gridSquareUnit === 'monad') {
+      location.source = "gridref"; // eslint-disable-line
+      if (gridSquareUnit === "monad") {
         // monad
         location.accuracy = 500; // eslint-disable-line
 
-        gridCoords.x += -gridCoords.x % 1000 + 500;
-        gridCoords.y += -gridCoords.y % 1000 + 500;
+        gridCoords.x += (-gridCoords.x % 1000) + 500;
+        gridCoords.y += (-gridCoords.y % 1000) + 500;
         location.gridref = gridCoords.to_gridref(1000); // eslint-disable-line
       } else {
         // tetrad
         location.accuracy = 1000; // eslint-disable-line
 
-        gridCoords.x += -gridCoords.x % 2000 + 1000;
-        gridCoords.y += -gridCoords.y % 2000 + 1000;
+        gridCoords.x += (-gridCoords.x % 2000) + 1000;
+        gridCoords.y += (-gridCoords.y % 2000) + 1000;
         location.gridref = gridCoords.to_gridref(2000); // eslint-disable-line
         location.accuracy = 1000; // eslint-disable-line
       }
 
-      this.set('location', location);
+      this.set("location", location);
       return this.save();
     };
   },
 
   checkExpiredActivity() {
-    const activity = this.get('activity');
+    const activity = this.get("activity");
     if (activity) {
       const expired = userModel.hasActivityExpired(activity);
       if (expired) {
         const newActivity = userModel.getActivity(activity.id);
         if (!newActivity) {
           // the old activity is expired and removed
-          Log('Sample:Activity: removing exipired activity.');
-          this.unset('activity');
+          Log("Sample:Activity: removing exipired activity.");
+          this.unset("activity");
           this.save();
         } else {
           // old activity has been updated
-          Log('Sample:Activity: updating exipired activity.');
-          this.set('activity', newActivity);
+          Log("Sample:Activity: updating exipired activity.");
+          this.set("activity", newActivity);
           this.save();
         }
       }
@@ -218,10 +208,7 @@ let Sample = Indicia.Sample.extend({
 
   isLocalOnly() {
     const status = this.getSyncStatus();
-    return (
-      this.metadata.saved &&
-      (status === Indicia.LOCAL || status === Indicia.SYNCHRONISING)
-    );
+    return this.metadata.saved && (status === Indicia.LOCAL || status === Indicia.SYNCHRONISING);
   },
 
   timeout() {
@@ -234,21 +221,19 @@ let Sample = Indicia.Sample.extend({
   setTaxon(taxon = {}) {
     return new Promise((resolve, reject) => {
       if (!taxon.group) {
-        return reject(new Error('New taxon must have a group'));
+        return reject(new Error("New taxon must have a group"));
       }
 
       if (this.metadata.complex_survey) {
-        return reject(
-          new Error('Only general survey samples can use setTaxon method')
-        );
+        return reject(new Error("Only general survey samples can use setTaxon method"));
       }
 
       const occ = this.getOccurrence();
       if (!occ) {
-        return reject(new Error('No occurrence present to set taxon'));
+        return reject(new Error("No occurrence present to set taxon"));
       }
 
-      if (occ.get('taxon')) {
+      if (occ.get("taxon")) {
         const survey = this.getSurvey();
         const newSurvey = Survey.factory(taxon.group);
         if (survey.name !== newSurvey.name) {
@@ -266,25 +251,25 @@ let Sample = Indicia.Sample.extend({
         }
       }
 
-      occ.set('taxon', taxon);
+      occ.set("taxon", taxon);
       return resolve(this);
     });
   },
 
   getSurvey() {
     if (this.metadata.complex_survey) {
-      return Survey.factory(null, true);
+      return Survey.q(null, true);
     }
 
     const occ = this.getOccurrence();
     if (!occ) {
-    return Survey.factory();
+      return Survey.factory();
     }
 
-    const taxon = occ.get('taxon') || {};
+    const taxon = occ.get("taxon") || {};
 
     return Survey.factory(taxon.group);
-  },
+  }
 });
 
 // add geolocation functionality

@@ -32,7 +32,7 @@
     <li class="table-view-cell">
       <span class="media-object pull-left icon icon-number"></span>
       <span class="media-object pull-right descript"><%- obj.number %></span>
-      Number
+      Abundance
     </li>
   <% } %>
   <% if (obj.stage) { %>
@@ -40,6 +40,13 @@
       <span class="media-object pull-left icon icon-stage"></span>
       <span class="media-object pull-right descript"><%- obj.stage %></span>
       Stage
+    </li>
+  <% } %>
+  <% if (obj.type) { %>
+    <li class="table-view-cell">
+      <span class="media-object pull-left icon icon-stage"></span>
+      <span class="media-object pull-right descript"><%- obj.type %></span>
+      Type
     </li>
   <% } %>
   <% if (obj.comment) { %>

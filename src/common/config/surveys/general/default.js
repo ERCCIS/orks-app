@@ -12,7 +12,7 @@ const survey = {
 
   taxonGroups: [], // all
 
-  editForm: ["occ:number", "occ:stage", "occ:identifiers"],
+  editForm: ["occ:number", "occ:stage", "occ:type", "occ:identifiers"],
 
   attrs: {
     smp: {
@@ -26,8 +26,7 @@ const survey = {
           attributes[keys.location_source.id] = location.source;
           attributes[keys.location_gridref.id] = location.gridref;
           attributes[keys.location_altitude.id] = location.altitude;
-          attributes[keys.location_altitude_accuracy.id] =
-            location.altitudeAccuracy;
+          attributes[keys.location_altitude_accuracy.id] = location.altitudeAccuracy;
           attributes[keys.location_accuracy.id] = accuracy;
 
           // add other location related attributes
@@ -98,8 +97,7 @@ const survey = {
       },
       stage: {
         id: 218,
-        info:
-          "Please indicate the life stage and sex of the organism, if recorded.",
+        info: "Please indicate the life stage and sex of the organism, if recorded.",
         default: "Not Recorded",
         values: {
           Male: 3484,
@@ -129,8 +127,8 @@ const survey = {
       },
       type: {
         id: 217,
-        label: "Select the type of observation that was made.",
-        default: "",
+        info: "Select the type of observation that was made.",
+        default: "Not Recorded",
         values: {
           Seen: 3383,
           Heard: 3384,
@@ -154,13 +152,12 @@ const survey = {
           "Camera trap": 5870,
           "Other (please add to comments)": 3393
         },
-        icon: "stage",
+        icon: "camera",
         type: "radio"
       },
       identifiers: {
         id: 18,
-        info:
-          "If anyone helped with the identification please enter their name here.",
+        info: "If anyone helped with the identification please enter their name here.",
         icon: "user-plus",
         type: "text"
       },
@@ -197,8 +194,7 @@ const survey = {
     } else {
       const date = new Date(attrs.date);
       if (date === "Invalid Date" || date > new Date()) {
-        attributes.date =
-          new Date(date) > new Date() ? "future date" : "invalid";
+        attributes.date = new Date(date) > new Date() ? "future date" : "invalid";
       }
     }
 
