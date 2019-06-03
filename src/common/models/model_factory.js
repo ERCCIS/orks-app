@@ -26,22 +26,20 @@ const Factory = {
     // add currently logged in user as one of the recorders
     const recorders = [];
     if (userModel.hasLogIn()) {
-      recorders.push(
-        `${userModel.get('firstname')} ${userModel.get('secondname')}`
-      );
+      recorders.push(`${userModel.get('firstname')} ${userModel.get('secondname')}`);
     }
 
     const sample = new Sample(
       {
         location_type: 'british',
         sample_method_id: 7305,
-        recorders,
+        recorders
       },
       {
         metadata: {
           complex_survey: true,
-          gridSquareUnit: appModel.get('gridSquareUnit'),
-        },
+          gridSquareUnit: appModel.get('gridSquareUnit')
+        }
       }
     );
 
@@ -137,10 +135,7 @@ const Factory = {
           break;
         case 'occ:number':
           occurrence = sample.getOccurrence();
-          const numberAttrName = !Number.isNaN(Number(val))
-            ? 'number'
-            : 'number-ranges';
-          occurrence.set(numberAttrName, val);
+          occurrence.set('number', val);
           break;
         case 'occ:stage':
           occurrence = sample.getOccurrence();
@@ -162,10 +157,8 @@ const Factory = {
    * Empty taxon.
    */
   createSampleWithPhoto(survey, photo) {
-    return ImageHelp.getImageModel(ImageModel, photo).then(image =>
-      Factory.createSample(survey, image)
-    );
-  },
+    return ImageHelp.getImageModel(ImageModel, photo).then(image => Factory.createSample(survey, image));
+  }
 };
 
 export default Factory;

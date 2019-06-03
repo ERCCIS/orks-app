@@ -14,8 +14,8 @@ export default Marionette.View.extend({
   regions: {
     attribute: {
       el: '#attribute',
-      replaceElement: true,
-    },
+      replaceElement: true
+    }
   },
 
   onRender() {
@@ -44,16 +44,13 @@ export default Marionette.View.extend({
     const attrName = attrParts[1];
     const attrConfig = surveyAttrs[attrType][attrName];
 
-    const currentVal =
-      attrType === 'smp' ? sample.get(attrName) : occ.get(attrName);
+    const currentVal = attrType === 'smp' ? sample.get(attrName) : occ.get(attrName);
 
     let attrView;
     switch (this.options.attr) {
       case 'occ:number':
         attrView = new NumberAttrView({
-          config: surveyAttrs.occ['number-ranges'],
-          defaultNumber: currentVal,
-          default: occ.get('number-ranges'),
+          defaultNumber: currentVal
         });
         break;
 
@@ -74,21 +71,21 @@ export default Marionette.View.extend({
       case 'input':
         attrView = new InputView({
           config: attrConfig,
-          default: currentVal,
+          default: currentVal
         });
         break;
 
       case 'radio':
         attrView = new RadioInputView({
           config: attrConfig,
-          default: currentVal,
+          default: currentVal
         });
         break;
 
       case 'text':
         attrView = new TextareaView({
           config: attrConfig,
-          default: currentVal,
+          default: currentVal
         });
         break;
 
@@ -105,16 +102,8 @@ export default Marionette.View.extend({
   getValues() {
     const values = {};
 
-    switch (this.options.attr) {
-      case 'number':
-        const [value, range] = this.attrView.getValues();
-        values[this.options.attr] = value;
-        values['number-ranges'] = range;
-        break;
-      default:
-        values[this.options.attr] = this.attrView.getValues();
-    }
+    values[this.options.attr] = this.attrView.getValues();
 
     return values;
-  },
+  }
 });

@@ -15,8 +15,7 @@ function template(sample) {
     const attrType = attrParts[0];
     const attrName = attrParts[1];
     const attr = survey.attrs[attrType][attrName];
-    const label =
-      attr.label || attrName.slice(0, 1).toUpperCase() + attrName.slice(1);
+    const label = attr.label || attrName.slice(0, 1).toUpperCase() + attrName.slice(1);
     const icon = attr.icon || 'dot';
 
     if (attr.type === 'toggle') {
@@ -54,7 +53,7 @@ export default Marionette.View.extend({
 
   events: {
     'toggle .toggle': 'onSettingToggled',
-    'click .toggle': 'onSettingToggled',
+    'click .toggle': 'onSettingToggled'
   },
 
   onSettingToggled(e) {
@@ -74,9 +73,7 @@ export default Marionette.View.extend({
   tagName: 'ul',
   id: 'attrs',
   className() {
-    return `table-view inputs no-top ${
-      this.options.activityExists ? 'withActivity' : ''
-    }`;
+    return `table-view inputs no-top ${this.options.activityExists ? 'withActivity' : ''}`;
   },
 
   serializeData() {
@@ -86,7 +83,7 @@ export default Marionette.View.extend({
 
     // get attr locks
     const attrLocks = {
-      number: appModel.isAttrLocked(occ, 'number'),
+      number: appModel.isAttrLocked(occ, 'number')
     };
     const survey = sample.getSurvey();
     survey.editForm.forEach(attr => {
@@ -99,7 +96,7 @@ export default Marionette.View.extend({
       id: sample.cid,
       isLocating: sample.isGPSRunning(),
       isSynchronising: sample.getSyncStatus() === Indicia.SYNCHRONISING,
-      locks: attrLocks,
+      locks: attrLocks
     };
 
     survey.editForm.forEach(element => {
@@ -113,9 +110,6 @@ export default Marionette.View.extend({
       switch (element) {
         case 'occ:number':
           currentVal = StringHelp.limit(occ.get('number'));
-          if (!currentVal) {
-            currentVal = StringHelp.limit(occ.get('number-ranges'));
-          }
           break;
         default:
           currentVal = StringHelp.limit(model.get(attrName));
@@ -131,5 +125,5 @@ export default Marionette.View.extend({
    * Returns the attribute value extracted from the view.
    * @returns {{}}
    */
-  getValues() {},
+  getValues() {}
 });

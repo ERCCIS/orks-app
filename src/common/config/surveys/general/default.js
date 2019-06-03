@@ -1,18 +1,18 @@
 /** ****************************************************************************
  * General survey configuration file.
  **************************************************************************** */
-import $ from "jquery";
-import Indicia from "indicia";
-import DateHelp from "helpers/date";
+import $ from 'jquery';
+import Indicia from 'indicia';
+import DateHelp from 'helpers/date';
 
 const survey = {
-  name: "default",
+  name: 'default',
   id: 490,
-  webForm: "enter-app-record",
+  webForm: 'enter-app-record',
 
   taxonGroups: [], // all
 
-  editForm: ["occ:number", "occ:stage", "occ:type", "occ:identifiers"],
+  editForm: ['occ:number', 'occ:stage', 'occ:type', 'occ:identifiers'],
 
   attrs: {
     smp: {
@@ -56,20 +56,20 @@ const survey = {
         values(date) {
           return DateHelp.print(date);
         },
-        isValid: val => val && val.toString() !== "Invalid Date",
-        type: "date",
+        isValid: val => val && val.toString() !== 'Invalid Date',
+        type: 'date',
         max: () => new Date()
       },
 
       activity: {
-        id: "group",
+        id: 'group',
         values: activity => activity.id,
-        type: "input"
+        type: 'input'
       }
     },
     occ: {
       training: {
-        id: "training"
+        id: 'training'
       },
 
       taxon: {
@@ -79,92 +79,80 @@ const survey = {
       },
       number: {
         id: 93,
-        info: "How many individuals of this type?",
-        label: "Abundance",
-        icon: "number"
-      },
-      "number-ranges": {
-        id: 93,
-        default: "Present",
-        values: {
-          1: 665,
-          "2-5": 666,
-          "6-20": 667,
-          "21-100": 668,
-          "101-500": 669,
-          "500+": 670
-        }
+        info: 'How many individuals of this type?',
+        label: 'Abundance',
+        icon: 'number'
       },
       stage: {
         id: 218,
-        info: "Please indicate the life stage and sex of the organism, if recorded.",
-        default: "Not Recorded",
+        info: 'Please indicate the life stage and sex of the organism, if recorded.',
+        default: 'Not Recorded',
         values: {
           Male: 3484,
-          "Pre-adult": 1951,
+          'Pre-adult': 1951,
           Female: 3483,
           Other: 1952,
           Adult: 3405,
-          "Adult male": 3406,
-          "Adult female": 3407,
+          'Adult male': 3406,
+          'Adult female': 3407,
           Juvenile: 3408,
-          "Juvenile male": 3409,
-          "Juvenile female": 3410,
-          "Breeding pair": 3411,
-          "Mixed group": 5261,
-          "In flower": 3412,
+          'Juvenile male': 3409,
+          'Juvenile female': 3410,
+          'Breeding pair': 3411,
+          'Mixed group': 5261,
+          'In flower': 3412,
           Fruiting: 3413,
           Egg: 3956,
           Larva: 3957,
           Nymph: 3959,
           Spawn: 3960,
           Pupa: 3958,
-          "Other (please add to comments)": 3414,
-          "Not recorded": 3415
+          'Other (please add to comments)': 3414,
+          'Not recorded': 3415
         },
-        icon: "stage",
-        type: "radio"
+        icon: 'stage',
+        type: 'radio'
       },
       type: {
         id: 217,
-        info: "Select the type of observation that was made.",
-        default: "Not Recorded",
+        info: 'Select the type of observation that was made.',
+        default: 'Not Recorded',
         values: {
           Seen: 3383,
           Heard: 3384,
           Dead: 3385,
-          "Dead on road": 3386,
-          "Feeding remains": 3387,
-          "Dung or droppings": 3388,
-          "Tracks or trail": 3389,
+          'Dead on road': 3386,
+          'Feeding remains': 3387,
+          'Dung or droppings': 3388,
+          'Tracks or trail': 3389,
           Burrow: 3391,
           Nest: 3392,
           Colony: 5667,
-          "Bat Roost": 3924,
-          "Bat Hibernacula": 5294,
-          "Bat Breeding Roost": 5296,
-          "Bat Detected": 5299,
-          "Bat Grounded": 7799,
-          "Bat Seen": 5734,
+          'Bat Roost': 3924,
+          'Bat Hibernacula': 5294,
+          'Bat Breeding Roost': 5296,
+          'Bat Detected': 5299,
+          'Bat Grounded': 7799,
+          'Bat Seen': 5734,
           Trap: 5881,
-          "Light trap": 3390,
-          "Net trap": 5869,
-          "Camera trap": 5870,
-          "Other (please add to comments)": 3393
+          'Light trap': 3390,
+          'Net trap': 5869,
+          'Camera trap': 5870,
+          'Other (please add to comments)': 3393
         },
-        icon: "camera",
-        type: "radio"
+        icon: 'camera',
+        type: 'radio'
       },
       identifiers: {
         id: 18,
-        info: "If anyone helped with the identification please enter their name here.",
-        icon: "user-plus",
-        type: "text"
+        info: 'If anyone helped with the identification please enter their name here.',
+        icon: 'user-plus',
+        type: 'text'
       },
       comment: {
-        info: "Please add any extra info about this record.",
-        icon: "comment",
-        type: "text"
+        info: 'Please add any extra info about this record.',
+        icon: 'comment',
+        type: 'text'
       }
     }
   },
@@ -181,20 +169,20 @@ const survey = {
     // location
     const location = attrs.location || {};
     if (!location.latitude) {
-      attributes.location = "missing";
+      attributes.location = 'missing';
     }
     // location name
     if (!location.name) {
-      attributes["location name"] = "missing";
+      attributes['location name'] = 'missing';
     }
 
     // date
     if (!attrs.date) {
-      attributes.date = "missing";
+      attributes.date = 'missing';
     } else {
       const date = new Date(attrs.date);
-      if (date === "Invalid Date" || date > new Date()) {
-        attributes.date = new Date(date) > new Date() ? "future date" : "invalid";
+      if (date === 'Invalid Date' || date > new Date()) {
+        attributes.date = new Date(date) > new Date() ? 'future date' : 'invalid';
       }
     }
 

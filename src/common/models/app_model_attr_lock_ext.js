@@ -14,7 +14,7 @@ export default {
 
     if (!locks[surveyType][surveyName]) {
       locks[surveyType] = Object.assign({}, locks[surveyType], {
-        [surveyName]: {},
+        [surveyName]: {}
       });
       this.set('attrLocks', locks);
       this.save();
@@ -86,11 +86,9 @@ export default {
    * @returns {boolean}
    */
   isAttrLocked(model, attr, noSurveyExists) {
-    const fullAttrName =
-      model instanceof Indicia.Sample ? `smp:${attr}` : `occ:${attr}`;
+    const fullAttrName = model instanceof Indicia.Sample ? `smp:${attr}` : `occ:${attr}`;
     const isCoreAttr = coreAttributes.includes(fullAttrName);
-    const surveyConfig =
-      isCoreAttr || noSurveyExists ? null : model.getSurvey();
+    const surveyConfig = isCoreAttr || noSurveyExists ? null : model.getSurvey();
 
     let value;
     let lockedVal = this.getAttrLock(fullAttrName, surveyConfig);
@@ -113,10 +111,7 @@ export default {
         }
         value = model.get(attr);
         // map or gridref
-        return (
-          lockedVal.latitude === value.latitude &&
-          lockedVal.longitude === value.longitude
-        );
+        return lockedVal.latitude === value.latitude && lockedVal.longitude === value.longitude;
       case 'smp:locationName':
         if (!lockedVal) {
           return false;
@@ -125,16 +120,10 @@ export default {
         return lockedVal === value.name;
       case 'occ:number':
         value = model.get(attr);
-        return (
-          lockedVal === model.get(attr) ||
-          lockedVal === model.get('number-ranges')
-        );
+        return lockedVal === model.get(attr);
       case 'smp:date':
         value = model.get(attr);
-        if (
-          Number.isNaN(Date.parse(value)) ||
-          Number.isNaN(Date.parse(lockedVal))
-        ) {
+        if (Number.isNaN(Date.parse(value)) || Number.isNaN(Date.parse(lockedVal))) {
           return false;
         }
 
@@ -159,5 +148,5 @@ export default {
       Log('AppModel:AttrLocks: activity has expired.');
       this.unsetAttrLock('smp:activity'); // remove locked activity
     });
-  },
+  }
 };

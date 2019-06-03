@@ -23,7 +23,7 @@ const SampleView = Marionette.View.extend({
 
   triggers: {
     'click #delete': 'sample:delete',
-    'click #add-species-btn': 'taxon:add',
+    'click #add-species-btn': 'taxon:add'
   },
 
   events: {
@@ -32,12 +32,12 @@ const SampleView = Marionette.View.extend({
       e.preventDefault();
       this.trigger('sample:edit:attr', $(e.target).data('attr'));
     },
-    'click img': 'photoView',
+    'click img': 'photoView'
   },
 
   modelEvents: {
     'request:remote sync:remote error:remote': 'render',
-    geolocation: 'render',
+    geolocation: 'render'
   },
 
   photoView(e) {
@@ -49,7 +49,7 @@ const SampleView = Marionette.View.extend({
       items.push({
         src: image.getURL(),
         w: image.get('width') || 800,
-        h: image.get('height') || 800,
+        h: image.get('height') || 800
       });
     });
 
@@ -71,11 +71,11 @@ const SampleView = Marionette.View.extend({
 
     const options = {
       threshold: 50,
-      toolsWidth: 100,
+      toolsWidth: 100
     };
 
     const hammertime = new Hammer(this.el, {
-      direction: Hammer.DIRECTION_HORIZONTAL,
+      direction: Hammer.DIRECTION_HORIZONTAL
     });
 
     // on tap bring back
@@ -124,16 +124,12 @@ const SampleView = Marionette.View.extend({
     const locationPrint = sample.printLocation();
     const location = sample.get('location') || {};
 
-    let number = StringHelp.limit(occ.get('number'));
-    if (!number) {
-      number = StringHelp.limit(occ.get('number-ranges'));
-    }
+    const number = StringHelp.limit(occ.get('number'));
 
     const activity = sample.get('activity');
 
     const isDefaultSurvey =
-      sample.getOccurrence().get('taxon') && // photo-first sample check
-      sample.getSurvey().name === 'default';
+      sample.getOccurrence().get('taxon') && sample.getSurvey().name === 'default'; // photo-first sample check
 
     return {
       id: sample.cid,
@@ -150,17 +146,13 @@ const SampleView = Marionette.View.extend({
       isDefaultSurvey,
       stage: StringHelp.limit(occ.get('stage')),
       comment: occ.get('comment'),
-      locationLocked: appModel.isAttrLocked(
-        sample,
-        'locationName',
-        !isDefaultSurvey
-      ),
+      locationLocked: appModel.isAttrLocked(sample, 'locationName', !isDefaultSurvey),
       dateLocked: appModel.isAttrLocked(sample, 'date', !isDefaultSurvey),
       commentLocked: appModel.isAttrLocked(occ, 'comment', !isDefaultSurvey),
       numberLocked: appModel.isAttrLocked(occ, 'number', !isDefaultSurvey),
       stageLocked: appModel.isAttrLocked(occ, 'stage', !isDefaultSurvey),
       activity,
-      img: img ? `<img src="${img}"/>` : '',
+      img: img ? `<img src="${img}"/>` : ''
     };
   },
 
@@ -210,7 +202,7 @@ const SampleView = Marionette.View.extend({
       this.$sample.css('transform', `translateX(${this.position}px)`);
       this.docked = false;
     }
-  },
+  }
 });
 
 const NoSamplesView = Marionette.View.extend({
@@ -219,8 +211,8 @@ const NoSamplesView = Marionette.View.extend({
   template: JST['samples/list/list-none'],
 
   triggers: {
-    'click #create-new-btn': 'create',
-  },
+    'click #create-new-btn': 'create'
+  }
 });
 
 const SmartCollectionView = SlidingView.extend({
@@ -230,7 +222,7 @@ const SmartCollectionView = SlidingView.extend({
   onAttach() {
     // let the world know when the list is in place
     radio.trigger('species:list:show');
-  },
+  }
 });
 
 const MainView = Marionette.View.extend({
@@ -262,8 +254,8 @@ const MainView = Marionette.View.extend({
   regions: {
     body: {
       el: '#list',
-      replaceElement: true,
-    },
+      replaceElement: true
+    }
   },
 
   onRender() {
@@ -273,10 +265,10 @@ const MainView = Marionette.View.extend({
       new SmartCollectionView({
         referenceCollection: this.collection,
         appModel: this.options.appModel,
-        scroll: this.options.scroll,
+        scroll: this.options.scroll
       })
     );
-  },
+  }
 });
 
 export { MainView as default, SampleView };

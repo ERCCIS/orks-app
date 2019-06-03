@@ -44,7 +44,7 @@ const API = {
     // MAIN
     const mainView = new MainView({
       attr,
-      model: sample,
+      model: sample
     });
     radio.trigger('app:main', mainView);
 
@@ -55,7 +55,7 @@ const API = {
       model: new Backbone.Model({ appModel, sample }),
       attr,
       onLockClick: view => API.onLockClick(view, !isCoreAttr && surveyConfig),
-      surveyConfig: !isCoreAttr && surveyConfig,
+      surveyConfig: !isCoreAttr && surveyConfig
     });
 
     const surveyAttrs = surveyConfig.attrs;
@@ -72,7 +72,7 @@ const API = {
         });
       },
       rightPanel: lockView,
-      model: new Backbone.Model({ title: attrConfig.label || attrName }),
+      model: new Backbone.Model({ title: attrConfig.label || attrName })
     });
 
     radio.trigger('app:header', headerView);
@@ -93,11 +93,7 @@ const API = {
     const attr = view.options.attr;
     // invert the lock of the attribute
     // real value will be put on exit
-    appModel.setAttrLock(
-      attr,
-      !appModel.getAttrLock(attr, surveyConfig),
-      surveyConfig
-    );
+    appModel.setAttrLock(attr, !appModel.getAttrLock(attr, surveyConfig), surveyConfig);
   },
 
   onExit(mainView, sample, attr, callback) {
@@ -118,20 +114,10 @@ const API = {
 
     switch (attr) {
       case 'occ:number':
-        currentVal = occ.get('number') || occ.get('number-ranges');
+        currentVal = occ.get('number');
 
-        // todo: validate before setting up
-        if (values[attr][0]) {
-          // specific number
-          newVal = values[attr][0];
-          occ.set('number', newVal);
-          occ.unset('number-ranges');
-        } else {
-          // number ranges
-          newVal = values[attr][1];
-          occ.set('number-ranges', newVal);
-          occ.unset('number');
-        }
+        newVal = values[attr];
+        occ.set('number', newVal);
         break;
       default:
         const surveyAttrs = sample.getSurvey().attrs;
@@ -151,7 +137,7 @@ const API = {
           radio.trigger('app:dialog', {
             title: 'Sorry',
             body: 'Invalid date selected',
-            timeout: 2000,
+            timeout: 2000
           });
           return;
         }
@@ -182,10 +168,7 @@ const API = {
 
     switch (attr) {
       case 'smp:date':
-        if (
-          !lockedValue ||
-          (lockedValue && DateHelp.print(newVal) === DateHelp.print(new Date()))
-        ) {
+        if (!lockedValue || (lockedValue && DateHelp.print(newVal) === DateHelp.print(new Date()))) {
           // don't lock current day
           appModel.unsetAttrLock(attr);
         } else {
@@ -193,14 +176,11 @@ const API = {
         }
         break;
       default:
-        if (
-          lockedValue &&
-          (lockedValue === true || lockedValue === currentVal)
-        ) {
+        if (lockedValue && (lockedValue === true || lockedValue === currentVal)) {
           appModel.setAttrLock(attr, newVal, surveyConfig);
         }
     }
-  },
+  }
 };
 
 export { API as default };
