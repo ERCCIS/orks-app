@@ -16,7 +16,7 @@ $width: 500vw;
     margin: 0;
     width: 80%;
     left: 10%;
-    background-color: #008C95;
+    background-color: #008c95;
     color: #fff;
     border: 0px;
     font-weight: 600;
@@ -57,14 +57,13 @@ $width: 500vw;
     transform: translate(0, 0);
   }
 
-
   #exit-button {
     font-size: medium;
     color: rgb(51, 38, 38);
-    background-color: rgba(245,245,245,.86);
-    border-color: #E8E8E8;
+    background-color: rgba(245, 245, 245, 0.86);
+    border-color: #e8e8e8;
     max-width: 500px;
-    width:100%;
+    width: 100%;
     height: 56px;
     display: block;
     margin: 0 auto;
@@ -147,7 +146,7 @@ $width: 500vw;
   .message h2 {
     padding: 10px;
     color: whitesmoke;
-    background-color: rgba(173,164,0,0.9);
+    background-color: rgba(173, 164, 0, 0.9);
   }
 
   .message p {
@@ -211,5 +210,4 @@ $width: 500vw;
   .fifth .credit {
     top: 80vh;
   }
-
 }

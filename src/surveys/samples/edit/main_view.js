@@ -1,77 +1,68 @@
 /** ****************************************************************************
  * Surveys Sample Edit main view.
- *****************************************************************************/
-import Marionette from 'backbone.marionette';
-import $ from 'jquery';
-import Indicia from 'indicia';
-import JST from 'JST';
-import DateHelp from 'helpers/date';
-import Device from 'helpers/device';
-import StringHelp from 'helpers/string';
+ **************************************************************************** */
+import Marionette from "backbone.marionette";
+import $ from "jquery";
+import Indicia from "indicia";
+import JST from "JST";
+import DateHelp from "helpers/date";
+import Device from "helpers/device";
+import StringHelp from "helpers/string";
 
-import './styles.scss';
+import "./styles.scss";
 
 export default Marionette.View.extend({
-  template: JST['surveys/samples/edit/main'],
+  template: JST["surveys/samples/edit/main"],
 
   triggers: {
-    'click a#species-button': 'taxon:update',
-    'click a#location-button': 'location:update',
+    "click a#species-button": "taxon:update",
+    "click a#location-button": "location:update"
   },
 
   events: {
-    'toggle #sensitive-btn': 'onSettingToggled',
-    'click #sensitive-btn': 'onSettingToggled',
+    "toggle #sensitive-btn": "onSettingToggled",
+    "click #sensitive-btn": "onSettingToggled"
   },
 
   initialize() {
-    const sample = this.model.get('sample');
-    this.listenTo(sample, 'request:remote error:remote geolocation', this.render);
+    const sample = this.model.get("sample");
+    this.listenTo(
+      sample,
+      "request:remote error:remote geolocation",
+      this.render
+    );
   },
 
   onSettingToggled(e) {
-    const setting = $(e.currentTarget).data('setting');
-    let active = $(e.currentTarget).hasClass('active');
+    const setting = $(e.currentTarget).data("setting");
+    let active = $(e.currentTarget).hasClass("active");
 
-    if (e.type !== 'toggle' && !Device.isMobile()) {
+    if (e.type !== "toggle" && !Device.isMobile()) {
       // Device.isMobile() android generates both swipe and click
 
       active = !active; // invert because it takes time to get the class
-      $(e.currentTarget).toggleClass('active', active);
+      $(e.currentTarget).toggleClass("active", active);
     }
 
-    this.trigger('setting:toggled', setting, active);
+    this.trigger("setting:toggled", setting, active);
   },
 
   serializeData() {
-    const sample = this.model.get('sample');
+    const sample = this.model.get("sample");
     const occ = sample.getOccurrence();
-    const specie = occ.get('taxon') || {};
-    const appModel = this.model.get('appModel');
+    const specie = occ.get("taxon") || {};
 
     // taxon
     const scientificName = specie.scientific_name;
     const commonName = specie.common_name;
 
     const locationPrint = sample.printLocation();
-    const location = sample.get('location') || {};
+    const location = sample.get("location") || {};
 
-    const attrLocks = {
-      date: appModel.isAttrLocked('date', sample.get('date')),
-      location: appModel.isAttrLocked('location', sample.get('location')),
-      number: appModel.isAttrLocked('number', occ.get('number')),
-      sensitive: occ.metadata.sensitivity_precision,
-      abundance: appModel.isAttrLocked('abundance', occ.get('abundance')),
-      stage: appModel.isAttrLocked('stage', occ.get('stage')),
-      status: appModel.isAttrLocked('status', occ.get('status')),
-      identifiers: appModel.isAttrLocked('identifiers', occ.get('identifiers')),
-      type: appModel.isAttrLocked('type', occ.get('type')),
-      comment: appModel.isAttrLocked('comment', occ.get('comment')),
-      activity: appModel.isAttrLocked('activity', sample.get('group')),
-    };
+    const number = StringHelp.limit(occ.get("number"));
 
     // show activity title.
-    const group = sample.get('group');
+    const activity = sample.get("activity");
 
     return {
       surveySampleID: sample.parent.cid,
@@ -84,21 +75,20 @@ export default Marionette.View.extend({
       location: locationPrint,
       locationName: location.name,
       locationEditAllowed: this.options.locationEditAllowed,
-      date: DateHelp.print(sample.get('date'), true),
-      number: occ.get('number') && StringHelp.limit(occ.get('number')),
-      abundance: occ.get('abundance') && StringHelp.limit(occ.get('abundance')),
-      status: occ.get('status') && StringHelp.limit(occ.get('status')),
-      stage: occ.get('stage') && StringHelp.limit(occ.get('stage')),
-      identifiers: occ.get('identifiers') && StringHelp.limit(occ.get('identifiers')),
-      type: appModel.isAttrLocked('type', occ.get('type')),
-      comment: occ.get('comment') && StringHelp.limit(occ.get('comment')),
-      group_title: group ? group.title : null,
-      group,
-      locks: attrLocks,
+      date: DateHelp.print(sample.get("date"), true),
+      number,
+      abundance: StringHelp.limit(occ.get("abundance")),
+      status: StringHelp.limit(occ.get("status")),
+      stage: StringHelp.limit(occ.get("stage")),
+      type: StringHelp.limit(occ.get("type")),
+      identifiers: StringHelp.limit(occ.get("identifiers")),
+      comment: StringHelp.limit(occ.get("comment")),
+      activity_title: activity ? activity.title : null,
+      activity
     };
   },
 
   getValues() {
-    return this.$el.find('');
-  },
+    return this.$el.find("");
+  }
 });

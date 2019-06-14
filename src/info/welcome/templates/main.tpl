@@ -49,11 +49,11 @@
     </div>
   </div>
   <div class="progress">
-    <div class="circle circle-full" data-id="0"></div>
-    <div class="circle" data-id="1"></div>
-    <div class="circle" data-id="2"></div>
-    <div class="circle" data-id="3"></div>
-    <div class="circle" data-id="4"></div>
+    <div class="circle circle-full" data-id="0" />
+    <div class="circle" data-id="1" />
+    <div class="circle" data-id="2" />
+    <div class="circle" data-id="3" />
+    <div class="circle" data-id="4" />
   </div>
   <button id="exit" class="btn btn-block">Get Started</button>
 </div>

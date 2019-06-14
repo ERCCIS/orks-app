@@ -12,8 +12,8 @@
 </div>
 <ul class="table-view core inputs info no-top">
   <li class="table-view-cell species">
-    <% if (obj.common_name) { %>
-      <span class="media-object pull-right descript"><%- obj.common_name %></span>
+    <% if (obj.commonName) { %>
+      <span class="media-object pull-right descript"><%- obj.commonName %></span>
     <% } %>
     <span class="media-object pull-right descript"><i><%- obj.scientific_name %></i></span>
   </li>
@@ -32,7 +32,7 @@
     <li class="table-view-cell">
       <span class="media-object pull-left icon icon-number"></span>
       <span class="media-object pull-right descript"><%- obj.number %></span>
-      Number
+      Abundance
     </li>
   <% } %>
   <% if (obj.stage) { %>
@@ -40,6 +40,13 @@
       <span class="media-object pull-left icon icon-stage"></span>
       <span class="media-object pull-right descript"><%- obj.stage %></span>
       Stage
+    </li>
+  <% } %>
+  <% if (obj.type) { %>
+    <li class="table-view-cell">
+      <span class="media-object pull-left icon icon-stage"></span>
+      <span class="media-object pull-right descript"><%- obj.type %></span>
+      Type
     </li>
   <% } %>
   <% if (obj.comment) { %>
@@ -56,10 +63,10 @@
     <span class="comment descript"><%- obj.identifiers %></span>
   </li>
   <% } %>
-  <% if (obj.group_title) { %>
+  <% if (obj.activity_title) { %>
   <li class="table-view-cell">
     <span class="media-object pull-left icon icon-users"></span>
-    <span class="media-object pull-right descript"><%- obj.group_title %></span>
+    <span class="media-object pull-right descript"><%- obj.activity_title %></span>
     Activity
   </li>
   <% } %>

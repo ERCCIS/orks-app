@@ -1,13 +1,12 @@
 /** ****************************************************************************
  * Surveys List header view.
- *****************************************************************************/
+ **************************************************************************** */
 import Marionette from 'backbone.marionette';
 import _ from 'lodash';
 import $ from 'jquery';
 import JST from 'JST';
 import Device from 'helpers/device';
 import gridAlertService from './gridAlertService';
-
 
 export default Marionette.View.extend({
   id: 'surveys-header',
@@ -49,7 +48,9 @@ export default Marionette.View.extend({
 
       serializeData() {
         const locating = gridAlertService.locating;
-        const gridSquareUnit = locating ? appModel.get('gridSquareUnit') : 'Grid Alert';
+        const gridSquareUnit = locating
+          ? appModel.get('gridSquareUnit')
+          : 'Grid Alert';
         return {
           locating,
           gridSquareUnit,
@@ -73,7 +74,9 @@ export default Marionette.View.extend({
     });
 
     const toggleView = new ToggleView();
-    toggleView.on('toggled', (setting, active) => this.onToggled(setting, active));
+    toggleView.on('toggled', (setting, active) =>
+      this.onToggled(setting, active)
+    );
     this.showChildView('toggle', toggleView);
   },
 
@@ -90,4 +93,3 @@ export default Marionette.View.extend({
     };
   },
 });
-

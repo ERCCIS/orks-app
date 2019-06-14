@@ -33,6 +33,7 @@
     <div class="attributes">
       <div class="status"><%= obj.status %></div>
       <% if (obj.stage) { %> <span class="icon icon-stage"></span> <% } %>
+      <% if (obj.type) { %> <span class="icon icon-type"></span> <% } %>
       <% if (obj.abundance) { %> <span class="icon icon-number"></span> <% } %>
       <% if (obj.comment) { %> <span class="icon icon-comment"></span> <% } %>
       <% if (obj.identifiers) { %> <span class="icon icon-user-plus"></span> <% } %>

@@ -1,46 +1,46 @@
 /** ****************************************************************************
  * Sample Show main view.
- *****************************************************************************/
-import Indicia from 'indicia';
-import Marionette from 'backbone.marionette';
-import JST from 'JST';
-import CONFIG from 'config';
-import DateHelp from 'helpers/date';
-import StringHelp from 'helpers/string';
-import Gallery from '../../common/gallery';
-import './styles.scss';
+ **************************************************************************** */
+import Indicia from "indicia";
+import Marionette from "backbone.marionette";
+import JST from "JST";
+import CONFIG from "config";
+import DateHelp from "helpers/date";
+import StringHelp from "helpers/string";
+import Gallery from "../../common/gallery";
+import "./styles.scss";
 
 export default Marionette.View.extend({
-  template: JST['samples/show/main'],
+  template: JST["samples/show/main"],
 
   events: {
-    'click img': 'photoView',
-    'click #resend-btn': 'resend',
+    "click img": "photoView",
+    "click #resend-btn": "resend"
   },
 
   photoView(e) {
     e.preventDefault();
 
     const items = [];
-    const sample = this.model.get('sample');
-    sample.getOccurrence().media.each((image) => {
+    const sample = this.model.get("sample");
+    sample.getOccurrence().media.each(image => {
       items.push({
         src: image.getURL(),
-        w: image.get('width') || 800,
-        h: image.get('height') || 800,
+        w: image.get("width") || 800,
+        h: image.get("height") || 800
       });
     });
 
-// Initializes and opens PhotoSwipe
+    // Initializes and opens PhotoSwipe
     const gallery = new Gallery(items);
     gallery.init();
   },
 
   serializeData() {
-    const sample = this.model.get('sample');
-    const appModel = this.model.get('appModel');
+    const sample = this.model.get("sample");
+    const appModel = this.model.get("appModel");
     const occ = sample.getOccurrence();
-    const specie = occ.get('taxon');
+    const specie = occ.get("taxon");
 
     // taxon
     const scientificName = specie.scientific_name;
@@ -49,15 +49,17 @@ export default Marionette.View.extend({
     const syncStatus = sample.getSyncStatus();
 
     const locationPrint = sample.printLocation();
-    const location = sample.get('location') || {};
+    const location = sample.get("location") || {};
+
+    const number = StringHelp.limit(occ.get("number"));
 
     // show activity title.
-    const group = sample.get('group');
+    const activity = sample.get("activity");
 
     return {
       id: occ.id,
       cid: occ.cid,
-      useExperiments: appModel.get('useExperiments'),
+      useExperiments: appModel.get("useExperiments"),
       site_url: CONFIG.site_url,
       isSynchronising: syncStatus === Indicia.SYNCHRONISING,
       onDatabase: syncStatus === Indicia.SYNCED,
@@ -65,14 +67,15 @@ export default Marionette.View.extend({
       commonName,
       location: locationPrint,
       locationName: location.name,
-      date: DateHelp.print(sample.get('date'), true),
-      number: occ.get('number') && StringHelp.limit(occ.get('number')),
-      stage: occ.get('stage') && StringHelp.limit(occ.get('stage')),
-      identifiers: occ.get('identifiers'),
-      type: occ.get('type'),
-      comment: occ.get('comment'),
-      group_title: group ? group.title : null,
-      media: occ.media,
+      date: DateHelp.print(sample.get("date"), true),
+      number,
+      stage: StringHelp.limit(occ.get("stage")),
+      type: StringHelp.limit(occ.get("type")),
+      identifiers: occ.get("identifiers"),
+      type: occ.get("type"),
+      comment: occ.get("comment"),
+      activity_title: activity ? activity.title : null,
+      media: occ.media
     };
   },
 
@@ -85,7 +88,7 @@ export default Marionette.View.extend({
    */
   resend() {
     // reset the values
-    const sample = this.model.get('sample');
+    const sample = this.model.get("sample");
     sample.id = null;
     sample.metadata.server_on = null;
     sample.metadata.updated_on = null;
@@ -94,6 +97,5 @@ export default Marionette.View.extend({
     sample.save(null, { remote: true });
 
     window.history.back();
-  },
+  }
 });
-
