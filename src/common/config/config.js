@@ -3,9 +3,7 @@
  **************************************************************************** */
 import Indicia from 'indicia';
 
-const HOST =
-  process.env.APP_INDICIA_API_HOST || 'https://www.brc.ac.uk/irecord/';
-
+const HOST = process.env.APP_INDICIA_API_HOST || 'https://www.brc.ac.uk/irecord/';
 
 const notInTest = process.env.ENV !== 'test';
 const CONFIG = {
@@ -27,26 +25,23 @@ const CONFIG = {
 
   // google analytics
   ga: {
-    id: notInTest && process.env.APP_GA,
+    id: notInTest && process.env.APP_GA
   },
 
   // error analytics
   sentry: {
     key: notInTest && process.env.APP_SENTRY_KEY,
-    project: '128357',
+    project: '1474152'
   },
 
   users: {
     url: `${HOST + Indicia.API_BASE + Indicia.API_VER}/users/`,
-    timeout: 80000,
+    timeout: 80000
   },
 
   reports: {
-    url: `${HOST +
-      Indicia.API_BASE +
-      Indicia.API_VER +
-      Indicia.API_REPORTS_PATH}`,
-    timeout: 80000,
+    url: `${HOST + Indicia.API_BASE + Indicia.API_VER + Indicia.API_REPORTS_PATH}`,
+    timeout: 80000
   },
 
   // mapping
@@ -54,15 +49,15 @@ const CONFIG = {
     os_api_key: process.env.APP_OS_MAP_KEY,
     mapbox_api_key: process.env.APP_MAPBOX_MAP_KEY,
     mapbox_osm_id: 'cehapps.0fenl1fe',
-    mapbox_satellite_id: 'cehapps.0femh3mh',
+    mapbox_satellite_id: 'cehapps.0femh3mh'
   },
 
   // indicia configuration
   indicia: {
     host: HOST,
     api_key: process.env.APP_INDICIA_API_KEY,
-    website_id: 23,
-  },
+    website_id: 23
+  }
 };
 
 export default CONFIG;
