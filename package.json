@@ -4,7 +4,7 @@
   "title": "ORKs App",
   "description": "ORKs mobile application.",
   "version": "1.0.3",
-  "build": "4",
+  "build": "1",
   "homepage": "https://orks.org.uk",
   "scripts": {
     "build": "grunt",
