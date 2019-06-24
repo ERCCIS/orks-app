@@ -36,15 +36,15 @@ App configuration is hosted in multiple places. **Note:** config changes should 
 
 ## Building
 
-- Install [NodeJS](http://nodejs.org/) ( > 4.5)
+- Install [NodeJS](http://nodejs.org/) ( > 8)
 
 - Get a copy of the code by running:
 
 ```bash
-git clone git://github.com/NERC-CEH/irecord-app.git
+git clone git@github.com:ERCCIS/orks-app.git
 ```
 
-- Enter the `irecord-app` directory and install the npm build dependencies:
+- Enter the `orks-app` directory and install the npm build dependencies:
 
 ```bash
 cd orks-app
