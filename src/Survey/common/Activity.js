@@ -39,7 +39,7 @@ class Container extends React.Component {
 
     return (
       <IonPage id="survey-default-edit-activity">
-        <AppHeader title={t('Activity')} />
+        <AppHeader title={t('Group')} />
         <AppMain>
           <ActivitiesList
             userModel={userModel}

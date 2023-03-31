@@ -7,7 +7,7 @@ import { store } from 'common/store';
 import makeRequest from 'common/helpers/makeRequest';
 import * as Yup from 'yup';
 import CONFIG from 'config';
-// import activitiesExtension from './user_model_activities_ext';
+import activitiesExtension from './user_model_activities_ext';
 // import statisticsExtension from './user_model_statistics_ext';
 
 const getDefaultAttrs = () => ({
@@ -227,7 +227,7 @@ class UserModel {
     this.attrs.secondname = user.secondname || '';
     this.attrs.isLoggedIn = true;
 
-    //this.syncActivities();
+    this.syncActivities();
     // TODO:
     // this.syncStats();
 
@@ -255,7 +255,7 @@ class UserModel {
 }
 
 // add activities management
-// UserModel.prototype = Object.assign(UserModel.prototype, activitiesExtension);
+UserModel.prototype = Object.assign(UserModel.prototype, activitiesExtension);
 
 // add statistics management
 // UserModel.prototype = Object.assign(UserModel.prototype, statisticsExtension);

@@ -279,7 +279,7 @@ export default observer(props => {
             <IonItem>
               <IonIcon icon={people} slot="start" />
               <IonLabel slot="end">{activityTitle}</IonLabel>
-              {t('Activity')}
+              {t('Group')}
             </IonItem>
           )}
 

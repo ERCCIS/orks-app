@@ -104,7 +104,7 @@ class Controller extends React.Component {
     const { activity } = surveySample.attrs;
 
     const activitySubheader = activity && (
-      <AppHeaderBand title={`${t(activity.title)} Activity`} activity />
+      <AppHeaderBand title={`${t(activity.title)} Group`} activity />
     );
 
     return (

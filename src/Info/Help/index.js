@@ -219,17 +219,17 @@ export default () => (
             .
           </p>
         </Collapse>
-        <Collapse title={t('Activities')}>
+        <Collapse title={t('Groups')}>
           <p>
             {t(
-              'To send records to a specific activity you can select it in the Activities page.'
+              'To send records to a specific group you can select it in the Groups page.'
             )}
             <IonIcon icon={people} size="small" />
             <br />
             <br />
             <b>{t('Note')}:</b>{' '}
             {t(
-              'only the activities that allow this mobile app records and only the ones that you have joined on the ORKS website will be available to select'
+              'only the groups that allow this mobile app records and only the ones that you have joined on the ORKS website will be available to select'
             )}
             .
           </p>

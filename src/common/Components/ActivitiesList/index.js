@@ -154,10 +154,10 @@ class Component extends React.Component {
         <div className="info-message">
           <p>
             {t(
-              'Click on the activity below which you would like to participate in. Any records you add from now on will be submitted to the chosen activity. You can join in with more activities by logging in to'
+              'Click on the group below which you would like to participate in. Any records you add from now on will be submitted to the chosen group. You can join in with more groups by logging in to'
             )}{' '}
             <a href={CONFIG.site_url}>ORKS</a>{' '}
-            {t(`and visiting the Record > Activities page`)}
+            {t(`and visiting the Share Sightings (ORKS) > Browse recording groups page`)}
             .
             <br />
             {t(`Pull to refresh the list.`)}

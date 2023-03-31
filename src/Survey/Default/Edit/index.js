@@ -80,7 +80,7 @@ class Controller extends React.Component {
     const { activity } = sample.attrs;
 
     const activitySubheader = activity && (
-      <AppHeaderBand title={`${t(activity.title)} Activity`} activity />
+      <AppHeaderBand title={`${t(activity.title)} Group`} activity />
     );
 
     return (
