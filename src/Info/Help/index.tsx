@@ -155,12 +155,7 @@ const Help = () => (
                   use the <a href="https://orks.org.uk">ORKS Website</a>.
                 </T>
               </p>
-<<<<<<< HEAD
-              <br />
-              <p>
-=======
               <p className="mt-2">
->>>>>>> upstream/master
                 <T>
                   <b>Note:</b> you have to be signed in to your ORKS account and
                   have a network connection, for the records to be automatically
@@ -215,12 +210,7 @@ const Help = () => (
                   the button and next to the attribute.
                 </T>
               </p>
-<<<<<<< HEAD
-              <br />
-              <p>
-=======
               <p className="mt-2">
->>>>>>> upstream/master
                 <T>
                   <b>Note:</b> For a GPS-sourced location, only the location
                   name can be locked, not the GPS value. As you move about, the
@@ -258,12 +248,7 @@ const Help = () => (
                   logout <IonIcon icon={logOutOutline} size="small" /> button
                 </T>
               </p>
-<<<<<<< HEAD
-              <br />
-              <p>
-=======
               <p className="mt-2">
->>>>>>> upstream/master
                 <T>
                   <b>Note:</b> after registering a new account you must verify
                   your email address by clicking on a verification link sent to
@@ -290,14 +275,12 @@ const Help = () => (
               </p>
             </div>
           </Collapse>{' '}
-<<<<<<< HEAD
-=======
           <Collapse title="Activities">
             <div>
               <p>
                 <T>
                   To send records to a specific activity you can select it in
-                  the Activities <IonIcon icon={peopleOutline} size="small" />{' '}
+                  the Activities <IonIcon icon={personOutline} size="small" />{' '}
                   page.
                 </T>
               </p>
@@ -310,7 +293,6 @@ const Help = () => (
               </p>
             </div>
           </Collapse>
->>>>>>> upstream/master
         </div>
 
         <h3 className="list-title">
@@ -325,11 +307,7 @@ const Help = () => (
                   location page and from the settings{' '}
                   <IonIcon icon={settingsOutline} size="small" /> page.
                 </T>
-<<<<<<< HEAD
-
-=======
                 .{' '}
->>>>>>> upstream/master
                 <T>
                   Swipe a location left and click edit{' '}
                   <IonIcon icon={createOutline} size="small" /> or delete

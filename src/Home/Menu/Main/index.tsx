@@ -16,7 +16,7 @@ import { Main, InfoMessage } from '@flumens';
 import { IonIcon, IonList, IonItem, IonButton } from '@ionic/react';
 import config from 'common/config';
 import { AppModel } from 'models/app';
-import appLogo from './logo.svg';
+import appLogo from './logo.png';
 import './styles.scss';
 
 // const shouldShowFeedback = (appModel: AppModel, isLoggedIn: boolean) => {

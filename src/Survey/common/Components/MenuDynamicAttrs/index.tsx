@@ -5,6 +5,7 @@ import Sample from 'models/sample';
 import MenuAttr from 'Survey/common/Components/MenuAttr';
 import MenuLocation from 'Survey/common/Components/MenuLocation';
 import MenuTaxonItem from 'Survey/common/Components/MenuTaxonItem';
+import MenuTypeItem from 'Survey/common/Components/MenuTypeItem';
 import './styles.scss';
 
 type Model = Sample | Occurrence;

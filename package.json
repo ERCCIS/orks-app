@@ -6,7 +6,6 @@
   "version": "6.1.2",
   "homepage": "https://orks.org.uk",
   "scripts": {
-    "prepare": "husky",
     "start": "webpack serve --progress --port 8000",
     "build": "NODE_ENV=production webpack",
     "build:production": "npm run clean && npm run build && npx cap sync && npm run build:resources",
