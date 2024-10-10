@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { observer } from 'mobx-react';
 import { Trans as T } from 'react-i18next';
 import appModel from 'models/app';
@@ -12,7 +11,7 @@ type Props = {
   isDefaultSurvey: boolean;
 };
 
-const Attributes: FC<Props> = ({ occ, sample, isDefaultSurvey }) => {
+const Attributes = ({ occ, sample, isDefaultSurvey }: Props) => {
   let number = StringHelp.limit(occ.attrs.number);
   if (!number) {
     number = StringHelp.limit(occ.attrs['number-ranges']);
@@ -27,7 +26,11 @@ const Attributes: FC<Props> = ({ occ, sample, isDefaultSurvey }) => {
   const typeLocked = appModel.isAttrLocked(occ, 'type');
 
   const commentComponent = (
-    <span className={`comment ${commentLocked ? 'locked' : ''}`}>
+    <span
+      className={`mr-2.5 w-full overflow-hidden text-ellipsis whitespace-nowrap text-sm ${
+        commentLocked ? 'locked' : ''
+      }`}
+    >
       {comment}
     </span>
   );
@@ -38,9 +41,9 @@ const Attributes: FC<Props> = ({ occ, sample, isDefaultSurvey }) => {
   }
 
   return (
-    <>
-      <span className={`number ${numberLocked ? 'locked' : ''}`}>{number}</span>
-      <span className={`stage ${stageLocked ? 'locked' : ''}`}>
+    <div className="flex flex-nowrap text-xs [&>*:not(:empty)]:mr-2">
+      <span className={`${numberLocked ? 'locked' : ''}`}>{number}</span>
+      <span className={`${stageLocked ? 'locked' : ''}`}>
         <T>{stage}</T>
       </span>
       <span className={`type ${typeLocked ? 'locked' : ''}`}>
@@ -48,7 +51,7 @@ const Attributes: FC<Props> = ({ occ, sample, isDefaultSurvey }) => {
       </span>
 
       {commentComponent}
-    </>
+    </div>
   );
 };
 

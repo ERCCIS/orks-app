@@ -1,0 +1,160 @@
+@mixin slide {
+  flex-direction: column;
+  background-position: center;
+  background-size: cover;
+
+  .slide-header {
+    position: absolute;
+    top: 0;
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+#welcome-page {
+  .swiper {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    background: white;
+    width: 100vw;
+    height: 100vh;
+
+    .message {
+      position: absolute;
+      -webkit-backdrop-filter: blur(5px);
+      backdrop-filter: blur(5px);
+      margin: 0 auto;
+      border-radius: 10px;
+      background: white;
+      background: rgb(255, 255, 255);
+      background: linear-gradient(0deg, rgb(254, 255, 247) 0%, white 68%);
+      max-width: 90%;
+      overflow: hidden;
+
+      p {
+        margin: 0;
+        padding: 10px 20px 15px 20px;
+        color: var(--ion-color-dark);
+        font-size: 1.1em;
+        line-height: 1.5em;
+        text-align: left;
+      }
+    }
+
+    .first .message,
+    .second .message {
+      top: 10%;
+    }
+
+    .third .message,
+    .fourth .message, 
+    .fifth .message {
+      bottom: 15%;
+    }
+
+    h2 {
+      margin: 0;
+      padding: 15px;
+      color: var(--ion-color-light);
+      color: var(--ion-color-primary);
+      font-weight: bold;
+      font-size: 1.3rem;
+      letter-spacing: 2px;
+      text-align: center;
+    }
+
+    .swiper-pagination-bullets {
+      bottom: 2%;
+
+      .swiper-pagination-bullet {
+        opacity: 1;
+        --bullet-background: var(--ion-color-primary-contrast);
+      }
+
+      .swiper-pagination-bullet-active {
+        opacity: 0.8;
+        background: var(--ion-color-primary-tint);
+      }
+    }
+  }
+
+  .app-name {
+    position: absolute;
+    top: -16px;
+    left: 0;
+    z-index: 10000;
+    background: white;
+    padding: 10px;
+    padding-top: calc(var(--ion-safe-area-top, 0) + 10px);
+    width: 100%;
+    color: black;
+    font-weight: 400;
+    font-size: 25px;
+    text-align: center;
+
+    &.md {
+      padding: 0;
+    }
+
+    b {
+      color: var(--ion-color-primary);
+    }
+  }
+
+  .swiper-slide {
+    @include slide;
+
+    .app-logo-wrapper {
+      position: absolute;
+      backdrop-filter: blur(5px);
+      background-color: #ffffff47;
+      background-color: rgba(255, 255, 255, 0.7);
+      width: 100%;
+
+      img {
+        display: block;
+        margin: 0 auto;
+        padding: 30px;
+        max-width: 90%;
+      }
+    }
+
+    .slide-header {
+      background-position: center;
+      padding-top: calc(var(--ion-safe-area-top, 0) + 10px);
+      max-width: 90%;
+    }
+
+    .message-container {
+      position: absolute;
+      bottom: 100px;
+      backdrop-filter: blur(5px);
+      margin: 0 auto;
+      border-radius: 10px;
+      background-color: #ffffffad;
+      width: 100%;
+      max-width: 90%;
+    }
+  }
+
+  .swiper-slide.record .message-container {
+    bottom: 150px;
+  }
+
+  ion-footer ion-toolbar {
+    --background: transparent;
+    --border-color: transparent;
+    position: absolute;
+    bottom: 0;
+
+    ion-button {
+      margin: 10px;
+      box-shadow: 0 0 15px #00000099;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+    }
+  }
+}

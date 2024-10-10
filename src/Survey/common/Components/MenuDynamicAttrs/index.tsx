@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { observer } from 'mobx-react';
 import { useRouteMatch } from 'react-router';
 import Occurrence from 'models/occurrence';
@@ -6,7 +5,6 @@ import Sample from 'models/sample';
 import MenuAttr from 'Survey/common/Components/MenuAttr';
 import MenuLocation from 'Survey/common/Components/MenuLocation';
 import MenuTaxonItem from 'Survey/common/Components/MenuTaxonItem';
-import MenuTypeItem from 'Survey/common/Components/MenuTypeItem';
 import './styles.scss';
 
 type Model = Sample | Occurrence;
@@ -17,11 +15,11 @@ type Props = {
   skipLocks?: boolean;
 };
 
-const MenuDynamicAttrs: FC<Props> = ({
+const MenuDynamicAttrs = ({
   model,
   surveyConfig: surveyConfigProp,
   skipLocks,
-}) => {
+}: Props) => {
   const { url } = useRouteMatch();
 
   const surveyConfig = surveyConfigProp || model.getSurvey();

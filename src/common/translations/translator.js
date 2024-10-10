@@ -1,7 +1,7 @@
-import appModel from 'models/app';
-import i18n from 'i18next';
 import { observe } from 'mobx';
+import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import appModel from 'models/app';
 import resources from './loader';
 
 const DEFAULT_LANGUAGE = 'en';
@@ -27,7 +27,7 @@ function saveMissingKey(key) {
 
   if (Number.isFinite(parseInt(key, 10))) return;
 
-  console.warn(`🇬🇧: ${key}`);
+  // console.warn(`🇬🇧: ${key}`);
   window.dic.push(key);
 }
 

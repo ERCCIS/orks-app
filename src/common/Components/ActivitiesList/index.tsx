@@ -1,9 +1,21 @@
-import { FC, useEffect } from 'react';
+import { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import { chevronDownOutline, informationCircleOutline } from 'ionicons/icons';
 import { Trans as T, useTranslation } from 'react-i18next';
-import { InfoMessage, RadioInput, useToast, useLoader, device } from '@flumens';
-import { IonList, IonRefresher, IonRefresherContent } from '@ionic/react';
+import {
+  InfoMessage,
+  InfoButton,
+  RadioInput,
+  useToast,
+  useLoader,
+  device,
+} from '@flumens';
+import {
+  IonIcon,
+  IonList,
+  IonRefresher,
+  IonRefresherContent,
+} from '@ionic/react';
 import CONFIG from 'common/config';
 import { AppModel } from 'models/app';
 import Sample from 'models/sample';
@@ -18,7 +30,7 @@ type Props = {
   onSelect: any;
 };
 
-const Activities: FC<Props> = ({ sample, userModel, appModel, onSelect }) => {
+const Activities = ({ sample, userModel, appModel, onSelect }: Props) => {
   const toast = useToast();
   const loader = useLoader();
   const { t } = useTranslation();
@@ -132,8 +144,9 @@ const Activities: FC<Props> = ({ sample, userModel, appModel, onSelect }) => {
   return (
     <>
       <InfoMessage
-        icon={informationCircleOutline}
-        className="blue"
+        prefix={<IonIcon src={informationCircleOutline} className="size-6" />}
+        className="m-2"
+        color="secondary"
         skipTranslation
       >
         <T>
@@ -145,6 +158,27 @@ const Activities: FC<Props> = ({ sample, userModel, appModel, onSelect }) => {
           <br />
           Pull to refresh the list.
         </T>
+        <InfoButton label="READ MORE" header="Activities" color="dark">
+          <p>
+            <T>
+              You can join in with more activities by visiting the{' '}
+              <a href={`${CONFIG.backend.url}/activities/list`}>
+                ORKS Activities
+              </a>{' '}
+              page.
+            </T>
+          </p>
+          <p>
+            <T>Swipe down on the activity list to refresh it.</T>
+          </p>
+          <p>
+            <T>
+              For more about Activities see the{' '}
+              <a href={`${CONFIG.backend.url}/joining-activity`}>ORKS Help</a>{' '}
+              page.
+            </T>
+          </p>
+        </InfoButton>
       </InfoMessage>
 
       <IonRefresher slot="fixed" onIonRefresh={syncActivitiesOnPull}>

@@ -1,4 +1,4 @@
-import { FC, useRef } from 'react';
+import { useRef } from 'react';
 import { observer } from 'mobx-react';
 import clsx from 'clsx';
 import {
@@ -27,7 +27,7 @@ export interface Props {
   label?: string;
 }
 
-const Lock: FC<Props> = ({ sample, skipLocks, label }) => {
+const Lock = ({ sample, skipLocks, label }: Props) => {
   const sliderRef = useRef<any>();
   const toast = useToast();
   const alert = useAlert();

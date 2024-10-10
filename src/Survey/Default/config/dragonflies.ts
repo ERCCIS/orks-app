@@ -1,5 +1,5 @@
-import numberIcon from 'common/images/number.svg';
 import { groupsReverse as groups } from 'common/data/informalGroups';
+import numberIcon from 'common/images/number.svg';
 import { Survey } from 'Survey/common/config';
 
 const numRanges = [

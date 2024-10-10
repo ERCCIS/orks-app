@@ -1,4 +1,4 @@
-import { FC, createRef, useState } from 'react';
+import { createRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import clsx from 'clsx';
 import { star, starOutline } from 'ionicons/icons';
@@ -54,7 +54,7 @@ type Props = {
   onSelect?: any;
 };
 
-const PastLocations: FC<Props> = ({ onSelect }) => {
+const PastLocations = ({ onSelect }: Props) => {
   const [editLocation, setEditLocation] = useState<Location>(null);
 
   const showDeletePopup = useShowDeletePopup();
@@ -127,8 +127,8 @@ const PastLocations: FC<Props> = ({ onSelect }) => {
             onClick={() => selectLocation(id)}
           >
             <IonLabel className="details" position="stacked" mode="ios">
-              <IonLabel slot="start">
-                {name ? <strong>{name}</strong> : ''}
+              <IonLabel slot="start" className="font-medium">
+                {name}
               </IonLabel>
               <IonLabel slot="start">{locationStr}</IonLabel>
               <IonLabel slot="start" className="location-raw">

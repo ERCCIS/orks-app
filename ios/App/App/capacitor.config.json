@@ -2,5 +2,20 @@
 	"appId": "uk.org.orks.app",
 	"appName": "ORKS App",
 	"webDir": "build",
-	"cordova": {}
+	"cordova": {},
+	"packageClassList": [
+		"CameraPreview",
+		"AppPlugin",
+		"CAPCameraPlugin",
+		"DevicePlugin",
+		"FilesystemPlugin",
+		"GeolocationPlugin",
+		"HapticsPlugin",
+		"KeyboardPlugin",
+		"CAPNetworkPlugin",
+		"SplashScreenPlugin",
+		"StatusBarPlugin",
+		"SentryCapacitor",
+		"CDVPlugin"
+	]
 }

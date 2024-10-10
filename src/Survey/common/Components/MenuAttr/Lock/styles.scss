@@ -8,33 +8,29 @@
     }
 
     ion-datetime,
-    ion-label[slot='end'] {
+    *[slot='end'] {
       color: var(--attr-lock-color);
     }
 
-    ion-toggle {
-      --background-checked: var(--attr-lock-color-tint);
-      &.md {
-        --handle-background-checked: var(--attr-lock-color);
-      }
+    .switch-input {
+      --form-value-color: var(--attr-lock-color-tint);
     }
 
     ion-accordion-group {
       .accordion-collapsed > [slot='header'] .ion-accordion-toggle-icon,
       .accordion-collapsing > [slot='header'] .ion-accordion-toggle-icon {
-        color: var(--attr-lock-color);
-
         opacity: 0.55;
+        color: var(--attr-lock-color);
       }
       .accordion-expanding > [slot='header'] .ion-accordion-toggle-icon {
         transform: rotate(40deg);
-        color: var(--attr-lock-color);
         opacity: 0.55;
+        color: var(--attr-lock-color);
       }
       .accordion-expanded > [slot='header'] .ion-accordion-toggle-icon {
         transform: rotate(0deg);
-        color: var(--attr-lock-color);
         opacity: 0.55;
+        color: var(--attr-lock-color);
       }
 
       ion-datetime {

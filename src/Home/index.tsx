@@ -1,5 +1,16 @@
-import { FC, useContext, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
+import { observer } from 'mobx-react';
+import {
+  peopleOutline,
+  menuOutline,
+  homeOutline,
+  addOutline,
+} from 'ionicons/icons';
+import { Trans as T } from 'react-i18next';
 import { Route, Redirect } from 'react-router-dom';
+import { App as AppPlugin } from '@capacitor/app';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { useAlert, LongPressFabButton } from '@flumens';
 import {
   IonTabs,
   IonTabButton,
@@ -12,25 +23,13 @@ import {
   useIonRouter,
   isPlatform,
 } from '@ionic/react';
-import { observer } from 'mobx-react';
-import {
-  peopleOutline,
-  menuOutline,
-  homeOutline,
-  addOutline,
-} from 'ionicons/icons';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { App as AppPlugin } from '@capacitor/app';
-import savedSamples from 'models/savedSamples';
 import appModel from 'models/app';
 import userModel from 'models/user';
-import { Trans as T } from 'react-i18next';
-import { useAlert, LongPressFabButton } from '@flumens';
-import PendingSurveysBadge from 'Components/PendingSurveysBadge';
-import Home from './Home';
 import Activities from './Activities';
-import Menu from './Menu';
 import DefaultCameraSurveyButton from './DefaultCameraSurveyButton';
+import Home from './Home';
+import Menu from './Menu';
+import PendingSurveysBadge from './PendingSurveysBadge';
 import './styles.scss';
 
 function useLongPressTip() {
@@ -43,12 +42,20 @@ function useLongPressTip() {
         message: (
           <>
             <T>
-              Tap on the <IonIcon className="tip-icon" icon={addOutline} />{' '}
+              Tap on the{' '}
+              <IonIcon
+                className="rounded-full bg-primary text-white"
+                icon={addOutline}
+              />{' '}
               button to capture a new record. <br />
             </T>
             <br />
             <T>
-              Long-press <IonIcon className="tip-icon" icon={addOutline} />{' '}
+              Long-press{' '}
+              <IonIcon
+                className="rounded-full bg-primary text-white"
+                icon={addOutline}
+              />{' '}
               button to see some more advanced options.
             </T>
           </>
@@ -71,7 +78,7 @@ function useLongPressTip() {
 const vibrate = () =>
   isPlatform('hybrid') && Haptics.impact({ style: ImpactStyle.Light });
 
-const HomeController: FC = () => {
+const HomeController = () => {
   const ionRouter = useIonRouter();
 
   const { navigate } = useContext(NavContext);
@@ -112,7 +119,7 @@ const HomeController: FC = () => {
             <IonLabel>
               <T>Home</T>
             </IonLabel>
-            <PendingSurveysBadge savedSamples={savedSamples} />
+            <PendingSurveysBadge className="absolute bottom-4 right-[calc(50%_-_15px)]" />
           </IonTabButton>
 
           <IonTabButton
@@ -131,15 +138,14 @@ const HomeController: FC = () => {
               onClick={navigateToPrimarySurvey}
               onLongClick={vibrate}
               icon={addOutline}
-              buttonProps={{ longClickDuration: 500 }}
             >
-              <div className="long-press-surveys-label">
+              <div className="flex items-center justify-center bg-primary-900 text-[0.8rem] text-[white]">
                 <T>Other recording options</T>
               </div>
 
               <IonFabButton
-                className="fab-button-label"
                 routerLink="/survey/plant"
+                color="light"
                 // Fixes app animation transition if fast clicked android back button.
                 routerDirection="none"
               >
@@ -148,8 +154,8 @@ const HomeController: FC = () => {
                 </IonLabel>
               </IonFabButton>
               <IonFabButton
-                className="fab-button-label"
                 routerLink="/survey/moth"
+                color="light"
                 // Fixes app animation transition if fast clicked android back button.
                 routerDirection="none"
               >
@@ -158,8 +164,8 @@ const HomeController: FC = () => {
                 </IonLabel>
               </IonFabButton>
               <IonFabButton
-                className="fab-button-label"
                 routerLink="/survey/list"
+                color="light"
                 // Fixes app animation transition if fast clicked android back button.
                 routerDirection="none"
               >

@@ -1,7 +1,7 @@
 #user-locations {
   .location {
-    border-radius: var(--theme-border-radius);
     margin: 6px auto;
+    border-radius: var(--theme-border-radius);
     max-width: 600px;
 
     ion-item {
@@ -44,10 +44,6 @@
       margin-top: 10px;
     }
   }
-}
-
-.past-locations .info-message.blue {
-  margin: 0 10px 10px;
 }
 
 .location-edit-form {
