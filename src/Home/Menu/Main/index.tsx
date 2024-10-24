@@ -15,7 +15,6 @@ import { Trans as T } from 'react-i18next';
 import { Main, InfoMessage } from '@flumens';
 import { IonIcon, IonList, IonItem, IonButton } from '@ionic/react';
 import config from 'common/config';
-import { AppModel } from 'models/app';
 import appLogo from './logo.png';
 import './styles.scss';
 
@@ -41,14 +40,12 @@ type Props = {
   resendVerificationEmail: any;
   isLoggedIn: boolean;
   user: any;
-  appModel: AppModel;
 };
 
 const MenuMain = ({
   isLoggedIn,
   user,
   logOut,
-  appModel,
   refreshAccount,
   resendVerificationEmail,
 }: Props) => {
