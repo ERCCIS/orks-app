@@ -56,7 +56,7 @@ export const defaults: Attrs = {
   feedbackGiven: false,
   taxonGroupFilters: [],
   searchNamesOnly: '',
-  sendAnalytics: true,
+  sendAnalytics: false,
   appSession: 0,
 
   useSpeciesImageClassifier: true,
