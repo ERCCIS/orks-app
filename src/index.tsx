@@ -6,10 +6,6 @@ import { App as AppPlugin } from '@capacitor/app';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { StatusBar, Style as StatusBarStyle } from '@capacitor/status-bar';
 import { setupIonicReact, isPlatform } from '@ionic/react';
-import * as SentryBrowser from '@sentry/browser';
-import * as Sentry from '@sentry/capacitor';
-import config from 'common/config';
-import { sentryOptions } from 'common/flumens';
 import appModel from 'models/app';
 import savedSamples from 'models/savedSamples';
 import userModel from 'models/user';
@@ -27,22 +23,6 @@ mobxConfig({ enforceActions: 'never' });
   await appModel.ready;
   await userModel.ready;
   await savedSamples.ready;
-
-  appModel.attrs.sendAnalytics &&
-    Sentry.init(
-      {
-        ...sentryOptions,
-        dsn: config.sentryDNS,
-        environment: config.environment,
-        release: config.version,
-        dist: config.build,
-        initialScope: {
-          user: { id: userModel.id },
-          tags: { session: appModel.attrs.appSession },
-        },
-      },
-      SentryBrowser.init
-    );
 
   appModel.attrs.appSession += 1;
 
