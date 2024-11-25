@@ -12,7 +12,7 @@ const indiciaUrl =
 const config = {
   version: process.env.APP_VERSION as string,
   build: process.env.APP_BUILD as string,
-  feedbackEmail: 'apps%40ceh.ac.uk',
+  feedbackEmail: 'orks%40cornwallwildlifetrust.org.uk',
 
   environment: process.env.NODE_ENV as string,
 
