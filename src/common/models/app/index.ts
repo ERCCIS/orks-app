@@ -1,9 +1,9 @@
-import { Model, ModelAttrs } from '@flumens';
-import { genericStore } from 'models/store';
+import { Model, ModelData } from '@flumens';
+import { mainStore } from 'models/store';
 import AttributeLockExtension from './attrLockExt';
 import PastLocationsExtension from './pastLocExt';
 
-export type Attrs = ModelAttrs & {
+export type Data = ModelData & {
   showWelcome: boolean;
   language: string;
 
@@ -16,30 +16,35 @@ export type Attrs = ModelAttrs & {
   useGridNotifications: boolean;
   gridSquareUnit: 'monad';
   speciesListSortedByTime: boolean;
-  geolocateSurveyEntries: boolean;
 
   showSurveysDeleteTip: boolean;
-  shownLongPressTip: boolean;
   shownLockingSwipeTip: boolean;
   showPastLocationsTip: boolean;
+  showSurveyOptionsTip: boolean;
   feedbackGiven: boolean;
-  taxonGroupFilters: number[];
+  taxonSearchGroupFilters: number[][];
   searchNamesOnly: '' | 'scientific' | 'common';
   sendAnalytics: boolean;
   appSession: number;
 
   useSpeciesImageClassifier: boolean;
 
+  /**
+   * Reset attribute locks.
+   */
+  attrLocksCleanedV620: boolean; // TODO: remove
+
   showVerifiedRecordsNotification: boolean;
   verifiedRecordsTimestamp: null | number;
 };
 
-export const defaults: Attrs = {
+export const defaults: Data = {
   showWelcome: true,
   language: 'EN',
 
   locations: [],
   attrLocks: { default: {}, complex: {} },
+  attrLocksCleanedV620: false,
   autosync: true,
   useTraining: false,
 
@@ -47,14 +52,13 @@ export const defaults: Attrs = {
   useGridNotifications: false,
   gridSquareUnit: 'monad',
   speciesListSortedByTime: true,
-  geolocateSurveyEntries: true,
 
   showSurveysDeleteTip: true,
-  shownLongPressTip: false,
   shownLockingSwipeTip: false,
   showPastLocationsTip: true,
+  showSurveyOptionsTip: true,
   feedbackGiven: false,
-  taxonGroupFilters: [],
+  taxonSearchGroupFilters: [],
   searchNamesOnly: '',
   sendAnalytics: true,
   appSession: 0,
@@ -65,11 +69,7 @@ export const defaults: Attrs = {
   verifiedRecordsTimestamp: null,
 };
 
-export class AppModel extends Model {
-  // eslint-disable-next-line
-  // @ts-ignore
-  attrs: Attrs = Model.extendAttrs(this.attrs, defaults);
-
+export class AppModel extends Model<Data> {
   isAttrLocked: any; // from extension
 
   getAttrLock: any; // from extension
@@ -89,16 +89,26 @@ export class AppModel extends Model {
   printLocation: any; // from extension
 
   constructor(options: any) {
-    super(options);
+    super({ ...options, data: { ...defaults, ...options.data } });
+
+    this.ready.then(() => {
+      if (!this.data.attrLocksCleanedV620) {
+        console.log('Resetting attr locks');
+        this.data.attrLocks = { default: {}, complex: {} };
+        this.data.attrLocksCleanedV620 = true;
+        this.save();
+      }
+    });
 
     Object.assign(this, PastLocationsExtension);
     Object.assign(this, AttributeLockExtension);
   }
 
-  resetDefaults() {
-    return super.resetDefaults(defaults);
+  reset() {
+    return super.reset(defaults);
   }
 }
 
-const appModel = new AppModel({ cid: 'app', store: genericStore });
+const appModel = new AppModel({ cid: 'app', store: mainStore });
+
 export default appModel;

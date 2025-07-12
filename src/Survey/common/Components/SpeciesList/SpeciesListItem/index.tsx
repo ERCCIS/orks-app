@@ -2,7 +2,7 @@ import { observer } from 'mobx-react';
 import { alertOutline } from 'ionicons/icons';
 import { Trans as T } from 'react-i18next';
 import { useRouteMatch } from 'react-router';
-import { useAlert } from '@flumens';
+import { Badge, useAlert } from '@flumens';
 import {
   IonItemOption,
   IonItemOptions,
@@ -46,8 +46,8 @@ function useDeleteOccurrenceDialog(occ: Occurrence, onDelete: any) {
 }
 
 const getLocationCommponent = (model: Sample) => {
-  const location = model.attrs.location || {};
-  const surveylocation = model.parent?.attrs.location || {};
+  const location = model.data.location || {};
+  const surveylocation = model.parent?.data.location || {};
   const isLocating = model.isGPSRunning();
   const isCustomLocation = surveylocation.gridref !== location.gridref;
 
@@ -56,7 +56,7 @@ const getLocationCommponent = (model: Sample) => {
   if (locationString) {
     locationComponent = <span>{locationString}</span>;
   } else if (isLocating) {
-    locationComponent = <span className=" warn">Locating...</span>;
+    locationComponent = <span className="warn">Locating...</span>;
   } else {
     return null;
   }
@@ -79,7 +79,7 @@ const SpeciesListItem = ({
 }: Props) => {
   const { url } = useRouteMatch();
 
-  const isDisabled = model.isDisabled();
+  const { isDisabled } = model;
 
   const occ: Occurrence = useSubSamples
     ? (model as Sample).occurrences[0]
@@ -87,12 +87,16 @@ const SpeciesListItem = ({
 
   const showDeleteOccurrenceDialog = useDeleteOccurrenceDialog(occ, onDelete);
 
+  if (!occ) return null; // if remote deleted but left sub-sample
+
   const getIncrementButton = () => {
     const increaseCountWrap = () => increaseCount(occ);
     const increase5xCountWrap = () => increaseCount(occ, true);
 
     const value =
-      occ.attrs.number || occ.attrs['number-ranges'] || occ.attrs.abundance;
+      occ.data.number || occ.data['number-ranges'] || occ.data.abundance;
+
+    if (!value && isDisabled) return null;
 
     return (
       <IncrementalButton
@@ -109,7 +113,8 @@ const SpeciesListItem = ({
   const modelPath = useSubSamples ? 'smp' : 'occ';
 
   const survey = model.getSurvey();
-  const isValid = survey.verify ? !survey.verify(model.attrs) : true;
+  const isValid =
+    !isDisabled && survey.verify ? !survey.verify(model.data) : true;
 
   return (
     <IonItemSliding
@@ -119,12 +124,14 @@ const SpeciesListItem = ({
     >
       <IonItem
         routerLink={`${url}/${modelPath}/${model.cid}`}
-        detail={!occ.hasOccurrenceBeenVerified()}
+        detail={!occ.hasOccurrenceBeenVerified() && isValid}
       >
         {getIncrementButton()}
 
         <div className="details">
-          <div className="species">{commonName}</div>
+          <div className="species">
+            {commonName || <Badge color="warning">Species missing</Badge>}
+          </div>
           {useSubSamples && getLocationCommponent(model as Sample)}
         </div>
 

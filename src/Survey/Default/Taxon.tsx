@@ -4,9 +4,9 @@ import { useRouteMatch } from 'react-router';
 import { Page, Header, Main } from '@flumens';
 import { NavContext } from '@ionic/react';
 import appModel from 'models/app';
+import samples from 'models/collections/samples';
 import Occurrence from 'models/occurrence';
 import Sample from 'models/sample';
-import savedSamples from 'models/savedSamples';
 import surveyConfig from 'Survey/Default/config';
 import TaxonSearch, {
   TaxonSearchFilters,
@@ -15,7 +15,7 @@ import TaxonSearch, {
 const getNewSample = async (taxon: any) => {
   const newSample = await surveyConfig.create({ Sample, Occurrence, taxon });
   newSample.save();
-  savedSamples.push(newSample);
+  samples.push(newSample);
   return newSample;
 };
 
@@ -29,8 +29,9 @@ const Taxon = () => {
     navigate(`${url}/${newSample.cid}`, undefined, 'replace');
   };
 
-  const { searchNamesOnly, taxonGroupFilters: selectedFilters } =
-    appModel.attrs;
+  const { searchNamesOnly, taxonSearchGroupFilters } = appModel.data;
+
+  const selectedFilters = taxonSearchGroupFilters.flat().flat();
 
   return (
     <Page id="taxon">
@@ -39,7 +40,7 @@ const Taxon = () => {
         <TaxonSearch
           onSpeciesSelected={onSpeciesSelected}
           namesFilter={searchNamesOnly}
-          informalGroups={selectedFilters}
+          selectedFilters={selectedFilters}
         />
       </Main>
     </Page>

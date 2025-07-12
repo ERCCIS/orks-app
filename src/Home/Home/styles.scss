@@ -9,24 +9,14 @@
       z-index: 100000000;
       margin: 8px auto;
 
-      box-shadow: -1px 2px 7px 0 #0000001a, 0 2px 9px 0 #3e396b1a;
+      box-shadow:
+        -1px 2px 7px 0 #0000001a,
+        0 2px 9px 0 #3e396b1a;
       border-radius: var(--theme-border-radius);
       background: #fff;
       max-width: calc(
         100% - 20px
       ); // -20px to match the padding of the list below
-
-      &[value='map'] {
-        border-radius: var(--theme-border-radius);
-        background: rgba(255, 255, 255, 0.9);
-      }
-
-      ion-badge {
-        display: inline;
-        vertical-align: top;
-        margin: 3px;
-        margin-left: 3px;
-      }
 
       ion-label {
         display: flex;
@@ -66,7 +56,9 @@
       right: 17px;
       bottom: 0;
       margin: 10px auto;
-      box-shadow: -1px 2px 7px 0 #0000001a, 0 2px 9px 0 #3e396b1a;
+      box-shadow:
+        -1px 2px 7px 0 #0000001a,
+        0 2px 9px 0 #3e396b1a;
       border-radius: var(--theme-border-radius);
       height: 35px !important;
       overflow: hidden;

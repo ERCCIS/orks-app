@@ -13,6 +13,7 @@ import MenuLocation from 'Survey/common/Components/MenuLocation';
 import MenuTaxonItem from 'Survey/common/Components/MenuTaxonItem';
 import PhotoPicker from 'Survey/common/Components/PhotoPicker';
 import VerificationMessage from 'Survey/common/Components/VerificationMessage';
+import { useSensitivityTip } from 'Survey/common/Components/hooks';
 import lockScreenshot from './lock.png';
 import './styles.scss';
 
@@ -24,15 +25,16 @@ const useAttributeLockingTip = (sample: Sample) => {
   const alert = useAlert();
 
   const showTip = () => {
-    const { shownLockingSwipeTip } = appModel.attrs;
+    const { shownLockingSwipeTip } = appModel.data;
     if (shownLockingSwipeTip) return;
 
     const [occ] = sample.occurrences;
-    const hasLockableAttributes = occ && (occ.attrs.comment || occ.attrs.stage);
+    const hasLockableAttributes =
+      occ && (occ.data.comment || occ.data.stage || occ.data.sex);
 
     if (!hasLockableAttributes) return;
 
-    appModel.attrs.shownLockingSwipeTip = true;
+    appModel.data.shownLockingSwipeTip = true;
 
     alert({
       header: 'Tip: Locks for data entry',
@@ -59,34 +61,36 @@ const useAttributeLockingTip = (sample: Sample) => {
 
 const EditMain = ({ sample }: Props) => {
   useAttributeLockingTip(sample);
+  const showSensitivityWarning = useSensitivityTip();
 
   const { url } = useRouteMatch();
 
   const [occ] = sample.occurrences;
+  if (!occ) return null;
 
-  const { activity } = sample.attrs;
+  const { groupId } = sample.data;
 
-  const isDisabled = sample.isDisabled();
+  const { isDisabled } = sample;
 
   return (
     <Main>
       <IonList lines="full" className="mb-2 flex flex-col gap-4">
         {isDisabled && (
-          <div className="rounded-list">
+          <div className="rounded-list mb-2">
             <VerificationMessage occurrence={occ} />
           </div>
         )}
 
         {isDisabled && (
-          <div className="rounded-list">
+          <div className="rounded-list mb-2">
             <DisabledRecordMessage sample={sample} />
           </div>
         )}
 
         {/* Only showing if pre-selected */}
-        {activity && (
+        {groupId && (
           <div className="rounded-list">
-            <MenuAttr.WithLock model={sample} attr="activity" />
+            <MenuAttr.WithLock model={sample} attr="groupId" />
           </div>
         )}
 
@@ -107,6 +111,11 @@ const EditMain = ({ sample }: Props) => {
             }}
           />
           <MenuDynamicAttrs model={sample} />
+          <MenuAttr.WithLock
+            model={occ}
+            attr="sensitivityPrecision"
+            onChange={showSensitivityWarning}
+          />
         </div>
       </IonList>
     </Main>

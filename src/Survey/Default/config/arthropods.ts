@@ -1,10 +1,10 @@
+import { object, string } from 'zod';
 import { groupsReverse as groups } from 'common/data/informalGroups';
 import progressIcon from 'common/images/progress-circles.svg';
 import { Survey } from 'Survey/common/config';
 
 const stage = [
-  { id: 17657, value: 'Not recorded', isDefault: true },
-
+  { id: 17657, value: 'Not recorded' },
   { id: 17643, value: 'Adult' },
   { id: 17644, value: 'Pupa' },
   { id: 17645, value: 'Cocoon' },
@@ -64,7 +64,7 @@ const survey: Partial<Survey> & { taxa: string } = {
     groups.scorpion,
     groups.mantis,
     groups.pauropod,
-    groups['web-spinne'],
+    groups['web-spinner'],
   ],
 
   occ: {
@@ -81,6 +81,12 @@ const survey: Partial<Survey> & { taxa: string } = {
         remote: { id: 829, values: stage },
       },
     },
+
+    verify: (attrs: any) =>
+      object({
+        taxon: object({}, { required_error: 'Species is missing.' }).nullable(),
+        stage: string({ required_error: 'Stage is missing.' }).nullable(),
+      }).safeParse(attrs).error,
   },
 };
 

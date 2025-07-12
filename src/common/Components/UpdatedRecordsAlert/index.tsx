@@ -3,10 +3,10 @@ import { observer } from 'mobx-react';
 import { Trans as T, useTranslation } from 'react-i18next';
 import { useAlert } from '@flumens';
 import { NavContext, IonItem, IonCheckbox, IonLabel } from '@ionic/react';
-import VerificationIcon from 'common/Components/VerificationStatus/VerificationIcon';
+import VerificationIcon from 'common/Components/VerificationStatus/Icon';
 import appModel from 'models/app';
+import samples from 'models/collections/samples';
 import Occurrence from 'models/occurrence';
-import savedSamples from 'models/savedSamples';
 import './styles.scss';
 
 let isPopupVisible = false;
@@ -16,17 +16,17 @@ const UpdatedRecordsDialog = () => {
   const { t } = useTranslation();
   const { navigate } = useContext(NavContext);
 
-  const { showVerifiedRecordsNotification } = appModel.attrs;
+  const { showVerifiedRecordsNotification } = appModel.data;
 
   const onToggleAlert = (e: any) => {
     // eslint-disable-next-line no-param-reassign
-    appModel.attrs.showVerifiedRecordsNotification = !e.detail.checked;
+    appModel.data.showVerifiedRecordsNotification = !e.detail.checked;
   };
 
   const showAlert = () => {
     if (!showVerifiedRecordsNotification || isPopupVisible) return;
 
-    const updatedOccurrences = savedSamples.verified.updated;
+    const updatedOccurrences = samples.verified.updated;
     if (!updatedOccurrences?.length) return;
 
     isPopupVisible = true;
@@ -37,13 +37,14 @@ const UpdatedRecordsDialog = () => {
     const verified = updatedOccurrences.filter(isStatus('verified')).length;
     const plausible = updatedOccurrences.filter(isStatus('plausible')).length;
     const rejected = updatedOccurrences.filter(isStatus('rejected')).length;
+    const queried = updatedOccurrences.filter(isStatus('queried')).length;
 
     const message = (
       <>
         <p>
           <T>
-            Some of your records have been verified. You can find those in your{' '}
-            <b>Uploaded</b> records list.
+            Some of your records have been verified or queried. You can find
+            those in your <b>Uploaded</b> records list.
           </T>
         </p>
 
@@ -73,6 +74,15 @@ const UpdatedRecordsDialog = () => {
                 <T>Rejected</T>:
               </span>
               <b>{rejected}</b>
+            </div>
+          )}
+          {!!queried && (
+            <div className="verified-count">
+              <VerificationIcon status="queried" />
+              <span>
+                <T>Queried</T>:
+              </span>
+              <b>{queried}</b>
             </div>
           )}
         </div>
@@ -118,7 +128,7 @@ const UpdatedRecordsDialog = () => {
     });
   };
 
-  useEffect(showAlert, [savedSamples.verified?.timestamp]);
+  useEffect(showAlert, [samples.verified?.timestamp]);
 
   return null;
 };

@@ -2,5 +2,8 @@
 	"appId": "uk.org.orks.app",
 	"appName": "ORKS App",
 	"webDir": "build",
-	"cordova": {}
+	"cordova": {},
+	"android": {
+		"adjustMarginsForEdgeToEdge": "force"
+	}
 }

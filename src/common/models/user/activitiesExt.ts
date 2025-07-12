@@ -3,7 +3,7 @@
  **************************************************************************** */
 import { observable } from 'mobx';
 import axios, { AxiosRequestConfig } from 'axios';
-import * as Yup from 'yup';
+import { array, object, string } from 'zod';
 import { HandledError, isAxiosNetworkError } from '@flumens';
 import config from 'common/config';
 
@@ -16,18 +16,16 @@ export interface Activity {
   group_to_date: any;
 }
 
-const schemaBackend = Yup.object().shape({
-  data: Yup.array().of(
-    Yup.object()
-      .shape({
-        id: Yup.string(),
-        title: Yup.string(),
-        // description: null
-        // group_type: Yup.string,
-        // group_from_date: null
-        // group_to_date: null
-      })
-      .required()
+const schemaBackend = object({
+  data: array(
+    object({
+      id: string(),
+      title: string(),
+      // description: null
+      // group_type: Yup.string,
+      // group_from_date: null
+      // group_to_date: null
+    })
   ),
 });
 
@@ -41,7 +39,7 @@ const extension = {
 
     if (
       !(
-        (this.isLoggedIn() && this.attrs.verified && this._lastSyncExpired()) ||
+        (this.isLoggedIn() && this.data.verified && this._lastSyncExpired()) ||
         force
       )
     ) {
@@ -82,7 +80,7 @@ const extension = {
       activities.push(fullActivity);
     });
 
-    this.attrs.activities = activities;
+    this.data.activities = activities;
     this.save();
   },
 
@@ -94,7 +92,7 @@ const extension = {
       headers: { Authorization: `Bearer ${await this.getAccessToken()}` },
       params: {
         path: 'enter-app-record',
-        user_id: this.attrs.indiciaUserId,
+        user_id: this.data.indiciaUserId,
       },
       timeout: 80000,
     };
@@ -103,7 +101,7 @@ const extension = {
       this.activities.synchronizing = true;
       const { data: response } = await axios(options);
 
-      const isValidResponse = await schemaBackend.isValid(response);
+      const isValidResponse = await schemaBackend.safeParse(response).success;
       if (!isValidResponse) throw new Error('Invalid server response.');
 
       this.activities.synchronizing = false;
@@ -122,7 +120,7 @@ const extension = {
   },
 
   _removeExpired() {
-    const activities = this.attrs.activities || [];
+    const activities = this.data.activities || [];
     for (let i = activities.length - 1; i >= 0; i--) {
       const activity = activities[i];
       if (this.hasActivityExpired(activity)) {
@@ -137,7 +135,7 @@ const extension = {
   },
 
   getActivity(id: any) {
-    const { activities } = this.attrs;
+    const { activities } = this.data;
     let foundedActivity = null;
     activities.forEach((activity: Activity) => {
       if (id === activity.id) {
@@ -187,7 +185,7 @@ const extension = {
    * @private
    */
   _lastSyncExpired() {
-    const { activities } = this.attrs;
+    const { activities } = this.data;
 
     if (!activities.length) {
       return true;

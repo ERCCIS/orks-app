@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Capacitor } from '@capacitor/core';
 import {
   PhotoPicker,
@@ -9,7 +10,7 @@ import {
   saveFile,
   deleteFile,
 } from '@flumens';
-import { isPlatform } from '@ionic/react';
+import { isPlatform, useIonActionSheet } from '@ionic/react';
 import config from 'common/config';
 import appModel from 'models/app';
 import Media from 'models/media';
@@ -21,6 +22,26 @@ import ImageWithClassification from './ImageWithClassification';
 import './styles.scss';
 
 type URL = string;
+
+export function usePromptImageSource() {
+  const { t } = useTranslation();
+  const [presentActionSheet] = useIonActionSheet();
+
+  const promptImageSource = (resolve: any) => {
+    presentActionSheet({
+      buttons: [
+        { text: t('Gallery'), handler: () => resolve(false) },
+        { text: t('Camera'), handler: () => resolve(true) },
+        { text: t('Cancel'), role: 'cancel', handler: () => resolve(null) },
+      ],
+      header: t('Choose a method to upload a photo'),
+    });
+  };
+  const promptImageSourceWrap = () =>
+    new Promise<boolean | null>(promptImageSource);
+
+  return promptImageSourceWrap;
+}
 
 type Props = {
   model: Sample | Occurrence;
@@ -61,20 +82,33 @@ const AppPhotoPicker = ({
   const [editImage, setEditImage] = useState<Media>();
   const toast = useToast();
 
-  const { useSpeciesImageClassifier } = appModel.attrs;
+  const { useSpeciesImageClassifier } = appModel.data;
   const useClassifier = !disableClassifier && useSpeciesImageClassifier;
 
-  const identify = (imageModel: Media) => {
+  const identifySpecies = (manualTrigger = false) => {
+    if (!(model instanceof Occurrence)) return;
+
+    // must reset to avoid getting into mixed state where media has changed but not the classifier results
+    model.updateMachineInvolvement();
+
     if (
-      useClassifier &&
-      device.isOnline &&
-      userModel.isLoggedIn() &&
-      userModel.attrs.verified
-    ) {
-      const processError = (error: any) =>
-        !error.isHandled && console.error(error); // don't toast this to user
-      imageModel.identify().catch(processError);
+      !model.media.length ||
+      !useClassifier ||
+      !userModel.isLoggedIn() ||
+      !userModel.data.verified
+    )
+      return;
+
+    if (manualTrigger && !device.isOnline) {
+      toast.warn("Sorry, looks like you're offline.");
+      return;
     }
+
+    model
+      .identify()
+      .catch((err: any) =>
+        manualTrigger ? toast.error(err) : console.error(err)
+      );
   };
 
   async function onAdd(shouldUseCamera: boolean) {
@@ -104,13 +138,16 @@ const AppPhotoPicker = ({
       model.media.push(...imageModels);
       model.save();
 
-      imageModels.map(identify);
+      identifySpecies();
     } catch (e: any) {
       toast.error(e);
     }
   }
 
-  const onRemove = (m: any) => m.destroy();
+  const onRemove = async (m: any) => {
+    await m.destroy();
+    identifySpecies();
+  };
 
   const onDoneEdit = async (imageDataURL: URL) => {
     const image = editImage as Media;
@@ -122,19 +159,15 @@ const AppPhotoPicker = ({
 
     await deleteFile(oldFileName);
 
-    let savedURL = await saveFile(imageDataURL, newFileName);
-
-    savedURL = isPlatform('hybrid')
-      ? Capacitor.convertFileSrc(savedURL)
-      : savedURL;
+    const savedURL = await saveFile(imageDataURL, newFileName);
 
     // copy over new image values to existing model to preserve its observability
     const newImageModel = await Media.getImageModel(
-      savedURL,
+      isPlatform('hybrid') ? Capacitor.convertFileSrc(savedURL) : savedURL,
       config.dataPath,
       true
     );
-    Object.assign(image?.attrs, { ...newImageModel.attrs, species: null });
+    Object.assign(image?.data, { ...newImageModel.data, species: null });
 
     if (!image.parent) {
       // came straight from camera rather than editing existing
@@ -145,24 +178,24 @@ const AppPhotoPicker = ({
 
     setEditImage(undefined);
 
-    identify(image);
+    identifySpecies();
   };
 
   const onCancelEdit = () => setEditImage(undefined);
 
   const onCropExisting = (media: Media) => {
-    if (model.isDisabled()) return;
+    if (model.isDisabled) return;
 
     setEditImage(media);
   };
 
-  const allowToEdit = allowToCrop && !model.isDisabled();
+  const allowToEdit = allowToCrop && !model.isDisabled;
 
   useOnBackButton(onCancelEdit, editImage);
 
   const onSpeciesSelect = (taxon: any) => model.setTaxon(taxon);
 
-  const isDisabled = model.isDisabled();
+  const { isDisabled } = model;
   if (isDisabled && !model.media.length) return null;
 
   return (
@@ -170,11 +203,17 @@ const AppPhotoPicker = ({
       <PhotoPicker
         className="with-cropper"
         onAdd={onAdd}
-        onRemove={onRemove}
         value={model.media}
         Image={useClassifier ? ImageWithClassification : undefined}
         Gallery={useClassifier ? GalleryWithClassification : undefined}
-        galleryProps={{ onCrop: onCropExisting, onSpeciesSelect, isDisabled }}
+        onRemove={onRemove}
+        galleryProps={{
+          onCrop: onCropExisting,
+          onSpeciesSelect,
+          isDisabled,
+          onDelete: onRemove,
+          onIdentify: identifySpecies,
+        }}
         isDisabled={isDisabled}
       />
 

@@ -10,52 +10,34 @@ import {
   useToast,
   useLoader,
   useAlert,
-  DrupalUserModelAttrs,
+  DrupalUserModelData,
 } from '@flumens';
 import { NavContext } from '@ionic/react';
 import * as Sentry from '@sentry/browser';
 import CONFIG from 'common/config';
-import { genericStore } from '../store';
+import { mainStore } from '../store';
 import activitiesExt from './activitiesExt';
 
-export interface Attrs extends DrupalUserModelAttrs {
+export interface Data extends DrupalUserModelData {
   firstName?: string;
   lastName?: string;
   email?: string;
-
   statistics: any;
-
-  activities: any[];
-
   /**
    * @deprecated
    */
   password?: any;
 }
 
-const defaults: Attrs = {
+const defaults: Data = {
   firstName: '',
   lastName: '',
   email: '',
 
   statistics: null,
-
-  activities: [],
 };
 
-export class UserModel extends DrupalUserModel {
-  hasActivityExpired: any; // from extension
-
-  getActivity: any; // from extension
-
-  syncActivities: any; // from extension
-
-  activities: any; // from extension
-
-  // eslint-disable-next-line
-  // @ts-ignore
-  attrs: Attrs = DrupalUserModel.extendAttrs(this.attrs, defaults);
-
+export class UserModel extends DrupalUserModel<Data> {
   static registerSchema: any = object({
     email: z.string().email('Please fill in'),
     password: z.string().min(1, 'Please fill in'),
@@ -78,12 +60,14 @@ export class UserModel extends DrupalUserModel {
 
   getAchievedStatsMilestone?: any; // from extension
 
+  hasActivityExpired?: any; // from extension
+
   constructor(options: any) {
-    super(options);
+    super({ ...options, data: { ...defaults, ...options.data } });
     Object.assign(this, activitiesExt);
 
     const checkForValidation = () => {
-      if (this.isLoggedIn() && !this.attrs.verified) {
+      if (this.isLoggedIn() && !this.data.verified) {
         console.log('User: refreshing profile for validation');
         this.refreshProfile();
       }
@@ -99,44 +83,44 @@ export class UserModel extends DrupalUserModel {
 
   getPrettyName() {
     return this.isLoggedIn()
-      ? `${this.attrs.firstName} ${this.attrs.lastName}`
+      ? `${this.data.firstName} ${this.data.lastName}`
       : '';
   }
 
   async checkActivation() {
     if (!this.isLoggedIn()) return false;
 
-    if (!this.attrs.verified) {
+    if (!this.data.verified) {
       try {
         await this.refreshProfile();
       } catch (e) {
         // do nothing
       }
 
-      if (!this.attrs.verified) return false;
+      if (!this.data.verified) return false;
     }
 
     return true;
   }
 
   async resendVerificationEmail() {
-    if (!this.isLoggedIn() || this.attrs.verified) return false;
+    if (!this.isLoggedIn() || this.data.verified) return false;
 
     await this._sendVerificationEmail();
 
     return true;
   }
 
-  resetDefaults() {
+  reset() {
     this.uploadCounter.count = 0;
 
-    return super.resetDefaults(defaults);
+    return super.reset(defaults);
   }
 }
 
 const userModel = new UserModel({
   cid: 'user',
-  store: genericStore,
+  store: mainStore,
   config: CONFIG.backend,
 });
 
@@ -157,7 +141,7 @@ export const useUserStatusCheck = () => {
       return false;
     }
 
-    if (!userModel.attrs.verified) {
+    if (!userModel.data.verified) {
       await loader.show('Please wait...');
       const isVerified = await userModel.checkActivation();
       loader.hide();

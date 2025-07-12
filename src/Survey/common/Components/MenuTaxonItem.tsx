@@ -9,15 +9,18 @@ interface Props {
 }
 
 const MenuTaxonItem = ({ occ }: Props) => {
-  const isDisabled = occ.isDisabled();
+  const { isDisabled } = occ;
   const { url } = useRouteMatch();
 
-  const { taxon } = occ.attrs;
+  const { taxon } = occ.data;
 
-  const scientificName = taxon?.scientific_name;
+  const scientificName =
+    taxon?.scientificName ||
+    // backwards compatible
+    (taxon as any)?.scientific_name;
   const commonName =
-    taxon && Number.isFinite(taxon.found_in_name)
-      ? taxon.common_names[taxon.found_in_name as number]
+    taxon && Number.isFinite(taxon.foundInName)
+      ? taxon.commonNames[taxon.foundInName as number]
       : '';
 
   const empty = !commonName && !scientificName;

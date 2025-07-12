@@ -19,11 +19,11 @@ import appLogo from './logo.png';
 import './styles.scss';
 
 // const shouldShowFeedback = (appModel: AppModel, isLoggedIn: boolean) => {
-//   if (appModel.attrs.feedbackGiven) {
+//   if (appModel.data.feedbackGiven) {
 //     return false;
 //   }
 
-//   if (appModel.attrs.useTraining) {
+//   if (appModel.data.useTraining) {
 //     return false;
 //   }
 
@@ -31,7 +31,7 @@ import './styles.scss';
 //     return false;
 //   }
 
-//   return savedSamples.length > 5;
+//   return samples.length > 5;
 // };
 
 type Props = {
@@ -54,7 +54,7 @@ const MenuMain = ({
 
   // const onFeedbackDone = () => {
   //   // eslint-disable-next-line no-param-reassign
-  //   appModel.attrs.feedbackGiven = true;
+  //   appModel.data.feedbackGiven = true;
   //   appModel.save();
   // };
 
