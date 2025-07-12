@@ -1,19 +1,10 @@
 {
-<<<<<<< HEAD
   "name": "orks-app",
   "id": "uk.org.orks.app",
   "title": "ORKS App",
   "description": "ORKS mobile application.",
-  "version": "6.1.2",
-  "homepage": "https://orks.org.uk",
-=======
-  "name": "irecord-app",
-  "id": "uk.ac.ceh.irecord",
-  "title": "iRecord App",
-  "description": "iRecord mobile application.",
   "version": "6.2.2",
-  "homepage": "https://irecord.org.uk",
->>>>>>> upstream/master
+  "homepage": "https://orks.org.uk",
   "scripts": {
     "start": "webpack serve --progress --port 8000",
     "build": "NODE_ENV=production webpack",
