@@ -149,8 +149,6 @@ const survey: Survey = {
 
     /** @deprecated */
     activity: activityAttr,
-
-    method: methodAttr,
   },
 
   verify: (attrs: any) =>

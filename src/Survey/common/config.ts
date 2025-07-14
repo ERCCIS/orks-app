@@ -32,24 +32,6 @@ export const locationAttrValidator = (obj: any = {}) =>
       'Location is missing.'
     );
 
-const typeSchema = Yup.string().defined();
-
-const validateType = (val: any) => {
-  try {
-    typeSchema.validateSync(val);
-    return true;
-  } catch (e) {
-    return false;
-  }
-};
-
-export const verifyTypeSchema = Yup.mixed().test(
-  'type',
-  'Please enter the type of observation.',
-  validateType
-);
-
-
 // eslint-disable-next-line import/prefer-default-export
 export const dateAttr = {
   menuProps: {

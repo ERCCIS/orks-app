@@ -57,6 +57,7 @@ type Attrs = Omit<OccurrenceData, 'taxon'> & {
   comment?: string;
   stage?: string;
   type?: string;
+  sex?: string;
 };
 
 type Metadata = OccurrenceMetadata & {

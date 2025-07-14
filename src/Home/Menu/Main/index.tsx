@@ -15,6 +15,7 @@ import { Trans as T } from 'react-i18next';
 import { Main, InfoMessage } from '@flumens';
 import { IonIcon, IonList, IonItem, IonButton } from '@ionic/react';
 import config from 'common/config';
+import { AppModel } from 'models/app';
 import appLogo from './logo.png';
 import './styles.scss';
 
@@ -40,15 +41,19 @@ type Props = {
   resendVerificationEmail: any;
   isLoggedIn: boolean;
   user: any;
+  appModel: AppModel;
 };
 
 const MenuMain = ({
   isLoggedIn,
   user,
   logOut,
+  appModel,
   refreshAccount,
   resendVerificationEmail,
 }: Props) => {
+  const lang = appModel.data.language;
+
   const isNotVerified = user.verified === false; // verified is undefined in old versions
   const userEmail = user.email;
 
@@ -145,7 +150,7 @@ const MenuMain = ({
           </IonItem>
 
           <IonItem
-            href={`${config.backend.url}/AboutUs/Policies`}
+            href={`${config.backend.url}/privacy-notice?lang=${lang}`}
             target="_blank"
             detail
             detailIcon={openOutline}
