@@ -23,6 +23,7 @@ import {
   groupIdAttr,
   sensitivityPrecisionAttr,
   locationAttrValidator,
+  methodAttr,
 } from 'Survey/common/config';
 import arthropodSurvey from './arthropods';
 import birdsSurvey from './birds';
@@ -149,6 +150,8 @@ const survey: Survey = {
 
     /** @deprecated */
     activity: activityAttr,
+
+    method: methodAttr,
   },
 
   verify: (attrs: any) =>
