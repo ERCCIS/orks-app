@@ -15,7 +15,6 @@ import {
 import { Trans as T } from 'react-i18next';
 import { Page, Collapse, Header, Main } from '@flumens';
 import { IonList, IonIcon, IonItem } from '@ionic/react';
-import CONFIG from 'common/config';
 import ai1Pic from './ai_1.png';
 import ai2Pic from './ai_2.png';
 import ai3Pic from './ai_3.png';
@@ -447,7 +446,7 @@ const Help = () => (
             <div className="pt-3">
               <T>
                 For more help please visit the iRecord{' '}
-                <a href={`https://irecord.org.uk/forum/36`}>forum</a> Or drop us
+                <a href="https://irecord.org.uk/forum/36">forum</a> Or drop us
                 an
                 <a href="mailto:orks%40cornwallwildlifetrust.gov.uk"> email</a>.
               </T>

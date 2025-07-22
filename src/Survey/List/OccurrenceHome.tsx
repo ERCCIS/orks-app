@@ -9,11 +9,9 @@ import MenuLocation from 'Survey/common/Components/MenuLocation';
 import MenuTaxonItem from 'Survey/common/Components/MenuTaxonItem';
 import PhotoPicker from 'Survey/common/Components/PhotoPicker';
 import VerificationMessage from 'Survey/common/Components/VerificationMessage';
-import { useSensitivityTip } from 'Survey/common/Components/hooks';
 
 const ListOccurrenceHome = () => {
   const { url } = useRouteMatch();
-  const showSensitivityWarning = useSensitivityTip();
 
   const { subSample } = useSample<Sample>();
   if (!subSample) return null;
