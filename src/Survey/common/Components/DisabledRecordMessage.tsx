@@ -24,10 +24,10 @@ const DisabledRecordMessage = ({ sample }: Props) => {
         </T>
       </div>
       <div>
-        <T>To view the full record, please visit the iRecord website.</T>
+        <T>To view the full record, please visit the ORKS website.</T>
       </div>
       <Button href={url} className="mt-2 p-1">
-        iRecord website
+        ORKS website
       </Button>
     </InfoMessage>
   );

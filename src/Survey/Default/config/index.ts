@@ -21,7 +21,6 @@ import {
   getSystemAttrs,
   recorderAttr,
   groupIdAttr,
-  sensitivityPrecisionAttr,
   locationAttrValidator,
   methodAttr,
 } from 'Survey/common/config';
@@ -75,6 +74,7 @@ const stageOptions = [
   { value: 'Juvenile male', id: 3409 },
   { value: 'Juvenile female', id: 3410 },
   { value: 'Breeding pair', id: 3411 },
+  { value: 'If a group contained mixed adults and juveniles, both male, female or unknown', id: 5262 },
   { value: 'Mixed group', id: 5261 },
   { value: 'In flower', id: 3412 },
   { value: 'Fruiting', id: 3413 },
@@ -83,6 +83,7 @@ const stageOptions = [
   { value: 'Nymph', id: 3959 },
   { value: 'Spawn', id: 3960 },
   { value: 'Pupa', id: 3958 },
+  { value: 'Exuviae', id: 14241},
   { value: 'Other (please add to comments)', id: 3414 },
 ];
 
@@ -253,7 +254,6 @@ const survey: Survey = {
         remote: { values: sensitivityOptions },
       },
       comment: commentAttr,
-      sensitivityPrecision: sensitivityPrecisionAttr(1000),
     },
 
     verify: (attrs: any) =>

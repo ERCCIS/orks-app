@@ -15,7 +15,6 @@ import {
   commentAttr,
   identifiersAttr,
   mothStageAttr,
-  sensitivityPrecisionAttr,
   locationAttrValidator,
 } from 'Survey/common/config';
 
@@ -116,7 +115,6 @@ const survey: Survey = {
       },
       identifiers: identifiersAttr,
       comment: commentAttr,
-      sensitivityPrecision: sensitivityPrecisionAttr(1000),
     },
 
     verify: (attrs: any) =>

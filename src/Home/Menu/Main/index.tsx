@@ -150,7 +150,7 @@ const MenuMain = ({
           </IonItem>
 
           <IonItem
-            href={`${config.backend.url}/privacy-notice?lang=${lang}`}
+            href={`${config.backend.url}/AboutUs/Policies?lang=${lang}`}
             target="_blank"
             detail
             detailIcon={openOutline}

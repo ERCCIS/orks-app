@@ -83,7 +83,7 @@ const RegisterMain = ({ onSubmit }: Props) => {
           <div className="my-6 px-5 text-base">
             <T>
               By clicking Sign Up, you agree to our{' '}
-              <IonRouterLink href={`${config.backend.url}/privacy-notice`}>
+              <IonRouterLink href={`${config.backend.url}/AboutUs/Policies`}>
                 Privacy Policy
               </IonRouterLink>{' '}
               and{' '}

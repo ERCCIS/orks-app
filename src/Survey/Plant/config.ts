@@ -14,7 +14,6 @@ import {
   locationAttr,
   getSystemAttrs,
   taxonAttr,
-  sensitivityPrecisionAttr,
   childGeolocationAttr,
   locationAttrValidator,
   plantStageAttr,
@@ -246,8 +245,6 @@ const survey: Survey = {
         },
 
         comment: commentAttr,
-
-        sensitivityPrecision: sensitivityPrecisionAttr(),
       },
 
       verify: (attrs: any) =>

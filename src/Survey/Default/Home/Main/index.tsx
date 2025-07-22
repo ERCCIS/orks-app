@@ -111,11 +111,6 @@ const EditMain = ({ sample }: Props) => {
             }}
           />
           <MenuDynamicAttrs model={sample} />
-          <MenuAttr.WithLock
-            model={occ}
-            attr="sensitivityPrecision"
-            onChange={showSensitivityWarning}
-          />
         </div>
       </IonList>
     </Main>

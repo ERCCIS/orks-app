@@ -25,7 +25,7 @@ const getVerificationText = (
 
         <div>
           <T>
-            You can find the verifier query and comments on the iRecord website.
+            You can find the verifier query and comments on the ORKS website.
           </T>
         </div>
       </>

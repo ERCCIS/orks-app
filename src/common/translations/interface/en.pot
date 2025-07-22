@@ -959,6 +959,9 @@ msgstr "Identifiers"
 msgid "Sensitivity"
 msgstr "Sensitivity"
 
+msgid "Sensitivity_precision"
+msgstr "Sensitivity Precision"
+
 msgid "Mixed"
 msgstr "Mixed"
 

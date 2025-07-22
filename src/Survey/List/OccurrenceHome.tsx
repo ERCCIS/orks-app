@@ -47,11 +47,6 @@ const ListOccurrenceHome = () => {
               }}
             />
             <MenuDynamicAttrs model={subSample} skipLocks />
-            <MenuAttr
-              model={occ}
-              attr="sensitivityPrecision"
-              onChange={showSensitivityWarning}
-            />
           </div>
         </IonList>
       </Main>

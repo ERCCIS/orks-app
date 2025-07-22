@@ -83,7 +83,7 @@ const HomeController = () => {
           >
             <IonIcon icon={peopleOutline} />
             <IonLabel>
-              <T>Groups</T>
+              <T>Activities</T>
             </IonLabel>
           </IonTabButton>
 

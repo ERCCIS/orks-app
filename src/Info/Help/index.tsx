@@ -447,7 +447,7 @@ const Help = () => (
             <div className="pt-3">
               <T>
                 For more help please visit the iRecord{' '}
-                <a href={`${CONFIG.backend.url}/forum/36`}>forum</a> Or drop us
+                <a href={`https://irecord.org.uk/forum/36`}>forum</a> Or drop us
                 an
                 <a href="mailto:orks%40cornwallwildlifetrust.gov.uk"> email</a>.
               </T>
