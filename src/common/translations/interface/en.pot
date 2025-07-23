@@ -134,15 +134,15 @@ msgid "Sign in/out or register"
 msgstr "Sign in/out or register"
 
 msgid "Activities"
-msgstr "Activities"
+msgstr "Groups"
 
 # Part of activities page 
 msgid "Swipe down on the activity list to refresh it."
-msgstr "Swipe down on the activity list to refresh it."
+msgstr "Swipe down on the group list to refresh it."
 
 # Part of activities page 
 msgid "Sorry, no activities data is available at the moment."
-msgstr "Sorry, no activities data is available at the moment."
+msgstr "Sorry, no groups data is available at the moment."
 
 msgid "Other"
 msgstr "Other"
@@ -664,7 +664,7 @@ msgid "Name missing"
 msgstr "Name missing"
 
 msgid "Please log in to the app before selecting an alternative activity for your records."
-msgstr "Please log in to the app before selecting an alternative activity for your records."
+msgstr "Please log in to the app before selecting an alternative group for your records."
 
 msgid "Let's add one!"
 msgstr "Let's add one!"
@@ -852,7 +852,7 @@ msgid "Top species"
 msgstr "Top species"
 
 msgid "Activity"
-msgstr "Activity"
+msgstr "Group"
 
 msgid "location name"
 msgstr "location name"
@@ -1249,7 +1249,7 @@ msgstr "<p>The records that you upload from the app may be checked by a verifier
 
 # Part of Help Page 
 msgid "<0>To send records to a specific activity you can select it in the Activities <1></1> page. Activities you have already joined can be seen in “My Activities”. To join an Activity for the first time search for it in “All Activities”.</0><p>Make sure you remember to change your Activity setting if you want to add a record that is not linked to an activity. To do this, set the My Activity page to “Not linked to any activity”.</p>"
-msgstr "<0>To send records to a specific activity you can select it in the Activities <1></1> page. Activities you have already joined can be seen in “My Activities”. To join an Activity for the first time search for it in “All Activities”.</0><p>Make sure you remember to change your Activity setting if you want to add a record that is not linked to an activity. To do this, set the My Activity page to “Not linked to any activity”.</p>"
+msgstr "<0>To send records to a specific group you can select it in the Groups <1></1> page. Groups you have already joined can be seen in “My Groups. To join an Group for the first time search for it in “All Groups”.</0><p>Make sure you remember to change your Group setting if you want to add a record that is not linked to an group. To do this, set the My Group page to “Not linked to any group.</p>"
 
 # Part of Help Page
 msgid "Swipe a location left and click edit <2></2> or delete<4></4> buttons."
@@ -1406,7 +1406,7 @@ msgstr "To find a species from its scientific name you can use shortcuts, e.g. t
 
 # Activities page alert info message
 msgid "Click on the activity below which you would like to participate in."
-msgstr "Click on the activity below which you would like to participate in."
+msgstr "Click on the group below which you would like to participate in."
 
 # Activities page button label
 msgid "READ MORE"
@@ -1530,7 +1530,7 @@ msgstr "button. This will change the symbol to locked"
 
 # Help page content
 msgid "To send records to a specific activity you can select it in the Activities page."
-msgstr "To send records to a specific activity you can select it in the Activities page."
+msgstr "To send records to a specific group you can select it in the Groups page."
 
 # Help page content
 msgid "You can manage your saved locations both on any record's location page and from the settings page."
@@ -1955,19 +1955,19 @@ msgstr "Location name is missing"
 
 # Activities page 
 msgid "My activities"
-msgstr "My activities"
+msgstr "My groups"
 
 # Activities page 
 msgid "All activities"
-msgstr "All activities"
+msgstr "All groups"
 
 # Activities page 
 msgid "Not linked to any activity"
-msgstr "Not linked to any activity"
+msgstr "Not linked to any group"
 
 # Activities page 
 msgid "You haven't joined any activities yet. Go to the \"All activities\" tab to join an activity.<br/><br/>Pull the page down to refresh the list."
-msgstr "You haven't joined any activities yet. Go to the \"All activities\" tab to join an activity.<br/><br/>Pull the page down to refresh the list."
+msgstr "You haven't joined any activities yet. Go to the \"All groups\" tab to join an group.<br/><br/>Pull the page down to refresh the list."
 
 # Activities page  
 msgid "There are currently no new activities available to join.<br/><br/>Pull the page down to refresh the list."
@@ -1975,7 +1975,7 @@ msgstr "There are currently no new activities available to join.<br/><br/>Pull t
 
 # Activities page  
 msgid "Activity name"
-msgstr "Activity name"
+msgstr "Group name"
 
 # Activities page  
 msgid "Join"
@@ -1983,7 +1983,7 @@ msgstr "Join"
 
 # Activities page  
 msgid "This activity requires administrator approval for membership requests."
-msgstr "This activity requires administrator approval for membership requests."
+msgstr "This group requires administrator approval for membership requests."
 
 # Activities page  
 msgid "From"
@@ -1995,7 +1995,7 @@ msgstr "To"
 
 # Activities page  
 msgid "Successfully joined the activity."
-msgstr "Successfully joined the activity."
+msgstr "Successfully joined the group."
 
 # Activities page  
 msgid "Leave"

@@ -116,7 +116,7 @@ const GroupsList = ({
 
                   <IonSegmentButton value="all">
                     <IonLabel className="ion-text-wrap">
-                      <T>All activities</T>
+                      <T>All groups</T>
                     </IonLabel>
                   </IonSegmentButton>
                 </IonSegment>

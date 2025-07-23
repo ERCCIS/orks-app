@@ -96,8 +96,8 @@ const UserGroups = ({
   if (!groups.length)
     return (
       <InfoBackgroundMessage>
-        You haven't joined any activities yet. Go to the "All activities" tab to
-        join an activity.
+        You haven't joined any activities yet. Go to the "All groups" tab to
+        join an group.
         <br />
         <br />
         Pull the page down to refresh the list.
