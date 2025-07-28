@@ -77,7 +77,7 @@ const useOnBackButton = (onCancelEdit: () => void, editImage?: Media) => {
 const AppPhotoPicker = ({
   model,
   allowToCrop = true,
-  disableClassifier = false,
+  disableClassifier = true,
 }: Props) => {
   const [editImage, setEditImage] = useState<Media>();
   const toast = useToast();
