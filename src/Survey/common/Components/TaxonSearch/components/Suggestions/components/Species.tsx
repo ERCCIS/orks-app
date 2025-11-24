@@ -3,24 +3,22 @@ import { Trans as T } from 'react-i18next';
 import { IonItem, IonIcon } from '@ionic/react';
 import { groups as informalGroups } from 'common/data/informalGroups';
 import { Button } from 'common/flumens';
-import { Taxon } from 'models/occurrence';
+import appModel from 'common/models/app';
+import { ClassifierSuggestion, Taxon } from 'models/occurrence';
 import ProbabilityBadge from 'Survey/common/Components/ProbabilityBadge';
 import './styles.scss';
 
 /**
  * Highlight the searched parts of taxa names.
- * @param name
- * @param searchPhrase
- * @returns {*}
- * @private
  */
 function prettifyName(
   species: Taxon & { _dedupedScientificName?: string },
   searchPhrase?: string
 ) {
-  const name = Number.isFinite(species.found_in_name)
-    ? species.common_names[species.found_in_name as number]
-    : species.scientific_name;
+  const foundInCommonName = Number.isFinite(species.foundInName);
+  const name = foundInCommonName
+    ? species.commonNames[species.foundInName as number]
+    : species.scientificName;
 
   if (!searchPhrase) return name;
 
@@ -29,13 +27,23 @@ function prettifyName(
     return name;
   }
 
-  let deDupedName;
-  if (species._dedupedScientificName) {
-    deDupedName = (
+  let secondaryName;
+  if (appModel.data.searchNamesOnly) {
+    if (species._dedupedScientificName)
+      secondaryName = (
+        <small>
+          <i>{species._dedupedScientificName}</i>
+        </small>
+      );
+  } else if (foundInCommonName) {
+    secondaryName = (
       <small>
-        <i>{species._dedupedScientificName}</i>
+        <i>{species.scientificName}</i>
       </small>
     );
+  } else {
+    const commonName = species.commonNames?.[0];
+    if (commonName) secondaryName = <small>{commonName}</small>;
   }
 
   return (
@@ -46,13 +54,13 @@ function prettifyName(
         {name.slice(searchPos + searchPhrase.length)}
       </span>
 
-      {deDupedName}
+      {secondaryName}
     </>
   );
 }
 
 type Props = {
-  species: Taxon;
+  species: Taxon | ClassifierSuggestion;
   searchPhrase?: string;
   onSelect: any;
   showEditButton?: boolean;
@@ -67,14 +75,20 @@ const Species = ({
   const prettyName = prettifyName(species, searchPhrase);
   const group = (informalGroups as any)[species.group];
 
-  const { probability } = species;
+  let probability;
+  if ('probability' in species) {
+    probability = species.probability;
+  }
 
   return (
-    <IonItem className="search-result" onClick={() => onSelect(species)}>
-      <div className="flex w-full items-center">
+    <IonItem
+      className="search-result relative overflow-hidden p-0 py-1 text-base [--background:none] [--inner-padding-end:0px] [--padding-start:0px]"
+      onClick={() => onSelect(species)}
+    >
+      <div className="flex w-full items-center py-1">
         {probability && (
           <div className="probability">
-            <ProbabilityBadge probability={probability} />
+            <ProbabilityBadge probability={probability} showInfo />
           </div>
         )}
 

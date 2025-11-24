@@ -40,7 +40,10 @@ const RegisterMain = ({ onSubmit }: Props) => {
           <T>Create a free account</T>
         </h1>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-8">
+        <form className="mt-8" onSubmit={handleSubmit(onSubmit)}>
+          {/* Fake onSubmit on Enter */}
+          <input type="submit" className="hidden" />
+
           <div className="rounded-list">
             <ControlledInput
               control={control}
@@ -80,7 +83,7 @@ const RegisterMain = ({ onSubmit }: Props) => {
           <div className="my-6 px-5 text-base">
             <T>
               By clicking Sign Up, you agree to our{' '}
-              <IonRouterLink href={`${config.backend.url}/privacy-notice`}>
+              <IonRouterLink href={`${config.backend.url}/AboutUs/Policies`}>
                 Privacy Policy
               </IonRouterLink>{' '}
               and{' '}
@@ -96,7 +99,7 @@ const RegisterMain = ({ onSubmit }: Props) => {
               !formState.isValid && 'opacity-50'
             )}
             color="primary"
-            type="submit"
+            onPress={() => handleSubmit(onSubmit)()}
           >
             Sign Up
           </Button>

@@ -17,6 +17,7 @@ ion-item-sliding.survey-list-item {
       align-items: center;
       width: 100%;
       height: 100%;
+      max-height: var(--survey-item-height);
 
       .photo {
         position: relative;
@@ -81,50 +82,10 @@ ion-item-sliding.survey-list-item {
           margin-bottom: 10px;
         }
 
-        .details {
-          padding-right: 10px;
-          width: 100%;
-
-          .species-count {
-            font-size: 14px;
-          }
-          .core {
-            overflow: hidden;
-            font-size: 14px;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-
-            span {
-              color: var(--ion-color-dark);
-              font-weight: 500;
-
-              &.warning {
-                margin: 1px 0;
-                color: var(--ion-color-warning);
-              }
-            }
-          }
-
-          span.locked,
-          div.locked {
-            color: var(--ion-color-secondary);
-          }
+        span.locked,
+        div.locked {
+          color: var(--ion-color-secondary);
         }
-      }
-    }
-
-    ion-badge[color='warning'] {
-      margin: 1px 0;
-      background-color: rgba(var(--ion-color-warning-rgb), 0.15);
-      width: -webkit-fit-content;
-      width: fit-content;
-      color: var(--ion-color-warning-dark);
-      font-weight: normal;
-
-      font-size: 1em;
-
-      &:not(:last-of-type) {
-        margin-bottom: 5px;
       }
     }
 

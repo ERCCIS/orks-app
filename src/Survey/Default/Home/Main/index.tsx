@@ -24,15 +24,16 @@ const useAttributeLockingTip = (sample: Sample) => {
   const alert = useAlert();
 
   const showTip = () => {
-    const { shownLockingSwipeTip } = appModel.attrs;
+    const { shownLockingSwipeTip } = appModel.data;
     if (shownLockingSwipeTip) return;
 
     const [occ] = sample.occurrences;
-    const hasLockableAttributes = occ && (occ.attrs.comment || occ.attrs.stage);
+    const hasLockableAttributes =
+      occ && (occ.data.comment || occ.data.stage || occ.data.sex);
 
     if (!hasLockableAttributes) return;
 
-    appModel.attrs.shownLockingSwipeTip = true;
+    appModel.data.shownLockingSwipeTip = true;
 
     alert({
       header: 'Tip: Locks for data entry',
@@ -63,30 +64,31 @@ const EditMain = ({ sample }: Props) => {
   const { url } = useRouteMatch();
 
   const [occ] = sample.occurrences;
+  if (!occ) return null;
 
-  const { activity } = sample.attrs;
+  const { groupId } = sample.data;
 
-  const isDisabled = sample.isDisabled();
+  const { isDisabled } = sample;
 
   return (
     <Main>
       <IonList lines="full" className="mb-2 flex flex-col gap-4">
         {isDisabled && (
-          <div className="rounded-list">
+          <div className="rounded-list mb-2">
             <VerificationMessage occurrence={occ} />
           </div>
         )}
 
         {isDisabled && (
-          <div className="rounded-list">
+          <div className="rounded-list mb-2">
             <DisabledRecordMessage sample={sample} />
           </div>
         )}
 
         {/* Only showing if pre-selected */}
-        {activity && (
+        {groupId && (
           <div className="rounded-list">
-            <MenuAttr.WithLock model={sample} attr="activity" />
+            <MenuAttr.WithLock model={sample} attr="groupId" />
           </div>
         )}
 

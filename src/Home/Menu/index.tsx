@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react';
 import { Trans as T } from 'react-i18next';
 import { Page, useAlert, useLoader, useToast } from '@flumens';
+import appModel from 'models/app';
 import userModel from 'models/user';
 import Main from './Main';
 
@@ -53,7 +54,7 @@ const Controller = () => {
     await loader.show('Please wait...');
     try {
       await userModel.checkActivation();
-      if (!userModel.attrs.verified) {
+      if (!userModel.data.verified) {
         toast.warn('The user has not been activated or is blocked.');
       }
     } catch (err: any) {
@@ -78,7 +79,8 @@ const Controller = () => {
   return (
     <Page id="home-menu">
       <Main
-        user={userModel.attrs}
+        user={userModel.data}
+        appModel={appModel}
         isLoggedIn={userModel.isLoggedIn()}
         logOut={logOut}
         refreshAccount={checkActivation}

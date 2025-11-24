@@ -15,15 +15,16 @@ import { Trans as T } from 'react-i18next';
 import { Main, InfoMessage } from '@flumens';
 import { IonIcon, IonList, IonItem, IonButton } from '@ionic/react';
 import config from 'common/config';
+import { AppModel } from 'models/app';
 import appLogo from './logo.png';
 import './styles.scss';
 
 // const shouldShowFeedback = (appModel: AppModel, isLoggedIn: boolean) => {
-//   if (appModel.attrs.feedbackGiven) {
+//   if (appModel.data.feedbackGiven) {
 //     return false;
 //   }
 
-//   if (appModel.attrs.useTraining) {
+//   if (appModel.data.useTraining) {
 //     return false;
 //   }
 
@@ -31,7 +32,7 @@ import './styles.scss';
 //     return false;
 //   }
 
-//   return savedSamples.length > 5;
+//   return samples.length > 5;
 // };
 
 type Props = {
@@ -40,21 +41,25 @@ type Props = {
   resendVerificationEmail: any;
   isLoggedIn: boolean;
   user: any;
+  appModel: AppModel;
 };
 
 const MenuMain = ({
   isLoggedIn,
   user,
   logOut,
+  appModel,
   refreshAccount,
   resendVerificationEmail,
 }: Props) => {
+  const lang = appModel.data.language;
+
   const isNotVerified = user.verified === false; // verified is undefined in old versions
   const userEmail = user.email;
 
   // const onFeedbackDone = () => {
   //   // eslint-disable-next-line no-param-reassign
-  //   appModel.attrs.feedbackGiven = true;
+  //   appModel.data.feedbackGiven = true;
   //   appModel.save();
   // };
 
@@ -145,7 +150,7 @@ const MenuMain = ({
           </IonItem>
 
           <IonItem
-            href={`${config.backend.url}/AboutUs/Policies`}
+            href={`${config.backend.url}/AboutUs/Policies?lang=${lang}`}
             target="_blank"
             detail
             detailIcon={openOutline}

@@ -1,17 +1,17 @@
 import Occurrence from 'models/occurrence';
-import VerificationIcon from './VerificationIcon';
+import Icon from './Icon';
 
 interface Props {
   occ: Occurrence;
 }
 
 const VerificationStatus = ({ occ }: Props) => {
-  if (!occ?.isUploaded()) return null;
+  if (!occ?.isUploaded) return null;
 
   const status = occ.getVerificationStatus();
   if (!status) return null;
 
-  return <VerificationIcon status={status} />;
+  return <Icon status={status} />;
 };
 
 export default VerificationStatus;

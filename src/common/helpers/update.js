@@ -5,7 +5,7 @@ import { set as setMobXAttrs } from 'mobx';
 import { loader } from '@flumens';
 import CONFIG from 'common/config';
 import appModel from 'models/app';
-import savedSamples from 'models/savedSamples';
+import samples from 'models/collections/samples';
 import userModel from 'models/user';
 
 const MIN_UPDATE_TIME = 5000; // show updating dialog for minimum seconds
@@ -60,13 +60,13 @@ function versionCompare(left, right) {
   return 0;
 }
 
-export function updateSamples(samples, callback) {
-  samples.each(sample => {
-    const { group } = sample.attrs;
+export function updateSamples(samplesList, callback) {
+  samplesList.each(sample => {
+    const { group } = sample.data;
     if (group) {
       console.log('Update: moving a sample group to activity');
       // eslint-disable-next-line no-param-reassign
-      sample.attrs.activity = group;
+      sample.data.activity = group;
       sample.unset('group');
       sample.save();
     }
@@ -81,10 +81,10 @@ const API = {
    */
   run(callback, silent = false) {
     appModel.ready.then(() => {
-      let currentVersion = appModel.attrs.appVersion;
+      let currentVersion = appModel.data.appVersion;
 
       const newVersion = CONFIG.version;
-      let currentBuild = appModel.attrs.appBuild;
+      let currentBuild = appModel.data.appBuild;
       const newBuild = CONFIG.build;
 
       // part of 4.0.0 update START
@@ -101,12 +101,12 @@ const API = {
 
       // when Beta testing we set training mode
       if (currentVersion !== newVersion || currentBuild !== newBuild) {
-        appModel.attrs.useTraining = CONFIG.training;
+        appModel.data.useTraining = CONFIG.training;
       }
 
       let savePromise = Promise.resolve();
       if (currentBuild !== newBuild) {
-        appModel.attrs.appBuild = newBuild;
+        appModel.data.appBuild = newBuild;
         savePromise = appModel.save();
       }
 
@@ -114,7 +114,7 @@ const API = {
         if (currentVersion !== newVersion) {
           // TODO: check for backward downgrade
           // set new app version
-          appModel.attrs.appVersion = newVersion;
+          appModel.data.appVersion = newVersion;
           appModel.save().then(() => {
             // first install
             if (!currentVersion) {
@@ -151,16 +151,14 @@ const API = {
         callback();
       }
 
-      if (savedSamples.fetching) {
+      if (samples.fetching) {
         console.log('Update: waiting for samples collection to be ready');
-        savedSamples.once('fetching:done', () =>
-          updateSamples(savedSamples, onFinish)
-        );
-        savedSamples.once('fetching:error', callback);
+        samples.once('fetching:done', () => updateSamples(samples, onFinish));
+        samples.once('fetching:error', callback);
         return;
       }
 
-      updateSamples(savedSamples, onFinish);
+      updateSamples(samples, onFinish);
     },
 
     '4.0.0': callback => {
@@ -181,7 +179,7 @@ const API = {
         const old = JSON.parse(oldStr);
         if (old && typeof old === 'object') {
           console.log('Update: updating userModel.');
-          setMobXAttrs(userModel.attrs, old);
+          setMobXAttrs(userModel.data, old);
           localStorage.removeItem('irecord-app-user');
           userModel.save().then(resolve);
           return;
@@ -194,7 +192,7 @@ const API = {
         const old = JSON.parse(oldStr);
         if (old && typeof old === 'object') {
           console.log('Update: updating appModel.');
-          setMobXAttrs(appModel.attrs, old);
+          setMobXAttrs(appModel.data, old);
           localStorage.removeItem('irecord-app-app');
           appModel.save().then(resolve);
           return;

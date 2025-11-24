@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IonSearchbar, useIonViewDidEnter } from '@ionic/react';
 import { Taxon } from 'models/occurrence';
-import searchSpecies, { Options } from 'helpers/taxonSearch';
+import searchSpecies, { Options, SearchResults } from 'helpers/taxonSearch';
 import Suggestions from './components/Suggestions';
 
 export { default as TaxonSearchFilters } from './components/TaxonSearchFilters';
@@ -12,7 +12,7 @@ const MIN_SEARCH_LENGTH = 2;
 type Props = {
   onSpeciesSelected: any;
   recordedTaxa?: any[];
-  informalGroups?: number[];
+  selectedFilters?: number[];
   namesFilter?: Options['namesFilter'];
   resetOnSelect?: boolean;
   showEditButton?: boolean;
@@ -23,7 +23,7 @@ type Props = {
 const TaxonSearch = ({
   onSpeciesSelected,
   recordedTaxa,
-  informalGroups,
+  selectedFilters: informalGroups,
   namesFilter,
   resetOnSelect,
   showEditButton,
@@ -32,14 +32,14 @@ const TaxonSearch = ({
 }: Props) => {
   const { t } = useTranslation();
 
-  const inputEl = useRef<any>();
+  const inputEl = useRef<any>(null);
 
   const [searchResults, setSearchResults] = useState<Taxon[]>();
   const [searchPhrase, setSearchPhrase] = useState('');
 
-  const annotateRecordedTaxa = (newSearchResults: any) =>
-    newSearchResults.map((result: any) =>
-      recordedTaxa?.includes(result.warehouse_id)
+  const annotateRecordedTaxa = (newSearchResults: SearchResults) =>
+    newSearchResults.map((result: Taxon) =>
+      recordedTaxa?.includes(result.warehouseId)
         ? { ...result, ...{ isRecorded: true } }
         : result
     );

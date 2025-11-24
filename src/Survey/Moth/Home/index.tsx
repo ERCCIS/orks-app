@@ -1,22 +1,43 @@
 import { useContext } from 'react';
 import { observer } from 'mobx-react';
-import { Page, useToast, Header } from '@flumens';
-import { NavContext } from '@ionic/react';
+import { Capacitor } from '@capacitor/core';
+import {
+  Page,
+  useToast,
+  Header,
+  captureImage,
+  device,
+  useSample,
+  useRemoteSample,
+} from '@flumens';
+import { NavContext, isPlatform } from '@ionic/react';
+import config from 'common/config';
+import appModel from 'common/models/app';
+import Media from 'common/models/media';
+import Occurrence from 'common/models/occurrence';
 import Sample, { useValidateCheck } from 'models/sample';
-import { useUserStatusCheck } from 'models/user';
+import userModel, { useUserStatusCheck } from 'models/user';
 import SurveyHeaderButton from 'Survey/common/Components/SurveyHeaderButton';
 import TrainingBand from 'Survey/common/Components/TrainingBand';
 import Main from './Main';
 
-type Props = {
-  sample: Sample;
-};
+const shouldAutoID = () =>
+  appModel.data.useSpeciesImageClassifier &&
+  device.isOnline &&
+  userModel.isLoggedIn() &&
+  userModel.data.verified;
 
-const MothHome = ({ sample }: Props) => {
+const MothHome = () => {
   const toast = useToast();
   const { navigate } = useContext(NavContext);
+
+  let { sample } = useSample<Sample>();
+  sample = useRemoteSample(sample, () => userModel.isLoggedIn(), Sample);
+
   const checkSampleStatus = useValidateCheck(sample);
   const checkUserStatus = useUserStatusCheck();
+
+  if (!sample) return null;
 
   const survey = sample.getSurvey();
 
@@ -53,18 +74,60 @@ const MothHome = ({ sample }: Props) => {
     await subSample.destroy();
   };
 
-  const { training } = sample.attrs;
+  async function onSpeciesImageAttach(shouldUseCamera: boolean) {
+    const images = await captureImage({
+      camera: shouldUseCamera,
+      multiple: !shouldUseCamera,
+    });
+
+    if (!images) return;
+
+    const imageArray = Array.isArray(images) ? images : [images];
+    const surveyConfig = sample!.getSurvey();
+
+    const occurrencesPromise = imageArray.map(async (img: any) => {
+      const imageModel: any = await Media.getImageModel(
+        isPlatform('hybrid') ? Capacitor.convertFileSrc(img) : img,
+        config.dataPath,
+        true
+      );
+
+      const occ = await surveyConfig.occ!.create!({
+        Occurrence,
+        images: [imageModel],
+      });
+
+      if (shouldAutoID()) {
+        const processError = (error: any) =>
+          !error.isHandled && console.error(error); // don't toast this to user
+        occ.identify().catch(processError);
+      }
+
+      return occ;
+    });
+
+    const occurrences = await Promise.all(occurrencesPromise);
+    sample!.occurrences.push(...occurrences);
+
+    sample!.save();
+  }
+
+  const { training } = sample.data;
   const subheader = !!training && <TrainingBand />;
 
   return (
     <Page id="survey-complex-moth-edit">
       <Header
-        title={`${survey.label} Survey`}
+        title={`${survey.label}`}
         rightSlot={finishButton}
         defaultHref="/home/surveys"
         subheader={subheader}
       />
-      <Main sample={sample} onDelete={onSubSampleDelete} />
+      <Main
+        sample={sample}
+        onDelete={onSubSampleDelete}
+        attachSpeciesImages={onSpeciesImageAttach}
+      />
     </Page>
   );
 };

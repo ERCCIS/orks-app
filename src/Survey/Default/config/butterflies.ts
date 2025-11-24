@@ -1,3 +1,4 @@
+import { object, string } from 'zod';
 import { groupsReverse as groups } from 'common/data/informalGroups';
 import genderIcon from 'common/images/gender.svg';
 import numberIcon from 'common/images/number.svg';
@@ -13,7 +14,6 @@ const sex = [
 ];
 
 const stage = [
-  { value: null, isDefault: true, label: 'Not Recorded' },
   { value: 'Adults', id: 3929 },
   { value: 'Larvae', id: 3931 },
   { value: 'Eggs', id: 3932 },
@@ -65,7 +65,7 @@ const survey: Partial<Survey> & { taxa: string } = {
           label: 'Abundance',
           icon: numberIcon,
           parse: (_, model: any) =>
-            model.attrs['number-ranges'] || model.attrs.number,
+            model.data['number-ranges'] || model.data.number,
           isLocked: (model: any) => {
             const value =
               survey.occ?.attrs?.number?.menuProps?.getLock?.(model);
@@ -76,7 +76,7 @@ const survey: Partial<Survey> & { taxa: string } = {
             );
           },
           getLock: (model: any) =>
-            model.attrs['number-ranges'] || model.attrs.number,
+            model.data['number-ranges'] || model.data.number,
           unsetLock: model => {
             appModel.unsetAttrLock(model, 'number', true);
             appModel.unsetAttrLock(model, 'number-ranges', true);
@@ -95,22 +95,22 @@ const survey: Partial<Survey> & { taxa: string } = {
           attrProps: [
             {
               set: (value, model) =>
-                Object.assign(model.attrs, {
+                Object.assign(model.data, {
                   number: value,
                   'number-ranges': undefined,
                 }),
-              get: model => model.attrs.number,
+              get: model => model.data.number,
               input: 'slider',
               info: 'How many individuals of this species did you see?',
               inputProps: { max: 500 },
             },
             {
               set: (value, model) =>
-                Object.assign(model.attrs, {
+                Object.assign(model.data, {
                   number: undefined,
                   'number-ranges': value,
                 }),
-              get: model => model.attrs['number-ranges'],
+              get: model => model.data['number-ranges'],
               onChange: () => window.history.back(),
               input: 'radio',
               inputProps: { options: numberOptions },
@@ -122,6 +122,12 @@ const survey: Partial<Survey> & { taxa: string } = {
 
       'number-ranges': { remote: { id: 203, values: numberOptions } },
     },
+
+    verify: (attrs: any) =>
+      object({
+        taxon: object({}, { required_error: 'Species is missing.' }).nullable(),
+        stage: string({ required_error: 'Stage is missing.' }).nullable(),
+      }).safeParse(attrs).error,
   },
 };
 

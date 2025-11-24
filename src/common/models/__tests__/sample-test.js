@@ -2,34 +2,32 @@ import i18n from 'i18next';
 import stringify from 'json-stable-stringify';
 import { initReactI18next } from 'react-i18next';
 import sinon from 'sinon';
-import { device, dateFormat } from '@flumens';
+import { device } from '@flumens';
 import config from 'common/config';
 import appModel from 'models/app';
 import Occurrence from 'models/occurrence';
 import Sample from 'models/sample';
 import userModel from 'models/user';
 import defaultSurvey, { taxonGroupSurveys } from 'Survey/Default/config';
-import listSurvey from 'Survey/List/config';
 import plantsSurvey from 'Survey/Plant/config';
 import { coreAttributes, systemAttrs } from 'Survey/common/config';
 
 i18n.use(initReactI18next).init({ lng: 'en' });
 
-const validTaxon = { warehouse_id: 1, group: 1 };
+const validTaxon = { warehouseId: 1, group: 1 };
 
 const getDefaultSample = taxon =>
   defaultSurvey.create({
     Sample,
     Occurrence,
     taxon: taxon || validTaxon,
-    skipGPS: true,
   });
 
 describe('Sample', () => {
   let sampleRemoteCreateStub;
   beforeEach(() => {
     sampleRemoteCreateStub = sinon
-      .stub(Sample.prototype, '_createRemote')
+      .stub(Sample.prototype, 'saveRemote')
       .resolves({ data: {} });
   });
 
@@ -37,25 +35,16 @@ describe('Sample', () => {
     sampleRemoteCreateStub.restore();
   });
 
-  it('should have current date by default', () => {
-    const sample = new Sample({});
-    const { date } = sample.attrs;
-
-    expect(dateFormat.format(new Date(date))).toBe(
-      dateFormat.format(new Date(new Date()))
-    );
-  });
-
   it('should set training mode', async () => {
-    appModel.attrs.useTraining = false;
+    appModel.data.useTraining = false;
 
     let sample = await getDefaultSample();
-    expect(sample.attrs.training).toBe(false);
+    expect(sample.data.training).toBe(false);
 
-    appModel.attrs.useTraining = true;
+    appModel.data.useTraining = true;
 
     sample = await getDefaultSample();
-    expect(sample.attrs.training).toBe(true);
+    expect(sample.data.training).toBe(true);
   });
 
   describe('upload', () => {
@@ -76,12 +65,10 @@ describe('Sample', () => {
   describe('validateRemote', () => {
     it('should return invalids if incomplete', async () => {
       const sample = await getDefaultSample();
-      delete sample.attrs.location;
+      delete sample.data.location;
       const invalids = sample.validateRemote();
 
-      expect(invalids.attributes.errors[0]).toBe(
-        'Please enter location and its name.'
-      );
+      expect(invalids.attributes.errors[0]).toBe('Location is missing.');
     });
   });
 
@@ -92,16 +79,16 @@ describe('Sample', () => {
       const sample = await getDefaultSample(dragonfly);
       const [occ] = sample.occurrences;
 
-      sample.attrs.non_core_attr = 1;
-      occ.attrs.non_core_attr = 1;
+      sample.data.non_core_attr = 1;
+      occ.data.non_core_attr = 1;
 
       // When
       const bryophyte = { group: taxonGroupSurveys.bryophytes.taxaGroups[0] };
       sample.removeOldTaxonAttributes(occ, bryophyte);
 
       // Then
-      expect(sample.attrs.non_core_attr).toBeUndefined();
-      expect(occ.attrs.non_core_attr).toBeUndefined();
+      expect(sample.data.non_core_attr).toBeUndefined();
+      expect(occ.data.non_core_attr).toBeUndefined();
     });
 
     it('should retain all core attributes on survey change', async () => {
@@ -117,7 +104,7 @@ describe('Sample', () => {
       const sampleKeyValues = {};
       sampleKeys.forEach(key => {
         sampleKeyValues[key] = Math.random();
-        sample.attrs[key] = sampleKeyValues[key];
+        sample.data[key] = sampleKeyValues[key];
       });
       const occKeys = coreAttributes
         .filter(key => key.includes('occ:'))
@@ -125,7 +112,7 @@ describe('Sample', () => {
       const occKeyValues = {};
       occKeys.forEach(key => {
         occKeyValues[key] = Math.random();
-        sample.occurrences[0].attrs[key] = occKeyValues[key];
+        sample.occurrences[0].data[key] = occKeyValues[key];
       });
 
       // When
@@ -134,10 +121,10 @@ describe('Sample', () => {
 
       // Then
       sampleKeys.forEach(key => {
-        expect(sample.attrs[key]).toEqual(sampleKeyValues[key]);
+        expect(sample.data[key]).toEqual(sampleKeyValues[key]);
       });
       occKeys.forEach(key => {
-        expect(occ.attrs[key]).toEqual(occKeyValues[key]);
+        expect(occ.data[key]).toEqual(occKeyValues[key]);
       });
     });
   });
@@ -158,16 +145,16 @@ describe('Sample', () => {
     it('should remove expired activities on init', async done => {
       const sample = await getDefaultSample();
       const activity = getRandActivity();
-      userModel.attrs.activities = [activity];
+      userModel.data.activities = [activity];
       userModel.save();
-      sample.attrs.activity = activity;
+      sample.data.activity = activity;
       sample
         .save()
         .then(() => {
-          expect(sample.attrs.activity).toBeInstanceOf(Object);
+          expect(sample.data.activity).toBeInstanceOf(Object);
 
           // expire activities
-          userModel.attrs.activities = [];
+          userModel.data.activities = [];
           userModel.save();
 
           // get the same sample - fresh
@@ -176,7 +163,7 @@ describe('Sample', () => {
           //   .fetch()
           //   .then(() => {
           //     const newSample = newCollection.get(sample);
-          //     expect(newSample.attrs.activity).to.be.undefined;
+          //     expect(newSample.data.activity).to.be.undefined;
           //     done();
           //   })
           //   .catch(done);
@@ -189,15 +176,15 @@ describe('Sample', () => {
       const activity = getRandActivity();
 
       // OK
-      userModel.attrs.activities = [activity];
-      sample.attrs.activity = activity;
+      userModel.data.activities = [activity];
+      sample.data.activity = activity;
       userModel.trigger('sync:activities:end');
-      expect(sample.attrs.activity).toBeInstanceOf(Object);
+      expect(sample.data.activity).toBeInstanceOf(Object);
 
       // expire
-      userModel.attrs.activities = [];
+      userModel.data.activities = [];
       userModel.trigger('sync:activities:end');
-      expect(sample.attrs.activity).toBeUndefined();
+      expect(sample.data.activity).toBeUndefined();
     });
   });
 
@@ -210,34 +197,7 @@ describe('Sample', () => {
     });
   });
 
-  describe('getSubmission', () => {
-    it('should add survey id and webform to be backwards compatible', async () => {
-      // Given
-      const sample = await listSurvey.create({
-        Sample,
-        Occurrence,
-        taxon: validTaxon,
-        skipGPS: true,
-      });
-      const subSample = await listSurvey.smp.create({
-        Sample,
-        Occurrence,
-        taxon: validTaxon,
-        skipGPS: true,
-        surveySample: sample,
-      });
-      sample.samples.push(subSample);
-      delete sample.metadata.survey_id;
-      delete subSample.metadata.survey_id;
-
-      // When
-      const { values, samples } = sample.getSubmission();
-
-      // Then
-      expect(values.survey_id).toBe(listSurvey.id);
-      expect(samples[0].values.survey_id).toBe(listSurvey.id);
-    });
-
+  describe('toDTO', () => {
     it('should add a system attributes', async () => {
       // Given
       config.version = '1';
@@ -245,7 +205,7 @@ describe('Sample', () => {
       const sample = await getDefaultSample();
 
       // When
-      const { values } = sample.getSubmission();
+      const { values } = sample.toDTO();
 
       // Then
       expect(values[`smpAttr:${systemAttrs.device.remote.id}`]).toEqual(
@@ -257,28 +217,6 @@ describe('Sample', () => {
       expect(values[`smpAttr:${systemAttrs.app_version.remote.id}`]).toEqual(
         '1'
       );
-    });
-
-    it('should set subsamples missing location to parent survey location', async () => {
-      // Given
-      const sample = await listSurvey.create({ Sample, skipGPS: true });
-      sample.attrs.location = { name: 'location' };
-      const bird = { group: taxonGroupSurveys.birds.taxaGroups[0] };
-      const subSample = await listSurvey.smp.create({
-        Sample,
-        Occurrence,
-        taxon: bird,
-        surveySample: sample,
-        skipGPS: true,
-      });
-      delete subSample.attrs.location;
-      sample.samples.push(subSample);
-
-      // When
-      const { values, samples } = sample.getSubmission();
-
-      // Then
-      expect(values.location_name).toEqual(samples[0].values.location_name);
     });
   });
 
@@ -348,7 +286,7 @@ describe('Sample', () => {
       sample.setTaxon(newTaxon);
 
       // Then
-      expect(sample.occurrences[0].attrs.taxon).toEqual(newTaxon);
+      expect(sample.occurrences[0].data.taxon).toEqual(newTaxon);
     });
 
     it('should not allow setting taxon to samples with subSamples', async () => {

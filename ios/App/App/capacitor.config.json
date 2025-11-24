@@ -4,7 +4,7 @@
 	"webDir": "build",
 	"cordova": {},
 	"packageClassList": [
-		"CameraPreview",
+		"CapacitorSQLitePlugin",
 		"AppPlugin",
 		"CAPCameraPlugin",
 		"DevicePlugin",
@@ -13,9 +13,9 @@
 		"HapticsPlugin",
 		"KeyboardPlugin",
 		"CAPNetworkPlugin",
+		"SharePlugin",
 		"SplashScreenPlugin",
 		"StatusBarPlugin",
-		"SentryCapacitor",
-		"CDVPlugin"
+		"BlobWriter"
 	]
 }

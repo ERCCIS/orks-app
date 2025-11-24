@@ -1,25 +1,26 @@
-import * as Yup from 'yup';
+import { object, string } from 'zod';
 import gridAlertService from 'common/helpers/gridAlertService';
+import { MachineInvolvement } from 'common/models/occurrence';
 import appModel from 'models/app';
 import AppSample from 'models/sample';
 import userModel from 'models/user';
+import defaultSurvey from 'Survey/Default/config';
 import {
   coreAttributes,
   dateAttr,
   recorderAttr,
   commentAttr,
-  verifyLocationSchema,
   Survey,
   activityAttr,
   locationAttr,
   getSystemAttrs,
-  makeSubmissionBackwardsCompatible,
-  assignParentLocationIfMissing,
-  methodAttr,
+  groupIdAttr,
+  childGeolocationAttr,
+  locationAttrValidator,
 } from 'Survey/common/config';
 
 function appendLockedAttrs(sample: AppSample) {
-  const defaultSurveyLocks = appModel.attrs.attrLocks.complex || {};
+  const defaultSurveyLocks = appModel.data.attrLocks.complex || {};
   const locks = defaultSurveyLocks['default-default'] || {}; // bypassing the API here!
   const coreLocks = Object.keys(locks).reduce((agg, key) => {
     if (coreAttributes.includes(key)) {
@@ -44,31 +45,41 @@ function autoIncrementAbundance(sample: AppSample) {
 
   if (!isNumberLocked && !skipAutoIncrement) {
     // eslint-disable-next-line no-param-reassign
-    sample.occurrences[0].attrs.number = 1;
+    sample.occurrences[0].data.number = 1;
   }
 }
 
 const survey: Survey = {
   name: 'list',
-  label: 'Species List',
+  label: 'Species List Survey',
   id: 576,
 
   webForm: 'enter-app-record-list',
 
-  render: ['smp:location', 'smp:date', 'smp:recorder', 'smp:comment'],
+  render: [
+    'smp:location',
+    'smp:childGeolocation',
+    'smp:date',
+    'smp:recorder',
+    'smp:comment',
+  ],
 
   attrs: {
     location: locationAttr,
 
+    childGeolocation: childGeolocationAttr,
+
     recorder: recorderAttr,
+
     /** @deprecated */
     recorders: recorderAttr,
 
     comment: commentAttr,
 
+    /** @deprecated */
     activity: activityAttr,
 
-    method: methodAttr,
+    groupId: groupIdAttr,
 
     date: {
       ...dateAttr,
@@ -79,11 +90,11 @@ const survey: Survey = {
 
           set: (value: string, sample: AppSample) => {
             // eslint-disable-next-line no-param-reassign
-            sample.attrs.date = value;
+            sample.data.date = value;
 
             const setDate = (smp: AppSample) => {
               // eslint-disable-next-line no-param-reassign
-              smp.attrs.date = value;
+              smp.data.date = value;
             };
             sample.samples.forEach(setDate);
             sample.save();
@@ -94,65 +105,64 @@ const survey: Survey = {
   },
 
   smp: {
-    async create({ Sample, Occurrence, taxon, surveySample, skipGPS = false }) {
-      const occurrence = new Occurrence();
+    async create({ Sample, Occurrence, taxon, images, surveySample }) {
+      const occurrence = new Occurrence({
+        data: {
+          machineInvolvement: MachineInvolvement.NONE,
+        },
+      });
+      if (images) occurrence.media.push(...images);
 
-      const { activity } = surveySample.attrs;
+      const { groupId } = surveySample.data;
 
       const sample = new Sample({
-        isSubSample: true,
-
+        // only top samples should have the store, otherwise sync() will save sub-samples on attr change.
+        skipStore: true,
         metadata: {
-          survey_id: survey.id,
-          survey: 'default', // not list since it looks for taxa specific attrs
+          forceSurveyId: defaultSurvey.id, // not list since it looks for taxa specific attrs
         },
-        attrs: {
-          date: surveySample.attrs.date,
+        data: {
+          surveyId: survey.id,
+          inputForm: survey.webForm,
+          enteredSrefSystem: 4326,
           location: {},
-          activity,
+          groupId,
         },
       });
 
       sample.occurrences.push(occurrence);
 
-      sample.setTaxon(taxon);
+      if (taxon) sample.setTaxon(taxon);
 
       appendLockedAttrs(sample);
       autoIncrementAbundance(sample);
 
-      const ignoreErrors = () => {};
-      if (!skipGPS && appModel.attrs.geolocateSurveyEntries)
-        sample.startGPS().catch(ignoreErrors);
+      if (surveySample.data.childGeolocation) {
+        const ignoreError = () => {};
+        sample.startGPS().catch(ignoreError);
+      }
 
       return sample;
-    },
-
-    modifySubmission(submission, sample) {
-      assignParentLocationIfMissing(submission, sample);
-
-      makeSubmissionBackwardsCompatible(submission, survey);
-
-      return submission;
     },
 
     // occ config is taxa specific
   },
 
-  verify(attrs) {
-    try {
-      Yup.object()
-        .shape({
-          location: verifyLocationSchema,
-          // TODO: re-enable in future versions after everyone uploads
-          // recorder: Yup.string().nullable().required('Recorder field is missing.'),
-        })
-        .validateSync(attrs, { abortEarly: false });
-    } catch (attrError) {
-      return attrError;
-    }
-
-    return null;
-  },
+  verify: (attrs: any) =>
+    object({
+      location: locationAttrValidator({
+        name: string({ required_error: 'Location name is missing' }).min(
+          1,
+          'Location name is missing'
+        ),
+      }),
+      date: string({ required_error: 'Date is missing.' }).nullable(),
+      recorder: string({
+        required_error: 'Recorder field is missing.',
+      })
+        .min(1, 'Recorder field is missing.')
+        .nullable(),
+    }).safeParse(attrs).error,
 
   create({ Sample, alert }) {
     // add currently logged in user as one of the recorders
@@ -161,21 +171,21 @@ const survey: Survey = {
       recorder = userModel.getPrettyName();
     }
 
-    const activity = appModel.getAttrLock('smp', 'activity');
+    const groupId = appModel.getAttrLock('smp', 'groupId');
 
     const sample = new Sample({
-      metadata: {
-        survey_id: survey.id,
-        survey: survey.name,
-      },
-      attrs: {
+      data: {
+        surveyId: survey.id,
+        inputForm: survey.webForm,
+        date: new Date().toISOString(),
+        enteredSrefSystem: 4326,
         location: {},
         recorder,
-        activity,
+        groupId,
       },
     });
 
-    const { useGridNotifications } = appModel.attrs;
+    const { useGridNotifications } = appModel.data;
     if (useGridNotifications) gridAlertService.start(sample.cid, alert);
 
     return Promise.resolve(sample);
@@ -183,8 +193,6 @@ const survey: Survey = {
 
   modifySubmission(submission) {
     Object.assign(submission.values, getSystemAttrs());
-
-    makeSubmissionBackwardsCompatible(submission, survey);
 
     return submission;
   },

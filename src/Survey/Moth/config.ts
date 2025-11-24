@@ -1,11 +1,11 @@
-import * as Yup from 'yup';
+import { object, string } from 'zod';
 import { groupsReverse as groups } from 'common/data/informalGroups';
 import genderIcon from 'common/images/gender.svg';
 import numberIcon from 'common/images/number.svg';
+import { MachineInvolvement } from 'common/models/occurrence';
 import appModel from 'models/app';
 import userModel from 'models/user';
 import {
-  verifyLocationSchema,
   recorderAttr,
   Survey,
   locationAttr,
@@ -15,7 +15,7 @@ import {
   commentAttr,
   identifiersAttr,
   mothStageAttr,
-  makeSubmissionBackwardsCompatible,
+  locationAttrValidator,
 } from 'Survey/common/config';
 
 const sex = [
@@ -42,7 +42,7 @@ const methodOptions = [
 
 const survey: Survey = {
   name: 'moth',
-  label: 'Moth',
+  label: 'Moth List Survey',
   id: 90,
 
   taxaGroups: [groups.moth],
@@ -81,6 +81,7 @@ const survey: Survey = {
       'occ:sex',
       'occ:identifiers',
       'occ:comment',
+      'occ:sensitivityPrecision',
     ],
 
     attrs: {
@@ -116,47 +117,46 @@ const survey: Survey = {
       comment: commentAttr,
     },
 
-    verify(attrs: any) {
-      try {
-        Yup.object()
-          .shape({
-            taxon: Yup.object().nullable().required('Species is missing.'),
-            stage: Yup.string().nullable().required('Stage is missing.'),
-          })
-          .validateSync(attrs, { abortEarly: false });
-      } catch (attrError) {
-        return attrError;
-      }
+    verify: (attrs: any) =>
+      object({
+        taxon: object({}, { required_error: 'Species is missing.' }).nullable(),
+        stage: string({ required_error: 'Stage is missing.' }).nullable(),
+      }).safeParse(attrs).error,
 
-      return null;
-    },
+    create({ Occurrence, taxon, images }) {
+      const newOccurrence = new Occurrence({
+        data: {
+          machineInvolvement: MachineInvolvement.NONE,
+          taxon,
+          number: 1,
+        },
+      });
+      if (images) newOccurrence.media.push(...images);
 
-    create({ Occurrence, taxon }) {
-      const newOccurrene = new Occurrence({ attrs: { taxon, number: 1 } });
-
-      const locks = appModel.attrs.attrLocks.complex.moth || {};
-      appModel.appendAttrLocks(newOccurrene, locks);
-      return newOccurrene;
+      const locks = appModel.data.attrLocks.complex.moth || {};
+      appModel.appendAttrLocks(newOccurrence, locks);
+      return newOccurrence;
     },
   },
 
-  verify(attrs) {
-    try {
-      Yup.object()
-        .shape({
-          location: verifyLocationSchema,
-          date: Yup.string().nullable().required('Date is missing.'),
-          method: Yup.string().nullable().required('Method is missing.'),
-          // TODO: re-enable in future versions after everyone uploads
-          // recorder: Yup.string().nullable().required('Recorder field is missing.'),
-        })
-        .validateSync(attrs, { abortEarly: false });
-    } catch (attrError) {
-      return attrError;
-    }
-
-    return null;
-  },
+  verify: (attrs: any) =>
+    object({
+      location: locationAttrValidator({
+        name: string({ required_error: 'Location name is missing' }).min(
+          1,
+          'Location name is missing'
+        ),
+      }),
+      date: string({ required_error: 'Date is missing.' }).nullable(),
+      method: string({ required_error: 'Method is missing.' })
+        .min(1, 'Method is missing.')
+        .nullable(),
+      recorder: string({
+        required_error: 'Recorder field is missing.',
+      })
+        .min(1, 'Recorder field is missing.')
+        .nullable(),
+    }).safeParse(attrs).error,
 
   create({ Sample }) {
     // add currently logged in user as one of the recorders
@@ -166,13 +166,12 @@ const survey: Survey = {
     }
 
     const sample = new Sample({
-      metadata: {
-        survey_id: survey.id,
-        survey: survey.name,
-      },
-      attrs: {
+      data: {
+        surveyId: survey.id,
+        inputForm: survey.webForm,
+        date: undefined, // user should specify the trap time
+        enteredSrefSystem: 4326,
         location: {},
-        date: '', // user should specify the trap time
         recorder,
       },
     });
@@ -188,10 +187,8 @@ const survey: Survey = {
       ...getSystemAttrs(),
 
       // email must be added to submissions
-      'smpAttr:8': userModel.attrs.email,
+      'smpAttr:8': userModel.data.email,
     });
-
-    makeSubmissionBackwardsCompatible(submission, survey);
 
     return submission;
   },

@@ -14,10 +14,10 @@ interface Props {
 }
 
 const MenuTypeItem: FC<Props> = ({ occ, label = 'Type' }) => {
-  const isDisabled = occ.isDisabled();
+  const { isDisabled } = occ;
   const { url } = useRouteMatch();
 
-  const { type } = occ.attrs;
+  const { type } = occ.data;
 
   const empty = type === '' || type === undefined;
 

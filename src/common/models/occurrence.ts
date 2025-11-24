@@ -1,13 +1,14 @@
-import { IObservableArray } from 'mobx';
+import { IObservableArray, observable } from 'mobx';
 import {
   Occurrence as OccurrenceOriginal,
-  OccurrenceAttrs,
+  OccurrenceData,
   OccurrenceMetadata,
   validateRemoteModel,
 } from '@flumens';
+import identify, { Suggestion, Result } from 'common/services/indiciaAI';
 import { Taxon as SearchTaxon } from 'helpers/taxonSearch';
 import { Survey } from 'Survey/common/config';
-import Media, { ClassifierResult, ClassifierSuggestion } from './media';
+import Media from './media';
 import Sample from './sample';
 
 export enum MachineInvolvement {
@@ -37,37 +38,44 @@ export enum MachineInvolvement {
   MACHINE = 5,
 }
 
-type ClassifierAttrs = {
-  probability?: number;
-  machineInvolvement?: MachineInvolvement;
-} & Partial<ClassifierResult>;
+type Classifier = Partial<Result>;
 
-export type Taxon = SearchTaxon & ClassifierAttrs;
+export type Taxon = SearchTaxon;
 
-type Attrs = Omit<OccurrenceAttrs, 'taxon'> & {
+export type ClassifierSuggestion = Suggestion;
+const byWarehouseId =
+  (warehouseId: number) => (suggestion: ClassifierSuggestion) =>
+    suggestion.warehouseId === warehouseId;
+
+type Attrs = Omit<OccurrenceData, 'taxon'> & {
   taxon?: Taxon;
+  classifier?: Classifier;
+  machineInvolvement?: MachineInvolvement;
   'number-ranges'?: string;
   number?: any;
   abundance?: any;
   comment?: string;
   stage?: string;
   type?: string;
+  sex?: string;
 };
 
 type Metadata = OccurrenceMetadata & {
+  /**
+   * If the occurrence hasn't got any new or changed media that requires re-classification.
+   */
+  isClassified?: boolean;
+
   verification?: {
     verification_status: any;
     verification_substatus: any;
+    query?: string;
     verified_on: any;
     verifier?: { name: string };
   };
 };
 
 export default class Occurrence extends OccurrenceOriginal<Attrs, Metadata> {
-  static fromJSON(json: any) {
-    return super.fromJSON(json, Media);
-  }
-
   declare media: IObservableArray<Media>;
 
   declare parent?: Sample;
@@ -76,22 +84,39 @@ export default class Occurrence extends OccurrenceOriginal<Attrs, Metadata> {
 
   validateRemote = validateRemoteModel;
 
-  getPrettyName() {
-    const { taxon } = this.attrs;
-    if (!taxon) return '';
+  identification = observable({ identifying: false });
 
-    if (Number.isFinite(taxon.found_in_name))
-      return taxon.common_names[taxon.found_in_name as number];
-
-    return taxon.scientific_name;
+  constructor(options: any) {
+    super({ ...options, Media });
   }
 
-  getVerificationStatus() {
+  getPrettyName() {
+    const { taxon } = this.data;
+    if (!taxon) return '';
+
+    if (Number.isFinite(taxon.foundInName))
+      return taxon.commonNames[taxon.foundInName as number];
+
+    return (
+      taxon?.scientificName ||
+      // backwards compatible
+      (taxon as any)?.scientific_name
+    );
+  }
+
+  getVerificationStatus():
+    | 'verified'
+    | 'plausible'
+    | 'rejected'
+    | 'queried'
+    | '' {
     const status = this.metadata?.verification?.verification_status;
 
     if (!status) return ''; // pending
 
     const substatus = this.metadata?.verification?.verification_substatus;
+
+    if (this.metadata?.verification?.query === 'Q') return 'queried';
 
     if (status.match(/V/i)) return 'verified';
     if (status.match(/C/i) && substatus === '3') return 'plausible';
@@ -105,9 +130,7 @@ export default class Occurrence extends OccurrenceOriginal<Attrs, Metadata> {
       this.metadata?.verification?.verification_status === 'C' &&
       this.metadata?.verification?.verification_substatus !== '3';
 
-    return (
-      this.isUploaded() && this.metadata?.verification && !isRecordInReview
-    );
+    return this.isUploaded && this.metadata?.verification && !isRecordInReview;
   }
 
   getVerificationStatusMessage() {
@@ -134,32 +157,147 @@ export default class Occurrence extends OccurrenceOriginal<Attrs, Metadata> {
     return codes[statusWithSubstatus];
   }
 
-  isIdentifying = () => this.media.some(m => m.isIdentifying());
+  get isIdentifying() {
+    return this.identification.identifying;
+  }
 
-  getSuggestions() {
-    const getSuggestions = (m: Media) => m.getSuggestions();
+  async identify(classifier?: 'plant') {
+    const isPlant =
+      this.parent?.parent?.getSurvey().name === 'plant' ||
+      classifier === 'plant';
+    if (isPlant) return this.identifyPlant();
 
-    const byProbability = (
-      suggestion1: ClassifierSuggestion,
-      suggestion2: ClassifierSuggestion
-    ) => suggestion2.probability - suggestion1.probability;
+    return this.identifyOther();
+  }
 
-    const uniqueSpecies = new Set();
-    const removeDuplicates = (sp: Taxon) => {
-      const isDuplicate = uniqueSpecies.has(sp?.scientific_name);
+  private async identifyOther() {
+    try {
+      this.identification.identifying = true;
 
-      uniqueSpecies.add(sp?.scientific_name);
+      const classifierResults = await identify(this.media);
 
-      return !isDuplicate;
-    };
+      this.metadata.isClassified = true;
+      this.data.classifier = classifierResults;
 
-    return this.media
-      .flatMap(getSuggestions)
-      .sort(byProbability)
-      .filter(removeDuplicates);
+      this.identification.identifying = false;
+    } catch (error) {
+      this.identification.identifying = false;
+      throw error;
+    }
+
+    this.save();
+  }
+
+  private async identifyPlant() {
+    try {
+      this.identification.identifying = true;
+
+      const classifierResults = await identify(this.media, 'plantnet');
+
+      this.metadata.isClassified = true;
+      this.data.classifier = classifierResults;
+
+      this.identification.identifying = false;
+    } catch (error) {
+      this.identification.identifying = false;
+      throw error;
+    }
+
+    this.save();
+  }
+
+  getSelectedTaxonProbability() {
+    if (!this.data.taxon || !this.data.classifier?.suggestions) return null;
+
+    const suggestion = this.data.classifier.suggestions.find(
+      byWarehouseId(this.data.taxon.warehouseId)
+    );
+
+    return suggestion?.probability || 0;
+  }
+
+  getTopSuggestionProbability() {
+    return this.data.classifier?.suggestions?.[0]?.probability || null;
   }
 
   setTaxon(newTaxon: Taxon) {
+    // has to go to sample because taxa-specific attributes can also be at the sample-level
     this.parent?.setTaxon(newTaxon, this.cid);
+  }
+
+  updateMachineInvolvement(newTaxon?: Taxon) {
+    const suggestions = this.data.classifier?.suggestions;
+    if (!newTaxon || !suggestions) {
+      delete this.data.classifier;
+      this.data.machineInvolvement = MachineInvolvement.NONE;
+      return;
+    }
+
+    const suggestionIndex = suggestions.findIndex(
+      byWarehouseId(newTaxon.warehouseId)
+    );
+    const userDidNotUseSuggestions = suggestionIndex < 0;
+    if (userDidNotUseSuggestions) {
+      this.data.machineInvolvement = MachineInvolvement.HUMAN;
+      return;
+    }
+
+    const isTopSuggestion = suggestionIndex === 0;
+    this.data.machineInvolvement = isTopSuggestion
+      ? MachineInvolvement.HUMAN_ACCEPTED_PREFERRED
+      : MachineInvolvement.HUMAN_ACCEPTED_LESS_PREFERRED;
+  }
+
+  getClassifierSubmission() {
+    const { taxon, classifier, machineInvolvement } = this.data;
+
+    const getMediaPath = (media: Media) => media.data.queued;
+    const mediaPaths = this.media.map(getMediaPath);
+
+    const getSuggestion = (
+      { probability, scientificName, warehouseId }: Suggestion,
+      index: number
+    ) => {
+      const topSpecies = index === 0;
+      const classifierChosen = topSpecies ? 't' : 'f';
+      const humanChosen = warehouseId === taxon?.warehouseId ? 't' : 'f';
+
+      return {
+        values: {
+          taxon_name_given: scientificName,
+          probability_given: probability,
+          taxa_taxon_list_id: warehouseId,
+          classifier_chosen: classifierChosen,
+          human_chosen: humanChosen,
+        },
+      };
+    };
+
+    const classifierSuggestions =
+      classifier?.suggestions?.map(getSuggestion) || [];
+
+    const hasSuggestions = classifierSuggestions.length;
+    const taxonChosenWithoutAI = machineInvolvement === MachineInvolvement.NONE;
+    if (!hasSuggestions || !mediaPaths.length || taxonChosenWithoutAI)
+      return {};
+
+    const { classifierId, classifierVersion } = classifier || {};
+    if (!classifierId || !classifierVersion) return {}; // backwards compatible
+
+    return {
+      classification_event: {
+        values: { created_by_id: null },
+        classification_results: [
+          {
+            values: {
+              classifier_id: classifierId,
+              classifier_version: classifierVersion,
+            },
+            classification_suggestions: classifierSuggestions,
+            metaFields: { mediaPaths },
+          },
+        ],
+      },
+    };
   }
 }

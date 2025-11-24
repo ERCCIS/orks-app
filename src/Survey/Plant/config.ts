@@ -1,39 +1,23 @@
-import {
-  peopleOutline,
-  businessOutline,
-  pencilOutline,
-  eyeOffOutline,
-} from 'ionicons/icons';
-import * as Yup from 'yup';
-import { checkGridType } from '@flumens';
+import { peopleOutline, businessOutline, pencilOutline } from 'ionicons/icons';
+import { object, array, string } from 'zod';
 import { groupsReverse as groups } from 'common/data/informalGroups';
 import VCs from 'common/data/vice_counties.data.json';
 import gridAlertService from 'common/helpers/gridAlertService';
 import numberIcon from 'common/images/number.svg';
-import progressIcon from 'common/images/progress-circles.svg';
 import appModel from 'models/app';
+import Occurrence, { MachineInvolvement } from 'models/occurrence';
 import userModel from 'models/user';
 import {
   dateAttr,
   commentAttr,
-  verifyLocationSchema,
   Survey,
   locationAttr,
   getSystemAttrs,
   taxonAttr,
-  makeSubmissionBackwardsCompatible,
-  assignParentLocationIfMissing,
+  childGeolocationAttr,
+  locationAttrValidator,
+  plantStageAttr,
 } from 'Survey/common/config';
-
-const stageOptions = [
-  { label: 'Not Recorded', value: null, isDefault: true },
-  { value: 'Flowering', id: 5331 },
-  { value: 'Fruiting', id: 5330 },
-  { value: 'Juvenile', id: 5328 },
-  { value: 'Mature', id: 5332 },
-  { value: 'Seedling', id: 5327 },
-  { value: 'Vegetative', id: 5329 },
-];
 
 const statusOptions = [
   { label: 'Not Recorded', value: null, isDefault: true },
@@ -49,7 +33,7 @@ const statusOptions = [
 
 const survey: Survey = {
   name: 'plant',
-  label: 'Plant',
+  label: 'Plant List Survey',
   id: 325,
   webForm: 'enter-vascular-plants',
 
@@ -66,6 +50,7 @@ const survey: Survey = {
 
   render: [
     'smp:location',
+    'smp:childGeolocation',
     'smp:vice-county',
     'smp:date',
     'smp:recorders',
@@ -87,6 +72,8 @@ const survey: Survey = {
         },
       },
     },
+
+    childGeolocation: childGeolocationAttr,
 
     recorders: {
       menuProps: { icon: peopleOutline, skipValueTranslation: true },
@@ -148,10 +135,10 @@ const survey: Survey = {
             const byName = ({ name }: any) => name === val;
             const VC = VCs.find(byName);
             // eslint-disable-next-line no-param-reassign
-            model.attrs['vice-county'] = VC;
+            model.data['vice-county'] = VC;
           },
 
-          get: (model: any) => model.attrs['vice-county']?.name,
+          get: (model: any) => model.data['vice-county']?.name,
           inputProps: {
             options: VCs.map((vc: any) => ({ value: vc.name })),
           },
@@ -212,7 +199,7 @@ const survey: Survey = {
                 const re = /^(\d+|[DAFOR]|LA|LF)$/;
                 if (!re.test(value)) return;
                 // eslint-disable-next-line no-param-reassign
-                model.attrs.abundance = value;
+                model.data.abundance = value;
               },
               inputProps: { options: statusOptions },
             },
@@ -236,17 +223,7 @@ const survey: Survey = {
           remote: { id: 507, values: statusOptions },
         },
 
-        stage: {
-          menuProps: { icon: progressIcon },
-          pageProps: {
-            attrProps: {
-              input: 'radio',
-              info: 'Please pick the life stage.',
-              inputProps: { options: stageOptions },
-            },
-          },
-          remote: { id: 466, values: stageOptions },
-        },
+        stage: plantStageAttr,
 
         identifiers: {
           menuProps: {
@@ -268,116 +245,82 @@ const survey: Survey = {
         },
 
         comment: commentAttr,
+      },
 
-        sensitivityPrecision: {
-          menuProps: {
-            label: 'Sensitive',
-            icon: eyeOffOutline,
-            type: 'toggle',
-            get: (model: any) => !!model.attrs.sensitivityPrecision,
-            set: (val: boolean, model: any) => {
-              // eslint-disable-next-line no-param-reassign
-              model.attrs.sensitivityPrecision = val ? 2000 : '';
-            },
-          },
-          // remote not needed as this is indicia.js metadata value
-        },
+      verify: (attrs: any) =>
+        object({
+          taxon: object(
+            {},
+            { required_error: 'Species is missing.' }
+          ).nullable(),
+        }).safeParse(attrs).error,
+
+      modifySubmission(submission: any, occ: Occurrence) {
+        return { ...submission, ...occ.getClassifierSubmission() };
       },
     },
 
-    verify(attrs) {
-      try {
-        Yup.object()
-          .shape({
-            location: Yup.object().shape({
-              latitude: Yup.number().required(),
-              longitude: Yup.number().required(),
-            }),
-          })
-          .validateSync(attrs, { abortEarly: false });
-      } catch (attrError) {
-        return attrError;
-      }
-
-      return null;
-    },
-
-    async create({ Sample, Occurrence, taxon, surveySample }) {
-      const { gridSquareUnit, geolocateSurveyEntries } = appModel.attrs;
+    async create({
+      Sample,
+      Occurrence: OccurrenceClass,
+      taxon,
+      images,
+      surveySample,
+    }) {
+      const { gridSquareUnit } = appModel.data;
 
       const sample = new Sample({
-        isSubSample: true,
+        // only top samples should have the store, otherwise sync() will save sub-samples on attr change.
+        skipStore: true,
 
-        metadata: {
-          survey_id: survey.id,
-          survey: survey.name,
-          gridSquareUnit,
-        },
-        attrs: {
-          location_type: 'british',
+        metadata: { gridSquareUnit },
+        data: {
+          surveyId: survey.id,
+          inputForm: survey.webForm,
+          enteredSrefSystem: 'OSGB',
           location: {},
-          date: surveySample.attrs.date,
         },
       });
 
-      const occurrence = new Occurrence({ attrs: { taxon } });
+      const occurrence = new OccurrenceClass({
+        data: {
+          machineInvolvement: MachineInvolvement.NONE,
+          taxon,
+        },
+      });
+      if (images) occurrence.media.push(...images);
+
       sample.occurrences.push(occurrence);
 
-      const locks = appModel.attrs.attrLocks.complex.plant || {};
+      const locks = appModel.data.attrLocks.complex.plant || {};
       appModel.appendAttrLocks(sample, locks);
 
-      // set sample location to survey's location which
-      // can be corrected by GPS or user later on
-      // TODO: listen for surveySample attribute changes
-      const isSurveyLocationSet = checkGridType(
-        surveySample.attrs.location,
-        surveySample.metadata.gridSquareUnit
-      );
-      if (isSurveyLocationSet) {
-        const surveyLocation = JSON.parse(
-          JSON.stringify(surveySample.attrs.location)
-        );
-        delete surveyLocation.name;
-
-        sample.attrs.location = surveyLocation;
-
-        if (geolocateSurveyEntries) {
-          const ignoreError = () => {};
-          sample.startGPS().catch(ignoreError);
-        }
+      if (surveySample.data.childGeolocation) {
+        const ignoreError = () => {};
+        sample.startGPS().catch(ignoreError);
       }
 
       return sample;
     },
-
-    modifySubmission(submission, sample) {
-      assignParentLocationIfMissing(submission, sample);
-
-      makeSubmissionBackwardsCompatible(submission, survey);
-
-      return submission;
-    },
   },
 
-  verify(attrs) {
-    try {
-      Yup.object()
-        .shape({
-          location: verifyLocationSchema,
-          recorders: Yup.array()
-            .of(Yup.string())
-            .min(1, 'Recorders field is missing.'),
-        })
-        .validateSync(attrs, { abortEarly: false });
-    } catch (attrError) {
-      return attrError;
-    }
-
-    return null;
-  },
+  verify: (attrs: any) =>
+    object({
+      location: locationAttrValidator({
+        name: string({ required_error: 'Location name is missing' }).min(
+          1,
+          'Location name is missing'
+        ),
+      }),
+      recorders: array(string(), {
+        required_error: 'Recorders field is missing.',
+      })
+        .min(1)
+        .nullable(),
+    }).safeParse(attrs).error,
 
   create({ Sample, alert }) {
-    const { gridSquareUnit, useGridNotifications } = appModel.attrs;
+    const { gridSquareUnit, useGridNotifications } = appModel.data;
 
     // add currently logged in user as one of the recorders
     const recorders = [];
@@ -387,14 +330,14 @@ const survey: Survey = {
 
     const sample = new Sample({
       metadata: {
-        survey_id: survey.id,
-        survey: survey.name,
         gridSquareUnit,
       },
-      attrs: {
-        location: {},
-        location_type: 'british',
-        sample_method_id: 7305,
+      data: {
+        surveyId: survey.id,
+        inputForm: survey.webForm,
+        date: new Date().toISOString(),
+        enteredSrefSystem: 'OSGB',
+        sampleMethodId: 7305,
         recorders,
       },
     });
@@ -406,8 +349,6 @@ const survey: Survey = {
 
   modifySubmission(submission: any) {
     Object.assign(submission.values, getSystemAttrs());
-
-    makeSubmissionBackwardsCompatible(submission, survey);
 
     return submission;
   },

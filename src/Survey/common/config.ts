@@ -2,55 +2,35 @@ import {
   calendarOutline,
   peopleOutline,
   clipboardOutline,
+  eyeOffOutline,
+  locationOutline,
 } from 'ionicons/icons';
-import * as Yup from 'yup';
+import { z } from 'zod';
 import { dateFormat, device, PageProps, RemoteConfig } from '@flumens';
 import config from 'common/config';
 import progressIcon from 'common/images/progress-circles.svg';
 import radarIcon from 'common/images/radar.svg';
+import groups from 'common/models/collections/groups';
 import Media from 'models/media';
 import Occurrence, { Taxon } from 'models/occurrence';
 import Sample from 'models/sample';
 import { Config as MenuProps } from 'Survey/common/Components/MenuAttr';
 
-const fixedLocationSchema = Yup.object().shape({
-  latitude: Yup.number().required(),
-  longitude: Yup.number().required(),
-  name: Yup.string().required(),
-});
-
-const validateLocation = (val: any) => {
-  try {
-    fixedLocationSchema.validateSync(val);
-    return true;
-  } catch (e) {
-    return false;
-  }
-};
-
-export const verifyLocationSchema = Yup.mixed().test(
-  'location',
-  'Please enter location and its name.',
-  validateLocation
-);
-
-const typeSchema = Yup.string().defined();
-
-const validateType = (val: any) => {
-  try {
-    typeSchema.validateSync(val);
-    return true;
-  } catch (e) {
-    return false;
-  }
-};
-
-export const verifyTypeSchema = Yup.mixed().test(
-  'type',
-  'Please enter the type of observation.',
-  validateType
-);
-
+export const locationAttrValidator = (obj: any = {}) =>
+  z
+    .object(
+      {
+        latitude: z.number().nullable().optional(),
+        longitude: z.number().nullable().optional(),
+      },
+      { required_error: 'Location is missing.' }
+    )
+    .extend(obj)
+    .refine(
+      (val: any) =>
+        Number.isFinite(val.latitude) && Number.isFinite(val.longitude),
+      'Location is missing.'
+    );
 
 // eslint-disable-next-line import/prefer-default-export
 export const dateAttr = {
@@ -78,10 +58,17 @@ export const commentAttr = {
     attrProps: {
       input: 'textarea',
       info: 'Please add any extra info about this record.',
+      inputProps: {
+        isMultiline: true,
+        className: 'h-36 [&>div>div>textarea]:h-36',
+      },
     },
   },
 };
 
+/**
+ * @deprecated
+ */
 export const activityAttr = {
   menuProps: {
     icon: peopleOutline,
@@ -117,6 +104,15 @@ export const methodAttr = {
   remote: { id: 1811, values: methodOptions },
 };
 
+export const groupIdAttr = {
+  menuProps: {
+    icon: peopleOutline,
+    label: 'Activity',
+    parse: (groupId: any) =>
+      groups.find((g: any) => g.id === groupId)?.data.title || groupId,
+  },
+};
+
 export const recorderAttr = {
   menuProps: { icon: peopleOutline, skipValueTranslation: true },
   pageProps: {
@@ -150,22 +146,41 @@ export const identifiersAttr = {
   remote: { id: 18 },
 };
 
+export const sensitivityPrecisionAttr = (defaultPrecision = 2000) => ({
+  menuProps: {
+    label: 'Sensitive',
+    icon: eyeOffOutline,
+    type: 'toggle',
+    get: (model: any) => !!model.data.sensitivityPrecision,
+    set: (val: boolean, model: any) => {
+      // eslint-disable-next-line no-param-reassign
+      model.data.sensitivityPrecision = val ? defaultPrecision : '';
+    },
+  },
+});
+
 export const coreAttributes = [
   'smp:location',
   'smp:locationName',
-  'smp:location_type',
+  'smp:enteredSrefSystem',
+  'smp:location_type', // backwards compatible
   'smp:date',
   'smp:recorder',
   'occ:comment',
-  'smp:activity',
-  'smp:method',
+  'occ:sensitivityPrecision',
+  'smp:groupId',
+  'smp:activity', // backwards compatible
 ];
 
 export const taxonAttr = {
   remote: {
     id: 'taxa_taxon_list_id',
-    values(taxon: any) {
-      return taxon.warehouse_id;
+    values(taxon: Taxon) {
+      return (
+        taxon.warehouseId ||
+        // backwards compatible
+        (taxon as any).warehouse_id
+      );
     },
   },
 };
@@ -200,43 +215,6 @@ export const getSystemAttrs = () => {
   };
 };
 
-export const makeSubmissionBackwardsCompatible = (
-  submission: any,
-  surveyConfig: Survey
-) => {
-  if (!submission.values.survey_id) {
-    submission.values.survey_id = surveyConfig.id; //eslint-disable-line
-  }
-
-  if (!submission.values.input_form) {
-    submission.values.input_form = surveyConfig.webForm; //eslint-disable-line
-  }
-};
-
-export const assignParentLocationIfMissing = (
-  submission: any,
-  sample: Sample
-) => {
-  if (!sample.parent) return;
-
-  const keys: any = (sample.parent.keys as any)();
-  const parentAttrs = sample.parent.attrs;
-  const location = submission.values[keys.location.id];
-  if (!location) {
-    const parentLocation = keys.location.values(
-      parentAttrs.location,
-      submission
-    );
-    // eslint-disable-next-line no-param-reassign
-    submission.values[keys.location.id] = parentLocation;
-
-    const locationType = keys.location_type.values[parentAttrs.location_type];
-
-    // eslint-disable-next-line no-param-reassign
-    submission.values[keys.location_type.id] = locationType;
-  }
-};
-
 export const locationAttr = {
   remote: {
     id: 'entered_sref',
@@ -266,6 +244,15 @@ export const locationAttr = {
   },
 };
 
+export const childGeolocationAttr = {
+  menuProps: {
+    label: 'Geolocate list entries',
+    icon: locationOutline,
+    type: 'toggle',
+  },
+  pageProps: { attrProps: { input: 'toggle' } },
+};
+
 const mothStages = [
   { value: 'Not recorded', id: 10647 },
   { value: 'Adult', id: 2189 },
@@ -290,6 +277,30 @@ export const mothStageAttr = {
   remote: { id: 130, values: mothStages },
 };
 
+const plantStageOptions = [
+  { label: 'Not Recorded', value: null, isDefault: true },
+  { value: 'Flowering', id: 5331 },
+  { value: 'Fruiting', id: 5330 },
+  { value: 'Juvenile', id: 5328 },
+  { value: 'Mature', id: 5332 },
+  { value: 'Seedling', id: 5327 },
+  { value: 'Vegetative', id: 5329 },
+  { value: 'Sporophyte', id: 23874 },
+  { value: 'Gametophyte', id: 23875 },
+];
+
+export const plantStageAttr = {
+  menuProps: { icon: progressIcon },
+  pageProps: {
+    attrProps: {
+      input: 'radio',
+      info: 'Please pick the life stage.',
+      inputProps: { options: plantStageOptions },
+    },
+  },
+  remote: { id: 466, values: plantStageOptions },
+};
+
 export type AttrConfig = {
   menuProps?: MenuProps;
   pageProps?: Omit<PageProps, 'attr' | 'model'>;
@@ -305,9 +316,9 @@ type OccurrenceConfig = {
   attrs: Attrs;
   create?: (props: {
     Occurrence: typeof Occurrence;
-    taxon: Taxon;
+    taxon?: Taxon;
     identifier?: string;
-    photo?: any;
+    images?: Media[];
   }) => Occurrence;
   verify?: (attrs: any) => any;
   modifySubmission?: (submission: any, model: any) => any;
@@ -323,9 +334,9 @@ export type SampleConfig = {
   create?: (props: {
     Sample: typeof Sample;
     Occurrence: typeof Occurrence;
-    taxon: Taxon;
+    taxon?: Taxon;
+    images?: Media[];
     surveySample: Sample;
-    skipGPS?: boolean;
   }) => Promise<Sample>;
   verify?: (attrs: any) => any;
   modifySubmission?: (submission: any, model: any) => any;
@@ -346,6 +357,7 @@ export interface Survey extends SampleConfig {
    * In-App survey code name.
    */
   name: string;
+  // name: 'plant' | 'list' | 'moth' | 'default';
   /**
    * Pretty survey name to show in the UI.
    */
@@ -354,6 +366,10 @@ export interface Survey extends SampleConfig {
    * Remote website survey edit page path.
    */
   webForm?: string;
+  /**
+   * Remote website survey view page path.
+   */
+  webViewForm?: string;
   /**
    * Which species group this config belongs to. Allows to link multiple taxon groups together under a common name.
    */
@@ -375,9 +391,8 @@ export interface Survey extends SampleConfig {
     Sample: typeof Sample;
     Occurrence: typeof Occurrence;
     taxon?: Taxon;
-    image?: Media | null;
+    images?: Media[] | null;
     skipLocation?: boolean;
-    skipGPS?: boolean;
     alert?: any;
   }) => Promise<Sample>;
 }

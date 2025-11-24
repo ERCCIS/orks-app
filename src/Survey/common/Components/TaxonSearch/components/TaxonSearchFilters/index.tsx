@@ -11,32 +11,31 @@ const Header = () => {
   const toggleModal = () => setShowModal(!showModal);
 
   const onSearchNamesFilterSelect = (filter: '' | 'scientific' | 'common') => {
-    if (filter === appModel.attrs.searchNamesOnly) {
+    if (filter === appModel.data.searchNamesOnly) {
       return;
     }
-    appModel.attrs.searchNamesOnly = filter;
+    appModel.data.searchNamesOnly = filter;
     appModel.save();
   };
 
   const isFiltering =
-    appModel.attrs.searchNamesOnly || appModel.attrs.taxonGroupFilters.length;
+    appModel.data.searchNamesOnly ||
+    appModel.data.taxonSearchGroupFilters.length;
 
   const filtersCount =
-    (appModel.attrs.searchNamesOnly ? 1 : 0) +
-    appModel.attrs.taxonGroupFilters.length;
+    (appModel.data.searchNamesOnly ? 1 : 0) +
+    appModel.data.taxonSearchGroupFilters.length;
 
-  const onSearchTaxaFilterSelect = (filters: string[]) => {
-    appModel.attrs.taxonGroupFilters = filters.map((s: string) =>
-      parseInt(s, 10)
-    );
+  const onSearchTaxaFilterSelect = (newFilters: number[][]) => {
+    appModel.data.taxonSearchGroupFilters = newFilters;
     appModel.save();
   };
 
   return (
     <>
       <FiltersModal
-        onSearchTaxaFilterSelect={onSearchTaxaFilterSelect}
-        onSearchNamesFilterSelect={onSearchNamesFilterSelect}
+        onTaxaFilterChange={onSearchTaxaFilterSelect}
+        onNameFilterChange={onSearchNamesFilterSelect}
         toggleModal={toggleModal}
         showModal={showModal}
       />

@@ -13,8 +13,8 @@ const Location = ({ sample }: Props) => {
   const isLocating = sample.isGPSRunning();
   const locationPrint = sample.printLocation();
 
-  const { location } = sample.attrs;
-  const locationName = location.name;
+  const { location } = sample.data;
+  const locationName = location?.name;
 
   const survey = sample.getSurvey();
   const locationLocked = appModel.isAttrLocked(sample, 'locationName');
@@ -37,6 +37,8 @@ const Location = ({ sample }: Props) => {
   }
 
   if (!locationName) {
+    if (sample.isDisabled) return null;
+
     return (
       <Badge color="warning" size="small">
         No location name
@@ -47,11 +49,13 @@ const Location = ({ sample }: Props) => {
   const locationPretty = sample.printLocation();
   return (
     <>
-      <span className={`location ${locationLocked ? 'locked' : ''}`}>
+      <span className={`text-sm ${locationLocked ? 'locked' : ''}`}>
         {locationName}
       </span>
 
-      {survey.name !== 'default' && <span>{` (${locationPretty})`}</span>}
+      {survey.name !== 'default' && (
+        <span className="text-sm">{` (${locationPretty})`}</span>
+      )}
     </>
   );
 };

@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { observer } from 'mobx-react';
-import { MapRef, ViewState } from 'react-map-gl';
+import { MapRef, ViewState } from 'react-map-gl/mapbox';
 import {
   isValidLocation,
   mapMetresToZoom,
   MapContainer,
   mapFlyToLocation,
   Location,
+  useCallbackMapRefresh,
 } from '@flumens';
+import { useIonViewWillEnter } from '@ionic/react';
 import config from 'common/config';
 import PastLocationsControl from './PastLocationsControl';
 
@@ -68,7 +70,7 @@ const MapboxContainer = ({
   const [mapRef, setMapRef] = useState<MapRef>();
   const flyToLocation = () => {
     mapFlyToLocation(
-      mapRef,
+      mapRef as any,
       isValidLocation(location) ? location : parentLocation || location // for location.geocoded
     );
   };
@@ -109,6 +111,8 @@ const MapboxContainer = ({
       paint={{ 'circle-color': '#00bd1a', 'circle-stroke-color': 'white' }}
     />
   ));
+
+  useCallbackMapRefresh(useIonViewWillEnter, mapRef);
 
   return (
     <MapContainer

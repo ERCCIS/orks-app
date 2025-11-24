@@ -7,20 +7,22 @@ import {
   createOutline,
   addOutline,
   trashOutline,
-  cameraOutline,
   lockClosedOutline,
   lockOpenOutline,
+  peopleOutline,
   logOutOutline,
 } from 'ionicons/icons';
 import { Trans as T } from 'react-i18next';
 import { Page, Collapse, Header, Main } from '@flumens';
 import { IonList, IonIcon, IonItem } from '@ionic/react';
-import CONFIG from 'common/config';
-// import imageRecognitionAgreeImg from './image_recognition_agree.jpg';
-// import imageRecognitionDisagreeImg from './image_recognition_disagree.jpg';
-// import suggestionsImg from './image_recognition_suggestions.jpg';
+import ai1Pic from './ai_1.png';
+import ai2Pic from './ai_2.png';
+import ai3Pic from './ai_3.png';
 import './styles.scss';
 import deleteRecordImage from './swipe_record.png';
+import verified1Pic from './verified_1.png';
+import verified2Pic from './verified_2.png';
+import verified3Pic from './verified_3.png';
 
 const Help = () => (
   <Page id="help-page">
@@ -30,70 +32,140 @@ const Help = () => (
         <h3 className="list-title">
           <T>Records</T>
         </h3>
+
         <div className="rounded-list">
           <Collapse title="How to make a new record">
-            <div>
-              <p>
-                <T>There are two ways to start a record</T>.
-              </p>
-              <br />
-              <p>
-                <h4 className="my-2 font-bold">
-                  <T>Taking a photo</T>
-                </h4>
-              </p>
-              <br />
-              <p>
-                <T>
-                  Press the camera button{' '}
-                  <IonIcon icon={cameraOutline} size="small" /> in the home page
-                  header. This will prompt you to select the photo source:
-                  camera or gallery. Once you have picked a photo, the app will
-                  create a new record without any species associated with it.
-                </T>
-              </p>
-              <br />
-              <p>
-                <h4 className="my-2 font-bold">
-                  <T>Selecting species</T>
-                </h4>
-              </p>
-              <br />
-              <p>
-                <T>
-                  Please press the plus{' '}
+            <div className="my-2">
+              <T>
+                <p>
+                  Start off by tapping the plus{' '}
                   <IonIcon
                     icon={addOutline}
-                    className="rounded-full bg-primary-600 text-white"
+                    className="-mb-1 rounded-full bg-primary-600 text-white"
                     size="small"
                   />{' '}
-                  button in the home page. This will bring you to the taxa
-                  search page. After selecting the species, open the record
-                  (either by opening it directly from the taxa search page using
-                  the edit button <span className="icon edit" /> beside the
-                  species name or through the home-list page) and fill in the
-                  details of the sighting, like location, date, number seen etc.
-                </T>
-              </p>
-              <br />
-              <p>
-                <T>
-                  When finished, press the Upload button in the record's page
-                  header.
-                </T>
-              </p>
+                  button on the home page. This gives you four options:
+                </p>
+                <h4 className="mb-2 mt-4 font-bold">
+                  Add a record without a photo
+                </h4>
+                <p>
+                  Tap here to add your record. You will first be asked to give
+                  the name of the species you are recording, and then you can
+                  add the other record information.
+                </p>
+                <h4 className="mb-2 mt-4 font-bold">
+                  Take a new photo of the species
+                </h4>
+                <p>
+                  Tap here to start a new record by adding a photo first, and
+                  then completing the species name and other details. The app
+                  provides image recognition that may be able to help suggest an
+                  identification for your species photo – once your photo has
+                  been added you can tap on it to see the suggested
+                  identifications. It is also possible to add extra photos of
+                  your species.
+                </p>
+                <h4 className="mb-2 mt-4 font-bold">
+                  Select multiple photos to add to a single record
+                </h4>
+                <p>
+                  Tap here to select multiple photos from your gallery and add
+                  them to a single record. In this case the image recognition
+                  will provide a single suggested identification based on all
+                  the photos – tap on any one photo to see the suggestions, or
+                  tap on the “Species missing” button. Once you have agreed an
+                  ID and added the other details you can save the record with
+                  all the photos attached.
+                </p>
+                <h4 className="mb-2 mt-4 font-bold">Show other surveys</h4>
+                <p>
+                  Tap here to see the other survey options in the app. These
+                  allow you to add a list of records from the same site on the
+                  same date. Currently there are three options:
+                </p>
+                <ul className="my-2 list-disc pl-4">
+                  <li>
+                    Plant List Survey (e.g. to record a list of species in a
+                    grid square)
+                  </li>
+                  <li>
+                    Moth List Survey (e.g. for recording moths at a moth trap)
+                  </li>
+                  <li>
+                    Species List Survey (e.g. for recording a range of different
+                    species on one date)
+                  </li>
+                </ul>
+
+                <p>
+                  Records in the list will be linked to the overall location for
+                  the survey. For the Plant List and Species List surveys you
+                  can choose to “Geolocate list entries”. If you switch that on,
+                  the app will add a precise GPS location to each individual
+                  record in your list. Be careful not to leave this switched on
+                  if you are adding records from a different location (e.g. if
+                  you leave your survey site and then want to add more records
+                  after you have arrive home).
+                </p>
+              </T>
             </div>
           </Collapse>
 
-          <Collapse title="Adding lists of records - surveying">
-            <div>
-              <p>
-                <T>
-                  You can record lists of species. Long-pressing the green plus
-                  button in the home page will show more advanced recording
-                  options.
-                </T>
-              </p>
+          <Collapse title="Image recognition">
+            <div className="my-2">
+              <T>
+                <p>
+                  If you have added a photo to your record, the app will offer
+                  suggestions about the identification (ID), using automatic
+                  image recognition.
+                </p>
+                <p>
+                  After uploading a photo, check the thumbnail to see if it
+                  shows a coloured circle indicating the probability of a
+                  suggested ID. This uses ‘traffic light’ colours to suggest how
+                  confident the app is about the suggested ID:
+                </p>
+                <ul className="my-2">
+                  <li>
+                    <div className="-mb-1 inline-block size-4 rounded-full bg-success" />{' '}
+                    = high confidence
+                  </li>
+                  <li>
+                    <div className="-mb-1 inline-block size-4 rounded-full bg-warning-400" />{' '}
+                    = medium confidence
+                  </li>
+                  <li>
+                    <div className="-mb-1 inline-block size-4 rounded-full bg-danger" />{' '}
+                    = low confidence
+                  </li>
+                </ul>
+
+                <p>
+                  If you have already suggested an ID, and the image recognition
+                  suggests a different ID, a small red warning circle will be
+                  displayed – open the thumbnail or edit the species name to see
+                  the alternative ID suggestion.
+                </p>
+                <p>
+                  Example of an ID that the image recognition agrees with, and
+                  has high confidence:
+                </p>
+                <img src={ai1Pic} alt="" className="mx-auto block" />
+                <p className="bg-success text-center text-white">
+                  Identification agreed, with high confidence
+                </p>
+                <img src={ai2Pic} alt="" className="mx-auto block" />
+                <p className="bg-danger text-center text-white">
+                  ! Alternative Identification suggested
+                </p>
+                <p>
+                  When you open up the thumbnail image you can tap on the
+                  “Suggestions” button to see the suggested ID, and you can then
+                  tap on “Select” to set the identification for your record.
+                </p>
+                <img src={ai3Pic} alt="" className="mx-auto block" />
+              </T>
             </div>
           </Collapse>
 
@@ -101,32 +173,43 @@ const Help = () => (
             <div>
               <p>
                 <T>
-                  For quicker searching of the taxa you can use different
-                  shortcuts.
-                  <br />
-                  <br />
-                  For <i>Puffinus baroli:</i>
-                  <br />
-                  <br />
-                  <i>puffinus ba</i>
-                  <br />
-                  <i>puffinus .oli</i>
-                  <br />
-                  <i>pubar</i> (2+3 characters)
-                  <br />
-                  <i>baroli</i>
+                  Type in a species name - English or scientific name, or a
+                  genus or family etc.
+                </T>
+              </p>
+              <p>
+                <T>
+                  To find a species from its scientific name you can use
+                  shortcuts, e.g. to find <i>Bellis perrenis</i> (Daisy) you can
+                  type:
+                </T>
+              </p>
+              <p>
+                <b>
+                  <i>bellis p</i>
+                </b>
+                <br />
+                <b>
+                  <i>bellis .ni</i>
+                </b>
+                <br />
+                <b>
+                  <i> beper </i>
+                </b>{' '}
+                <T>(2 letters of genus + 3 of species)</T>
+                <br />
+                <b>
+                  <i>perennis</i>
+                </b>
+              </p>
+              <p>
+                <T>
+                  Once you have added the name, you can add a photo and the app
+                  will suggest an identification based on the photo.
                 </T>
               </p>
             </div>
           </Collapse>
-
-          <Collapse title="Adding lists of records - surveying">
-            <T>
-              You can record lists of species. Long-pressing the green plus
-              button in the home page will show more advanced recording options.
-            </T>
-          </Collapse>
-
           <Collapse title="Sync. with ORKS">
             <div>
               <p>
@@ -222,6 +305,31 @@ const Help = () => (
               </p>
             </div>
           </Collapse>
+          <Collapse title="Respond to a queried record">
+            <div className="my-2">
+              <T>
+                <p>
+                  The records that you upload from the app may be checked by a
+                  verifier. If a verifier queries one of your app records, the
+                  next time you open the app you will see a message to let you
+                  know:
+                </p>
+                <img src={verified1Pic} alt="" className="mx-auto my-2 block" />
+                <p>
+                  Tap on “See Records” to see the records that have been queried
+                  – they will be shown with a question mark:
+                </p>
+                <img src={verified2Pic} alt="" className="mx-auto my-2 block" />
+              </T>
+              <p>
+                Tap on a queried record to get a link to that record via the
+                ORKS website. If you go to the website you will be able to
+                see what the query is, and to add a reply or edit your record if
+                required:
+              </p>
+              <img src={verified3Pic} alt="" className="mx-auto my-2 block" />
+            </div>
+          </Collapse>
         </div>
 
         <h3 className="list-title">
@@ -276,21 +384,22 @@ const Help = () => (
             </div>
           </Collapse>{' '}
           <Collapse title="Activities">
-            <div>
-              <p>
-                <T>
+            <div className="my-2">
+              <T>
+                <p>
                   To send records to a specific activity you can select it in
-                  the Activities <IonIcon icon={personOutline} size="small" />{' '}
-                  page.
-                </T>
-              </p>
-              <p className="mt-2">
-                <T>
-                  <b>Note:</b> only the activities that allow this mobile app
-                  records and only the ones that you have joined on the iRecord
-                  website will be available to select.
-                </T>
-              </p>
+                  the Activities <IonIcon icon={peopleOutline} size="small" />{' '}
+                  page. Activities you have already joined can be seen in “My
+                  Activities”. To join an Activity for the first time search for
+                  it in “All Activities”.
+                </p>
+                <p>
+                  Make sure you remember to change your Activity setting if you
+                  want to add a record that is not linked to an activity. To do
+                  this, set the My Activity page to “Not linked to any
+                  activity”.
+                </p>
+              </T>
             </div>
           </Collapse>
         </div>
@@ -316,7 +425,7 @@ const Help = () => (
               </p>
               <br />
               <p>
-                <span className="location-favourite icon icon-star " />{' '}
+                <span className="location-favourite icon icon-star" />{' '}
                 <T>
                   You can make your location stick to the top of the locations
                   list by clicking the Favourite toggle.
@@ -337,7 +446,7 @@ const Help = () => (
             <div className="pt-3">
               <T>
                 For more help please visit the iRecord{' '}
-                <a href={`${CONFIG.backend.url}/forum/36`}>forum</a> Or drop us
+                <a href="https://irecord.org.uk/forum/36">forum</a> Or drop us
                 an
                 <a href="mailto:orks%40cornwallwildlifetrust.gov.uk"> email</a>.
               </T>

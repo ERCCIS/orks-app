@@ -11,6 +11,7 @@ import {
   getRelativeDate,
 } from '@flumens';
 import { IonIcon, IonItem } from '@ionic/react';
+import { capitalize } from 'common/helpers/string';
 import Occurrence from 'models/occurrence';
 import Sample from 'models/sample';
 import { WithLock, LockConfig } from './Lock';
@@ -34,9 +35,6 @@ function parseValue(value: any, parse: any, model: Sample | Occurrence) {
 
   return value;
 }
-
-const capitalize = (s: string) =>
-  typeof s !== 'string' ? '' : s.charAt(0).toUpperCase() + s.slice(1);
 
 type Props = {
   attr: string;
@@ -75,9 +73,9 @@ const MenuAttr = ({ attr, model, onChange, itemProps, className }: Props) => {
   } = menuProps;
   const valueRaw = metadata
     ? (model.metadata as any)[attr]
-    : (model.attrs as any)[attr];
+    : (model.data as any)[attr];
   const value = parseValue(valueRaw, parse, model);
-  const isDisabled = model.isDisabled();
+  const { isDisabled } = model;
 
   const link = `${match.url}/${attr}`;
 
@@ -91,7 +89,7 @@ const MenuAttr = ({ attr, model, onChange, itemProps, className }: Props) => {
         set(checked, model);
       } else {
         // eslint-disable-next-line no-param-reassign
-        (model.attrs as any)[attr] = checked;
+        (model.data as any)[attr] = checked;
       }
 
       onChange && onChange(checked);
@@ -109,7 +107,7 @@ const MenuAttr = ({ attr, model, onChange, itemProps, className }: Props) => {
           label={label}
           prefix={<IonIcon src={icon as string} className="size-6" />}
           onChange={onAttrToggle}
-          disabled={isDisabled}
+          isDisabled={isDisabled}
           {...itemProps}
         />
       </IonItem>

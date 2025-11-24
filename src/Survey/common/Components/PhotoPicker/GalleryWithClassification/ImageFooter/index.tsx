@@ -1,50 +1,77 @@
 import { observer } from 'mobx-react';
-import { cropOutline } from 'ionicons/icons';
-import { Trans as T } from 'react-i18next';
-import { IonButton, IonIcon } from '@ionic/react';
+import { cropOutline, trashBinOutline } from 'ionicons/icons';
+import { IonIcon } from '@ionic/react';
+import { Button, Occurrence, usePhotoDeletePrompt } from 'common/flumens';
 import Media from 'models/media';
 import SpeciesSuggestions from './SpeciesSuggestions';
-import './styles.scss';
 
 interface Props {
   onCrop: any;
+  onDelete: any;
   image: Media;
-  identifyImage?: any;
+  identifySpecies?: any;
   onSpeciesSelect: any;
 }
 
 const ImageFooter = ({
   onCrop,
+  onDelete,
   image,
-  identifyImage,
+  identifySpecies,
   onSpeciesSelect,
 }: Props) => {
+  const showDeletePrompt = usePhotoDeletePrompt();
+
   const onCropWrap = () => onCrop(image);
 
-  const allowToEdit = !image.parent?.isDisabled() && !image.isIdentifying();
+  const onDeleteWrap = async () => {
+    const shouldDelete = await showDeletePrompt();
+    if (!shouldDelete) return;
+    onDelete(image);
+  };
 
-  const cropButton = (
-    <IonButton
-      className="crop-button"
-      onClick={onCropWrap}
-      fill="clear"
-      color="light"
-    >
-      <IonIcon icon={cropOutline} />
-      <T>Crop/Zoom</T>
-    </IonButton>
-  );
+  const occurrence = image.parent instanceof Occurrence ? image.parent : null;
+
+  const allowToEdit = !image.parent?.isDisabled && !occurrence?.isIdentifying;
 
   return (
-    <>
-      <SpeciesSuggestions
-        image={image}
-        identifyImage={identifyImage}
-        onSpeciesSelect={onSpeciesSelect}
-      />
+    <div className="mx-4 flex justify-between gap-2">
+      {occurrence && !occurrence.isDisabled && (
+        <SpeciesSuggestions
+          occurrence={occurrence}
+          identifySpecies={identifySpecies}
+          onSpeciesSelect={onSpeciesSelect}
+        />
+      )}
 
-      {allowToEdit && cropButton}
-    </>
+      {allowToEdit && (
+        <div className="flex gap-4">
+          <Button
+            className="shrink-0 bg-black/60 p-2 text-white data-[pressed=true]:bg-neutral-100/40"
+            onPress={onCropWrap}
+            fill="clear"
+            shape="round"
+          >
+            <IonIcon
+              icon={cropOutline}
+              className="size-8 [--ionicon-stroke-width:20px]"
+            />
+          </Button>
+
+          <Button
+            className="shrink-0 bg-black/60 p-2 text-white data-[pressed=true]:bg-neutral-100/40"
+            onPress={onDeleteWrap}
+            fill="clear"
+            shape="round"
+          >
+            <IonIcon
+              icon={trashBinOutline}
+              className="size-8 [--ionicon-stroke-width:20px]"
+            />
+          </Button>
+        </div>
+      )}
+    </div>
   );
 };
 
