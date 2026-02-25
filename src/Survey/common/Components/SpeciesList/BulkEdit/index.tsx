@@ -18,8 +18,8 @@ import EditModal from './EditModal';
 function useDeletePrompt() {
   const alert = useAlert();
 
-  const showDeleteOccurrenceDialog = async () => {
-    return new Promise<boolean>(resolve => {
+  const showDeleteOccurrenceDialog = async () =>
+    new Promise<boolean>(resolve => {
       alert({
         header: 'Delete',
         message: 'Are you sure you want to delete the selected entries?',
@@ -37,7 +37,6 @@ function useDeletePrompt() {
         ],
       });
     });
-  };
 
   return showDeleteOccurrenceDialog;
 }
@@ -200,7 +199,7 @@ const BulkEdit = ({ onBulkEdit, onEditChange, models, children }: Props) => {
   const onNewValueSave = (newValue?: any) => {
     if (newValue) onCancelBulkEdit();
     if (valueEditConfig?.attr)
-      onBulkEdit!(valueEditConfig!.attr, bulkEditItems, newValue);
+      onBulkEdit!(valueEditConfig.attr, bulkEditItems, newValue);
     setValueEditConfig(undefined);
   };
 

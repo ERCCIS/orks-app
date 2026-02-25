@@ -66,7 +66,7 @@ export default async function identify(
   const upload = (img: Media) => img.uploadFile();
   await Promise.all(images.map(upload));
 
-  const data = new URLSearchParams({ list: `${UKSI_LIST_ID}` });
+  const data = new URLSearchParams({ list: UKSI_LIST_ID });
   images.forEach((img: Media) => data.append('image[]', img.getRemoteURL()));
 
   const options: any = {

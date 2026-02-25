@@ -21,11 +21,11 @@ import Sample from 'models/sample';
 import MenuLocation from '..';
 import './styles.scss';
 
-export interface Props {
+export type Props = {
   sample: Sample;
   skipLocks?: boolean;
   label?: string;
-}
+};
 
 const Lock = ({ sample, skipLocks, label }: Props) => {
   const sliderRef = useRef<any>(null);

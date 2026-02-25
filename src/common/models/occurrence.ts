@@ -155,7 +155,7 @@ export default class Occurrence extends OccurrenceOriginal<Attrs, Metadata> {
   }
 
   getVerificationStatusMessage() {
-    const codes: { [keyof: string]: string } = {
+    const codes: Record<string, string> = {
       V: 'Accepted',
       V1: 'Accepted as correct',
       V2: 'Accepted as considered correct',

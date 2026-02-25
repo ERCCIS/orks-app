@@ -88,7 +88,7 @@ const EditModal = ({ config, onSave }: Props) => {
       <Main>
         <div className="my-2">
           {!!blockConfig && (
-            <Block block={blockConfig!} record={{}} onChange={setValue} />
+            <Block block={blockConfig} record={{}} onChange={setValue} />
           )}
         </div>
       </Main>

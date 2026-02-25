@@ -79,7 +79,7 @@ const FiltersModal = ({
 
       const subFilters = Object.keys(options).map((subFilterName: string) => ({
         label: capitalize(subFilterName),
-        value: JSON.stringify((options as any)[subFilterName]),
+        value: JSON.stringify(options[subFilterName]),
       }));
 
       // caching for easier lookups

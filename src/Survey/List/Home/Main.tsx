@@ -37,9 +37,10 @@ const HomeMain = ({
 
   const { isDisabled } = sample;
 
-  const renderArray = typeof surveyConfig.render === 'function' 
-    ? surveyConfig.render(sample) 
-    : surveyConfig.render;
+  const renderArray =
+    typeof surveyConfig.render === 'function'
+      ? surveyConfig.render(sample)
+      : surveyConfig.render;
 
   const attachSpeciesImagesWrap = async () => {
     const shouldUseCamera = await promptImageSource();
@@ -73,7 +74,7 @@ const HomeMain = ({
             </InfoMessage>
           )}
           {renderArray?.map((config: any) => (
-            <MenuDynamicAttr 
+            <MenuDynamicAttr
               key={config.id}
               model={sample}
               config={config}

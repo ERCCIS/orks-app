@@ -9,14 +9,14 @@ import StringHelp from 'helpers/string';
 import GridRefValue from './GridRefValue';
 import Lock from './Lock';
 
-interface Props {
+type Props = {
   sample: Sample;
   detailIcon?: any;
   className?: any;
   skipName?: boolean;
   isRequired?: boolean;
   label?: string;
-}
+};
 
 const MenuLocation = ({
   sample,

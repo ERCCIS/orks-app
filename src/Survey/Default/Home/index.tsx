@@ -20,7 +20,7 @@ const DefaultHome = () => {
 
   if (!sample) return null;
 
-  const _processSubmission = async () => {
+  const processSubmission = async () => {
     const isUserOK = await checkUserStatus();
     if (!isUserOK) return;
 
@@ -28,22 +28,20 @@ const DefaultHome = () => {
     if (!isValid) return;
 
     sample.upload().catch(toast.error);
-    navigate(`/home/surveys`, 'root');
+    navigate('/home/surveys', 'root');
   };
 
-  const _processDraft = async () => {
+  const processDraft = async () => {
     const isValid = checkSampleStatus();
     if (!isValid) return;
-
-    // eslint-disable-next-line no-param-reassign
     sample.metadata.saved = true;
     sample.save();
 
-    navigate(`/home/surveys`, 'root');
+    navigate('/home/surveys', 'root');
   };
 
   const onFinish = async () =>
-    !sample.metadata.saved ? _processDraft() : _processSubmission();
+    !sample.metadata.saved ? processDraft() : processSubmission();
 
   const finishButton = (
     <SurveyHeaderButton sample={sample} onClick={onFinish} />

@@ -5,13 +5,13 @@ import { Button, Occurrence, usePhotoDeletePrompt } from 'common/flumens';
 import Media from 'models/media';
 import SpeciesSuggestions from './SpeciesSuggestions';
 
-interface Props {
+type Props = {
   onCrop: any;
   onDelete: any;
   image: Media;
   identifySpecies?: any;
   onSpeciesSelect: any;
-}
+};
 
 const ImageFooter = ({
   onCrop,

@@ -210,7 +210,7 @@ const survey: Survey = {
   verify: (attrs: any) =>
     object({
       location: locationAttrValidator({
-        name: string({ required_error: 'Location name is missing' }).min(
+        name: string({ error: 'Location name is missing' }).min(
           1,
           'Location name is missing'
         ),
@@ -314,7 +314,7 @@ const survey: Survey = {
       if (!sample.metadata.taxa) return survey;
 
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      return _getFullTaxaGroupSurvey(sample.metadata.taxa);
+      return getFullTaxaGroupSurvey(sample.metadata.taxa);
     };
 
     const isSubSample = sample.parent;
@@ -337,7 +337,7 @@ export default survey;
  * Finds the matching species group survey.
  * @param taxa species group name e.g. 'birds'.
  */
-export function _getFullTaxaGroupSurvey(
+export function getFullTaxaGroupSurvey(
   taxa?: keyof typeof taxonGroupSurveys
 ): Survey {
   if (!taxa) return { ...survey };
@@ -355,7 +355,7 @@ export function _getFullTaxaGroupSurvey(
     return undefined;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { render, taxaGroups, ...defaultSurveyCopy } = survey;
   const mergedDefaultSurvey: Survey = mergeWith(
     {},

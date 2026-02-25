@@ -3,9 +3,9 @@ import { Button, InfoMessage } from '@flumens';
 import config from 'common/config';
 import Sample from 'models/sample';
 
-interface Props {
+type Props = {
   sample: Sample;
-}
+};
 
 const DisabledRecordMessage = ({ sample }: Props) => {
   const survey = sample.getSurvey();

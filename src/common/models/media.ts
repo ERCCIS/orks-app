@@ -3,16 +3,14 @@ import {
   Filesystem,
   Directory as FilesystemDirectory,
 } from '@capacitor/filesystem';
-import { Media as MediaOriginal, MediaData } from '@flumens';
+import { Media as MediaOriginal } from '@flumens';
 import { isPlatform } from '@ionic/react';
 import config from 'common/config';
 import Occurrence from 'models/occurrence';
 import Sample from 'models/sample';
 import userModel from 'models/user';
 
-type Attrs = MediaData;
-
-export default class Media extends MediaOriginal<Attrs> {
+export default class Media extends MediaOriginal {
   declare parent?: Sample | Occurrence;
 
   constructor(options: any) {
@@ -80,7 +78,6 @@ export default class Media extends MediaOriginal<Attrs> {
     return Capacitor.convertFileSrc(`${pathToFile}/${name}`);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   validateRemote() {
     return null;
   }

@@ -13,7 +13,7 @@ const url = `/survey/${survey.name}`;
 const { AttrPageFromRoute } = AttrPage;
 
 const routes = [
-  [`${url}`, StartNewSurvey.with(survey, NewSurveyTaxon)],
+  [url, StartNewSurvey.with(survey, NewSurveyTaxon)],
   [`${url}/:smpId`, Home],
   [`${url}/:smpId/:attr`, withSample(AttrPageFromRoute)],
   [`${url}/:smpId/location`, ModelLocation],

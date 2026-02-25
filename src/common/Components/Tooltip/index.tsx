@@ -12,13 +12,13 @@ type Props = {
 };
 
 const Tooltip = ({ children, className }: Props) => {
-  const [infoState, setShowInfo] = useState<any>({
+  const [infoState, setInfoState] = useState<any>({
     showInfo: false,
     event: undefined,
   });
 
-  const showInfo = (e: any) => setShowInfo({ showInfo: true, event: e });
-  const hideInfo = () => setShowInfo({ showInfo: false, event: undefined });
+  const showInfo = (e: any) => setInfoState({ showInfo: true, event: e });
+  const hideInfo = () => setInfoState({ showInfo: false, event: undefined });
 
   return (
     <Button

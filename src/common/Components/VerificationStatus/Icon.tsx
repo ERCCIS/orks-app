@@ -1,9 +1,9 @@
 import { checkmarkCircle, closeCircle, helpOutline } from 'ionicons/icons';
 import { IonIcon } from '@ionic/react';
 
-interface Props {
+type Props = {
   status: 'verified' | 'plausible' | 'rejected' | 'queried';
-}
+};
 
 const VerificationIcon = ({ status }: Props) => {
   let detailIcon;

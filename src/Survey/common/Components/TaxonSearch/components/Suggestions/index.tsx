@@ -55,6 +55,7 @@ function deDuplicateSuggestions(suggestions: any) {
       results.push({
         ...taxon,
         ...{
+          // eslint-disable-next-line @typescript-eslint/naming-convention
           _dedupedScientificName: taxon.scientificName,
         },
       });

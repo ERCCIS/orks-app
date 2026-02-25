@@ -1,3 +1,7 @@
+## 6.4.0
+
+- Updated libraries.
+
 ## 6.3.6
 
 - Removed species list options.

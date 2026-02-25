@@ -44,7 +44,7 @@ const Map = () => {
   const { t } = useTranslation();
   const [mapRef, setMapRef] = useState<MapRef>();
 
-  const [isFetchingRecords, setFetchingRecords] = useState<any>(null);
+  const [isFetchingRecords, setIsFetchingRecords] = useState<any>(null);
   const toast = useToast();
 
   const [totalSquares, setTotalSquares] = useState<number>(1);
@@ -89,7 +89,7 @@ const Map = () => {
 
     const shouldFetchRecords = zoomLevel >= 13;
     if (shouldFetchRecords) {
-      setFetchingRecords(true);
+      setIsFetchingRecords(true);
       const fetchedRecords = await fetchRecords({
         northWest,
         southEast,
@@ -100,13 +100,13 @@ const Map = () => {
       if (!fetchedRecords) return;
       setRecords(fetchedRecords);
       setSquares([]);
-      setFetchingRecords(false);
+      setIsFetchingRecords(false);
       return;
     }
 
     const squareSize = getSquareSize(zoomLevel);
 
-    setFetchingRecords(true);
+    setIsFetchingRecords(true);
     const fetchedSquares = await fetchSquares({
       northWest,
       southEast,
@@ -121,7 +121,7 @@ const Map = () => {
 
     setTotalSquares(getTotalSquares(fetchedSquares));
     setSquares(fetchedSquares);
-    setFetchingRecords(false);
+    setIsFetchingRecords(false);
   };
 
   const updateMapCentre = () => updateRecords();
@@ -178,7 +178,7 @@ const Map = () => {
 
     const [longitude, latitude] = square.key.split(' ').map(parseFloat);
 
-    const radius = square.size! / 2;
+    const radius = square.size / 2;
     const padding = 1.1; // extra padding between squares
     const metersToPixels =
       radius / padding / 0.075 / Math.cos((latitude * Math.PI) / 180);

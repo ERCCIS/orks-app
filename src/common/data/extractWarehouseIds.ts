@@ -9,8 +9,8 @@ import {
 
 function saveMapToFile(ids: any) {
   return new Promise((resolve, reject) => {
-    console.log(`Writing ./species_ids.data.json`);
-    fs.writeFile(`./species_ids.data.json`, JSON.stringify(ids), err => {
+    console.log('Writing ./species_ids.data.json');
+    fs.writeFile('./species_ids.data.json', JSON.stringify(ids), err => {
       if (err) {
         reject(err);
         return;

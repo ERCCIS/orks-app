@@ -184,6 +184,7 @@ const ModelLocationMap = ({
             placeholder="Site name eg nearby village"
             suggestions={appModel.data.locations || []}
             geocodingParams={{
+              // eslint-disable-next-line @typescript-eslint/naming-convention
               access_token: config.map.mapboxApiKey,
               types: 'locality,place,district,neighborhood,region,postcode',
               country: 'GB',

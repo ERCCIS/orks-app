@@ -88,8 +88,8 @@ const survey: Partial<Survey> & { taxa: string } = {
 
     verify: (attrs: any) =>
       object({
-        taxon: object({}, { required_error: 'Species is missing.' }).nullable(),
-        stage: string({ required_error: 'Stage is missing.' }).nullable(),
+        taxon: object({}, { error: 'Species is missing.' }).nullable(),
+        stage: string({ error: 'Stage is missing.' }).nullable(),
       }).safeParse(attrs).error,
   },
 };

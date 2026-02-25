@@ -45,7 +45,9 @@ const Lock = ({ model, attr, children }: Props) => {
 
   const isLocked = appModel.isAttrLocked(model, attr);
   const toggleLockWrap = async () => {
-    const isOpen = sliderRef.current.firstChild.style.transform;
+    const isOpen = sliderRef.current.classList.contains(
+      'item-sliding-active-slide'
+    );
     if (!isOpen) return;
 
     sliderRef.current.close(); // needs to be after the openness check
@@ -130,7 +132,7 @@ export const WithLock = observer(
   }: MenuAttrWithLockProps) => {
     const isLocked = appModel.isAttrLocked(model, attr);
 
-    // eslint-disable-next-line no-unused-expressions
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     (model.data as any)[attr]; // force rerender on val change
 
     const onChange = (newValue: any) => {

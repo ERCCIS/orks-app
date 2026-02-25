@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 import taxonCleaner from './clean';
 import {
   GENUS_ID_INDEX,
@@ -96,7 +95,7 @@ function getLastGenus(
   optimised: any[],
   taxa: any[],
   taxaNameSplitted: any[],
-  index?: number | undefined
+  index?: number
 ) {
   const lastEntry = index || optimised.length - 1;
   let lastGenus = optimised[lastEntry];
@@ -154,7 +153,7 @@ function addSpecies(optimised: any[], taxa: any[][], taxaNameSplitted: any[]) {
 function isGenusDuplicate(
   optimised: string | any[],
   taxa: any[],
-  index?: number | undefined
+  index?: number
 ) {
   const lastEntry = index || optimised.length - 1;
   if (lastEntry < 0) {

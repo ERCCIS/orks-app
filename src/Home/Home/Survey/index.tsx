@@ -131,7 +131,7 @@ const Survey = ({ sample, style, uploadIsPrimary }: Props) => {
     if (!isValid) return;
 
     sample.upload().catch(toast.error);
-    navigate(`/home/surveys`, 'root');
+    navigate('/home/surveys', 'root');
   };
 
   const getAvatar = () => {

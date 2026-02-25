@@ -275,10 +275,7 @@ const survey: Survey = {
 
       verify: (attrs: any) =>
         object({
-          taxon: object(
-            {},
-            { required_error: 'Species is missing.' }
-          ).nullable(),
+          taxon: object({}, { error: 'Species is missing.' }).nullable(),
         }).safeParse(attrs).error,
 
       modifySubmission(submission: any, occ: Occurrence) {
@@ -333,13 +330,13 @@ const survey: Survey = {
   verify: (attrs: any) =>
     object({
       location: locationAttrValidator({
-        name: string({ required_error: 'Location name is missing' }).min(
+        name: string({ error: 'Location name is missing' }).min(
           1,
           'Location name is missing'
         ),
       }),
       recorders: array(string(), {
-        required_error: 'Recorders field is missing.',
+        error: 'Recorders field is missing.',
       })
         .min(1)
         .nullable(),

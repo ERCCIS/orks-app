@@ -6,9 +6,7 @@ const config: CapacitorConfig = {
   appName: 'ORKS App',
   webDir: 'build',
   cordova: {},
-  android: {
-    adjustMarginsForEdgeToEdge: 'force',
-  },
+
 };
 
 export default config;

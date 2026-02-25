@@ -1,9 +1,9 @@
 import Occurrence from 'models/occurrence';
 import Icon from './Icon';
 
-interface Props {
+type Props = {
   occ: Occurrence;
-}
+};
 
 const VerificationStatus = ({ occ }: Props) => {
   if (!occ?.isUploaded) return null;

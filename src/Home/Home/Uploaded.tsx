@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
-import InfiniteLoader from 'react-window-infinite-loader';
+import { useInfiniteLoader } from 'react-window-infinite-loader';
 import { device, getRelativeDate, VirtualList, useToast } from '@flumens';
 import {
   IonItem,
@@ -13,7 +13,7 @@ import samplesCollection, { bySurveyDate } from 'models/collections/samples';
 import Sample from 'models/sample';
 import userModel from 'models/user';
 import InfoBackgroundMessage from 'Components/InfoBackgroundMessage';
-import { getSurveyConfigs } from 'Survey/common/surveyConfigs';
+import getSurveyConfigs from 'Survey/common/surveyConfigs';
 import Survey from './Survey';
 
 // https://stackoverflow.com/questions/47112393/getting-the-iphone-x-safe-area-using-javascript
@@ -148,7 +148,7 @@ const UploadedSurveys = ({ isOpen }: Props) => {
   const onScroll = ({ scrollOffset }: any) =>
     setReachedTopOfList(scrollOffset < 80);
 
-  const loadMoreItems = (from: number, to: number) => {
+  const loadMoreItems = async (from: number, to: number) => {
     if (cachedPages * PAGE_SIZE < to && !isLoading) {
       fetchSurveys(cachedPages * PAGE_SIZE);
     }
@@ -159,6 +159,12 @@ const UploadedSurveys = ({ isOpen }: Props) => {
     const sample = groupedSurveys[index];
     return !!sample;
   };
+
+  const onRowsRendered = useInfiniteLoader({
+    isRowLoaded: isItemLoaded,
+    rowCount: itemCount,
+    loadMoreRows: loadMoreItems,
+  });
 
   if (!isOpen) return null;
 
@@ -200,24 +206,15 @@ const UploadedSurveys = ({ isOpen }: Props) => {
       </IonRefresher>
 
       <IonList>
-        <InfiniteLoader
-          isItemLoaded={isItemLoaded}
-          itemCount={itemCount}
-          loadMoreItems={loadMoreItems}
-        >
-          {({ onItemsRendered, ref }: any) => (
-            <VirtualList
-              ref={ref}
-              onItemsRendered={onItemsRendered}
-              itemCount={itemCount}
-              itemSize={getItemSize}
-              Item={Item}
-              topPadding={LIST_PADDING}
-              bottomPadding={LIST_ITEM_HEIGHT / 2}
-              onScroll={onScroll}
-            />
-          )}
-        </InfiniteLoader>
+        <VirtualList
+          onRowsRendered={onRowsRendered}
+          rowCount={itemCount}
+          rowHeight={getItemSize}
+          Item={Item}
+          topPadding={LIST_PADDING}
+          bottomPadding={LIST_ITEM_HEIGHT / 2}
+          onScroll={onScroll}
+        />
       </IonList>
     </>
   );

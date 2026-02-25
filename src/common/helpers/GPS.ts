@@ -39,7 +39,7 @@ const API = {
 
     const onPosition = (position: Position | null, err: Error) => {
       if (err) {
-        callback && callback(err);
+        callback?.(err);
         return;
       }
 
@@ -58,9 +58,9 @@ const API = {
       };
 
       if (location.accuracy <= accuracyLimit) {
-        callback && callback(null, location);
+        callback?.(null, location);
       } else {
-        onUpdate && onUpdate(location);
+        onUpdate?.(location);
       }
     };
 

@@ -4,11 +4,11 @@ import CONFIG from 'common/config';
 import { matchAppSurveys } from 'common/services/ES';
 import userModel from 'models/user';
 
-export interface Square {
+export type Square = {
   key: string;
   doc_count: number;
   size: number; // in meters
-}
+};
 
 type LatLng = { lat: number; lng: number };
 
@@ -171,6 +171,7 @@ const getSquaresQuery = ({
 
   const squareSizeInKm = squareSize / 1000;
 
+  /* eslint-disable @typescript-eslint/naming-convention */
   return JSON.stringify({
     size: 0,
     query: {
@@ -201,6 +202,7 @@ const getSquaresQuery = ({
     },
     sort: [{ 'event.date_start': 'desc' }],
   });
+  /* eslint-enable @typescript-eslint/naming-convention */
 };
 
 export async function fetchSquares(

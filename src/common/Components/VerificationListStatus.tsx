@@ -2,9 +2,9 @@ import { IonLabel } from '@ionic/react';
 import Occurrence from 'models/occurrence';
 import Sample from 'models/sample';
 
-interface Props {
+type Props = {
   sample: Sample;
-}
+};
 
 const VerificationListStatus = ({ sample }: Props) => {
   let rejected = 0;

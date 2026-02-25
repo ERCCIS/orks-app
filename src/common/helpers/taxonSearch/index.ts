@@ -52,7 +52,7 @@ const loadData = async () => {
 const MAX = 20;
 
 /* Species dictionary load. */
-let _init: any;
+let initPromise: any;
 
 export type Options = {
   maxResults?: number;
@@ -91,8 +91,8 @@ export default async function search(
   options: Options = {}
 ): Promise<SearchResults> {
   if (!species || !commonNamePointers) {
-    if (!_init) _init = loadData();
-    await _init;
+    if (!initPromise) initPromise = loadData();
+    await initPromise;
   }
 
   let results: any = [];

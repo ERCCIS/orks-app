@@ -53,8 +53,6 @@ const service = {
     if (otherClientLocating) return;
 
     console.log('GridAlertService: start.');
-
-    // eslint-disable-next-line
     const options = {
       accuracyLimit: 100, // meters
 
@@ -92,7 +90,7 @@ const service = {
       clientIds.splice(0, clientIds.length);
     } else {
       const clientIndex = clientIds?.indexOf(clientId);
-      if (clientIndex > -1) clientIds.splice(clientIndex!, 1);
+      if (clientIndex > -1) clientIds.splice(clientIndex, 1);
     }
 
     if (clientIds.length) return;

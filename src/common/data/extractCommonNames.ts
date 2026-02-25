@@ -1,7 +1,6 @@
 /** ****************************************************************************
  * Extract common names as pointers in an array.
  **************************************************************************** */
-// eslint-disable-next-line import/extensions
 import {
   GENUS_SPECIES_INDEX,
   GENUS_NAMES_INDEX,
@@ -16,9 +15,7 @@ type NamePointers = NamePointer[][];
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AllSpecies = any[];
 
-const isGenusPointer = (p: NamePointer): p is GenusPointer => {
-  return p.length === 2;
-};
+const isGenusPointer = (p: NamePointer): p is GenusPointer => p.length === 2;
 
 /**
  * Return common name from common names array pointer

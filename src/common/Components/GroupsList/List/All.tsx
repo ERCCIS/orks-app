@@ -138,9 +138,9 @@ const AllGroups = ({ groups, onJoin, onScroll }: Props) => {
   return (
     <IonList className="h-full">
       <VirtualList
-        itemCount={groups.length}
-        itemSize={() => LIST_ITEM_HEIGHT}
-        itemData={groupsMemo}
+        rowCount={groups.length}
+        rowHeight={() => LIST_ITEM_HEIGHT}
+        rowProps={groupsMemo}
         Item={Item}
         topPadding={LIST_PADDING}
         bottomPadding={LIST_ITEM_HEIGHT / 2}

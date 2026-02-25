@@ -42,7 +42,7 @@ const ListHome = () => {
 
   if (!sample) return null;
 
-  const _processSubmission = async () => {
+  const processSubmission = async () => {
     const isUserOK = await checkUserStatus();
     if (!isUserOK) return;
 
@@ -50,20 +50,18 @@ const ListHome = () => {
     if (!isValid) return;
 
     sample.upload().catch(toast.error);
-    navigate(`/home/surveys`, 'root');
+    navigate('/home/surveys', 'root');
   };
 
-  const _processDraft = async () => {
+  const processDraft = async () => {
     const isValid = checkSampleStatus();
     if (!isValid) return;
 
     gridAlertService.stop(sample.cid);
-
-    // eslint-disable-next-line no-param-reassign
     sample.metadata.saved = true;
     sample.save();
 
-    navigate(`/home/surveys`, 'root');
+    navigate('/home/surveys', 'root');
   };
 
   const onSubSampleDelete = async (subSample: Sample) => subSample.destroy();
@@ -111,7 +109,7 @@ const ListHome = () => {
   const isSaved = sample.metadata.saved;
 
   const onFinish = async () =>
-    !isSaved ? _processDraft() : _processSubmission();
+    !isSaved ? processDraft() : processSubmission();
 
   const finishButton = (
     <SurveyHeaderButton sample={sample} onClick={onFinish} />

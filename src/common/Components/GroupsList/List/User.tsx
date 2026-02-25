@@ -29,11 +29,11 @@ const UserGroups = ({
   const { t } = useTranslation();
 
   // force update the radio styles
-  const [currentValue, forceRefresh] = useState(currentValueProp);
+  const [currentValue, setCurrentValue] = useState(currentValueProp);
 
   const onSelectWrap = (newValue: any) => {
     onSelect(newValue);
-    forceRefresh(newValue);
+    setCurrentValue(newValue);
   };
 
   const groupOptions: (Group | null)[] = [...groups];

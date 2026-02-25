@@ -14,7 +14,7 @@ const ModelGridOccurrenceLocation = () => {
     const { gridref: parentGridref, accuracy } =
       model.parent?.data?.location || {};
     if (!parentGridref) {
-      toast.warn(`Parent location must be selected first.`, {
+      toast.warn('Parent location must be selected first.', {
         position: 'bottom',
       });
       return;

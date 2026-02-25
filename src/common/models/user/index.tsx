@@ -13,17 +13,17 @@ import {
   DrupalUserModelData,
 } from '@flumens';
 import { NavContext } from '@ionic/react';
-import * as Sentry from '@sentry/browser';
+import { setUser } from '@sentry/browser';
 import CONFIG from 'common/config';
 import { mainStore } from '../store';
 import activitiesExt from './activitiesExt';
 
-export interface Data extends DrupalUserModelData {
+export type Data = {
   firstName?: string;
   lastName?: string;
   email?: string;
   statistics: any;
-}
+} & DrupalUserModelData;
 
 const defaults: Data = {
   firstName: '',
@@ -74,7 +74,7 @@ export class UserModel extends DrupalUserModel<Data> {
   async logIn(email: string, password: string) {
     await super.logIn(email, password);
 
-    if (this.id) Sentry.setUser({ id: this.id });
+    if (this.id) setUser({ id: this.id });
   }
 
   getPrettyName() {
@@ -133,7 +133,7 @@ export const useUserStatusCheck = () => {
     }
 
     if (!userModel.isLoggedIn()) {
-      navigate(`/user/login`);
+      navigate('/user/login');
       return false;
     }
 

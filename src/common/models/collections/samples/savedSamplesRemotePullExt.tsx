@@ -1,6 +1,4 @@
 /* eslint-disable no-param-reassign */
-
-/* eslint-disable camelcase */
 import { observable, set } from 'mobx';
 import axios, { AxiosRequestConfig } from 'axios';
 import { ElasticOccurrence, device, isAxiosNetworkError } from '@flumens';
@@ -12,9 +10,9 @@ import Occurrence from 'models/occurrence';
 import Sample from 'models/sample';
 import { UserModel } from 'models/user';
 
-interface Hit {
+type Hit = {
   _source: ElasticOccurrence;
-}
+};
 
 export type Verification = {
   timestamp: number | null;
@@ -125,8 +123,6 @@ async function fetchUpdatedRemoteSamples(userModel: UserModel, timestamp: any) {
     return samples;
   }
 
-  // eslint-disable-next-line no-param-reassign
-
   const normalizeResponse = ({ ...hit }: Hit) => {
     samples[hit._source.occurrence.source_system_key] = { ...hit };
   };
@@ -214,7 +210,6 @@ async function init(
   allSamples.verified = observable({ updated: [], timestamp: null });
 
   const originalResetDefaults = allSamples.reset;
-  // eslint-disable-next-line @getify/proper-arrows/name
   allSamples.reset = () => {
     set(allSamples.verified, { count: 0, timestamp: null });
     return originalResetDefaults();

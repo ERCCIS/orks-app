@@ -7,14 +7,14 @@ import { array, object, string } from 'zod';
 import { HandledError, isAxiosNetworkError } from '@flumens';
 import config from 'common/config';
 
-export interface Activity {
+export type Activity = {
   id: any;
   title: string;
   description: string;
   group_type: string;
   group_from_date: any;
   group_to_date: any;
-}
+};
 
 const schemaBackend = object({
   data: array(

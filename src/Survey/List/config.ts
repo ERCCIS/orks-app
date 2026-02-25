@@ -140,14 +140,14 @@ const survey: Survey = {
   verify: (attrs: any) =>
     object({
       location: locationAttrValidator({
-        name: string({ required_error: 'Location name is missing' }).min(
+        name: string({ error: 'Location name is missing' }).min(
           1,
           'Location name is missing'
         ),
       }),
-      date: string({ required_error: 'Date is missing.' }).nullable(),
+      date: string({ error: 'Date is missing.' }).nullable(),
       recorder: string({
-        required_error: 'Recorder field is missing.',
+        error: 'Recorder field is missing.',
       })
         .min(1, 'Recorder field is missing.')
         .nullable(),

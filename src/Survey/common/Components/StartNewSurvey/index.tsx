@@ -39,7 +39,6 @@ function StartNewSurvey({ survey, SurveyCreatePage }: Props) {
   return <IonPage id="start-new-survey" />;
 }
 
-// eslint-disable-next-line @getify/proper-arrows/name
 StartNewSurvey.with = (survey: Survey, SurveyCreatePage?: any) => {
   const StartNewSurveyWithRouter = (params: any) => (
     <StartNewSurvey
