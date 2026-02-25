@@ -22,7 +22,7 @@ export const locationAttrValidator = (obj: any = {}) =>
         latitude: z.number().nullable().optional(),
         longitude: z.number().nullable().optional(),
       },
-      { required_error: 'Location is missing.' }
+      { error: 'Location is missing.' }
     )
     .extend(obj)
     .refine(
@@ -31,7 +31,6 @@ export const locationAttrValidator = (obj: any = {}) =>
       'Location is missing.'
     );
 
-// eslint-disable-next-line import/prefer-default-export
 export const dateAttr = {
   id: 'date',
   menuProps: {
@@ -163,7 +162,9 @@ export const systemAttrs = {
     },
   },
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   device_version: { remote: { id: 759 } },
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   app_version: { remote: { id: 1139 } },
 };
 
@@ -277,9 +278,7 @@ export type AttrConfig = {
   remote?: RemoteConfig;
 };
 
-interface Attrs {
-  [key: string]: AttrConfig;
-}
+type Attrs = Record<string, AttrConfig>;
 
 type OccurrenceConfig = {
   render?: any[] | ((model: Occurrence) => any[]);
@@ -307,6 +306,8 @@ export type SampleConfig = {
     taxon?: Taxon;
     images?: Media[];
     surveySample: Sample;
+    skipLocation?: any;
+    alert?: any;
   }) => Promise<Sample>;
   verify?: (attrs: any) => any;
   modifySubmission?: (submission: any, model: any) => any;
@@ -314,7 +315,7 @@ export type SampleConfig = {
   occ?: OccurrenceConfig;
 };
 
-export interface Survey extends SampleConfig {
+export type Survey = {
   /**
    * Survey version.
    */
@@ -365,4 +366,4 @@ export interface Survey extends SampleConfig {
     skipLocation?: boolean;
     alert?: any;
   }) => Promise<Sample>;
-}
+} & SampleConfig;

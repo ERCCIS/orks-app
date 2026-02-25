@@ -37,7 +37,7 @@ const HomeController = () => {
   const exitApp = () => {
     const onExitApp = () => !ionRouter.canGoBack() && AppPlugin.exitApp();
 
-    // eslint-disable-next-line @getify/proper-arrows/name
+    // eslint-disable-next-line func-names
     document.addEventListener('ionBackButton', (ev: any) =>
       ev.detail.register(-1, onExitApp)
     );
@@ -50,70 +50,68 @@ const HomeController = () => {
 
   const navigateToPrimarySurvey = (sampleId?: string) =>
     navigate(`/survey/default${sampleId ? `/${sampleId}` : ''}`);
-  const navigateToListSurvey = () => navigate(`/survey/list`);
-  const navigateToMothSurvey = () => navigate(`/survey/moth`);
-  const navigateToPlantSurvey = () => navigate(`/survey/plant`);
+  const navigateToListSurvey = () => navigate('/survey/list');
+  const navigateToMothSurvey = () => navigate('/survey/moth');
+  const navigateToPlantSurvey = () => navigate('/survey/plant');
 
   const activitiesOn = !!appModel.getAttrLock('smp', 'groupId');
 
   return (
-    <>
-      <IonTabs>
-        <IonRouterOutlet>
-          <Redirect exact path="/home" to="/home/surveys" />
-          <Route path="/home/surveys/:id?" component={Home} exact />
-          <Route path="/home/activities" component={Groups} exact />
-          <Route path="/home/map" component={Map} exact />
-          <Route path="/home/menu" component={Menu} exact />
-        </IonRouterOutlet>
+    <IonTabs>
+      <IonRouterOutlet>
+        <Redirect exact path="/home" to="/home/surveys" />
+        <Route path="/home/surveys/:id?" component={Home} exact />
+        <Route path="/home/activities" component={Groups} exact />
+        <Route path="/home/map" component={Map} exact />
+        <Route path="/home/menu" component={Menu} exact />
+      </IonRouterOutlet>
 
-        <IonTabBar slot="bottom">
-          <IonTabButton tab="home/surveys" href="/home/surveys">
-            <IonIcon icon={homeOutline} />
-            <IonLabel>
-              <T>Home</T>
-            </IonLabel>
-            <PendingSurveysBadge className="absolute bottom-4 right-[calc(50%_-_15px)]" />
-          </IonTabButton>
+      <IonTabBar slot="bottom">
+        <IonTabButton tab="home/surveys" href="/home/surveys">
+          <IonIcon icon={homeOutline} />
+          <IonLabel>
+            <T>Home</T>
+          </IonLabel>
+          <PendingSurveysBadge className="absolute bottom-4 right-[calc(50%_-_15px)]" />
+        </IonTabButton>
 
-          <IonTabButton
-            className={activitiesOn ? 'activities-button-on' : ''}
-            tab="home/activities"
-            href={userModel.isLoggedIn() ? '/home/activities' : '/user/login'}
-          >
-            <IonIcon icon={peopleOutline} />
-            <IonLabel>
-              <T>Activities</T>
-            </IonLabel>
-          </IonTabButton>
+        <IonTabButton
+          className={activitiesOn ? 'activities-button-on' : ''}
+          tab="home/activities"
+          href={userModel.isLoggedIn() ? '/home/activities' : '/user/login'}
+        >
+          <IonIcon icon={peopleOutline} />
+          <IonLabel>
+            <T>Activities</T>
+          </IonLabel>
+        </IonTabButton>
 
-          <IonTabButton className="z-10">
-            <SurveyButtonWithImagePicker
-              onPrimarySurvey={navigateToPrimarySurvey}
-              onListSurvey={navigateToListSurvey}
-              onMothSurvey={navigateToMothSurvey}
-              onPlantSurvey={navigateToPlantSurvey}
-              onCameraSurveyStart={navigateToPrimarySurvey}
-              onGallerySurveyStart={navigateToPrimarySurvey}
-            />
-          </IonTabButton>
+        <IonTabButton className="z-10">
+          <SurveyButtonWithImagePicker
+            onPrimarySurvey={navigateToPrimarySurvey}
+            onListSurvey={navigateToListSurvey}
+            onMothSurvey={navigateToMothSurvey}
+            onPlantSurvey={navigateToPlantSurvey}
+            onCameraSurveyStart={navigateToPrimarySurvey}
+            onGallerySurveyStart={navigateToPrimarySurvey}
+          />
+        </IonTabButton>
 
-          <IonTabButton tab="map" href="/home/map">
-            <IonIcon icon={mapOutline} />
-            <IonLabel>
-              <T>Map</T>
-            </IonLabel>
-          </IonTabButton>
+        <IonTabButton tab="map" href="/home/map">
+          <IonIcon icon={mapOutline} />
+          <IonLabel>
+            <T>Map</T>
+          </IonLabel>
+        </IonTabButton>
 
-          <IonTabButton tab="menu" href="/home/menu">
-            <IonIcon icon={menuOutline} />
-            <IonLabel>
-              <T>Menu</T>
-            </IonLabel>
-          </IonTabButton>
-        </IonTabBar>
-      </IonTabs>
-    </>
+        <IonTabButton tab="menu" href="/home/menu">
+          <IonIcon icon={menuOutline} />
+          <IonLabel>
+            <T>Menu</T>
+          </IonLabel>
+        </IonTabButton>
+      </IonTabBar>
+    </IonTabs>
   );
 };
 

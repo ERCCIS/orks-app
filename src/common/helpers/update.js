@@ -206,7 +206,7 @@ const API = {
 
   _initApplyUpdates(currentVersion, callback, silent) {
     // find first update
-    const firstUpdate = API._findFirst(API.updatesSeq, currentVersion);
+    const firstUpdate = API._findFirst(currentVersion, API.updatesSeq);
     if (firstUpdate < 0) {
       return callback();
     } // no update for this version
@@ -259,7 +259,7 @@ const API = {
    * @returns {number}
    * @private
    */
-  _findFirst(updatesSeq = API.updatesSeq, currentVersion) {
+  _findFirst(currentVersion, updatesSeq = API.updatesSeq) {
     if (!updatesSeq.length) {
       return -1;
     }

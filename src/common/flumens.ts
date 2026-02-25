@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 export { options as sentryOptions } from '@flumens/utils/dist/sentry';
 export { default as Main } from '@flumens/ionic/dist/components/Main';
 export { default as Page } from '@flumens/ionic/dist/components/Page';
@@ -102,7 +101,7 @@ export {
 export * from '@flumens/utils/dist/errors';
 export * from '@flumens/utils/dist/location';
 export * from '@flumens/utils/dist/image';
-export * from '@flumens/utils/dist/type';
+export type * from '@flumens/utils/dist/type';
 export { default as ImageWithBackground } from '@flumens/ionic/dist/components/ImageWithBackground';
 export { default as Store } from '@flumens/models/dist/Stores/SQLiteStore';
 export { default as Collection } from '@flumens/models/dist/Collection';

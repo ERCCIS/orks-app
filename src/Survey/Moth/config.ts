@@ -129,8 +129,8 @@ const survey: Survey = {
 
     verify: (attrs: any) =>
       object({
-        taxon: object({}, { required_error: 'Species is missing.' }).nullable(),
-        stage: string({ required_error: 'Stage is missing.' }).nullable(),
+        taxon: object({}, { error: 'Species is missing.' }).nullable(),
+        stage: string({ error: 'Stage is missing.' }).nullable(),
       }).safeParse(attrs).error,
 
     create({ Occurrence, taxon, images }) {
@@ -152,17 +152,17 @@ const survey: Survey = {
   verify: (attrs: any) =>
     object({
       location: locationAttrValidator({
-        name: string({ required_error: 'Location name is missing' }).min(
+        name: string({ error: 'Location name is missing' }).min(
           1,
           'Location name is missing'
         ),
       }),
-      date: string({ required_error: 'Date is missing.' }).nullable(),
-      method: string({ required_error: 'Method is missing.' })
+      date: string({ error: 'Date is missing.' }).nullable(),
+      method: string({ error: 'Method is missing.' })
         .min(1, 'Method is missing.')
         .nullable(),
       recorder: string({
-        required_error: 'Recorder field is missing.',
+        error: 'Recorder field is missing.',
       })
         .min(1, 'Recorder field is missing.')
         .nullable(),

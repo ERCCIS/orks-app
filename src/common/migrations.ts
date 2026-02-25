@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign, no-restricted-syntax */
 import MigrationsManager from '@flumens/utils/dist/MigrationManager';
 import config from './config';
 import { Migration } from './flumens';
@@ -14,8 +13,8 @@ const migrations: Migration[] = [
       await db.init();
 
       try {
-        await db.query({ sql: `UPDATE samples SET id = NULL WHERE id is ''` });
-        await db.query({ sql: `UPDATE groups SET id = NULL WHERE id is ''` });
+        await db.query({ sql: "UPDATE samples SET id = NULL WHERE id is ''" });
+        await db.query({ sql: "UPDATE groups SET id = NULL WHERE id is ''" });
       } catch (error) {
         console.debug(
           '🔵 samples/groups table does not exist, skipping migration'

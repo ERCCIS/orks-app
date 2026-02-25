@@ -179,7 +179,7 @@ const survey: Partial<Survey> & { taxa: string } = {
 
     verify: (attrs: any) =>
       object({
-        taxon: object({}, { required_error: 'Species is missing.' }).nullable(),
+        taxon: object({}, { error: 'Species is missing.' }).nullable(),
         adCount: string().nullable().optional(),
         coCount: string().nullable().optional(),
         ovCount: string().nullable().optional(),

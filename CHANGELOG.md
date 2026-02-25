@@ -1,3 +1,7 @@
+## 6.4.0
+
+- Updated libraries.
+
 ## 6.3.3
 
 - Fixed bryophyte and dragonfly upload.

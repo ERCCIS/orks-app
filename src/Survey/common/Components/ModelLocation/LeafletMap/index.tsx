@@ -12,7 +12,7 @@ const DEFAULT_CENTER: LatLngExpression = [53.7326306, -2];
 function getLocation(location: any, model: any) {
   const hasNoLocation = !location.latitude;
 
-  const hasGeolocation = location.geocoded && location.geocoded.center;
+  const hasGeolocation = location.geocoded?.center;
   const useGeocodedLocation = hasNoLocation && hasGeolocation;
   if (useGeocodedLocation) {
     return {
@@ -34,7 +34,7 @@ function getCenter(
   location: any,
   defaultCenter: LatLngExpression
 ): LatLngExpression {
-  if (!location || !location.latitude) return defaultCenter;
+  if (!location?.latitude) return defaultCenter;
 
   if (location.gridref) {
     const gridCenter = getGridSquareCenter(location.gridref);
@@ -64,7 +64,7 @@ const centerMap = (
   }
 };
 
-interface Props {
+type Props = {
   model: any;
   location: any;
   childLocations: any[];
@@ -72,7 +72,7 @@ interface Props {
   onGPSClick?: any;
   onLayersClick?: any;
   onPastLocationsClick?: any;
-}
+};
 
 const Map = ({
   model,
@@ -111,7 +111,7 @@ const Map = ({
   const updateLocation = () => mapHelpers.setCurrentLocation(location);
   useEffect(updateLocation, [map, location.latitude, location.longitude]);
 
-  const refreshMap = () => map && map.invalidateSize();
+  const refreshMap = () => map?.invalidateSize();
   useIonViewDidEnter(refreshMap, [map]);
 
   const refreshMapOnResize = () => {

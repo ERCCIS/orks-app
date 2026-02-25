@@ -24,11 +24,7 @@ function useDeleteOccurrenceDialog(occ: Occurrence, onDelete: any) {
     const speciesPrettyName = occ.getPrettyName();
     alert({
       header: 'Delete',
-      message: (
-        <>
-          <T>Are you sure you want to delete {{ speciesPrettyName }}?</T>
-        </>
-      ),
+      message: <T>Are you sure you want to delete {{ speciesPrettyName }}?</T>,
       buttons: [
         {
           text: 'Cancel',

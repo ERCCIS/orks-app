@@ -92,7 +92,7 @@ const MenuAttr = ({ attr, model, onChange, itemProps, className }: Props) => {
         (model.data as any)[attr] = checked;
       }
 
-      onChange && onChange(checked);
+      onChange?.(checked);
       return model.save();
     };
 

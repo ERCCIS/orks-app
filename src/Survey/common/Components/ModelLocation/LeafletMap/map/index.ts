@@ -57,7 +57,7 @@ const transformCoords = function (arr: any) {
 
 // eslint-disable-next-line
 let API: any = {
-  DEFAULT_LAYER: 'OS',
+  defaultLayer: 'OS',
 
   init({ onGPSClick, sample, map, onLayersClick, onPastLocationsClick }: any) {
     const bounds = [
@@ -101,7 +101,7 @@ let API: any = {
     this.$container = map.getContainer();
 
     // default layer
-    this.currentLayer = this.DEFAULT_LAYER;
+    this.currentLayer = this.defaultLayer;
     this.map.options.crs = OS_CRS;
 
     // show default layer

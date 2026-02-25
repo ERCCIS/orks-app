@@ -66,7 +66,7 @@ const PlantHomeMain = ({
             onChange={(val: boolean) => {
               if (!val || sample?.data?.location?.gridref) return;
               sample.data.childGeolocation = false; // eslint-disable-line no-param-reassign
-              toast.warn(`Parent location must be selected first.`);
+              toast.warn('Parent location must be selected first.');
             }}
           />
           <MenuAttr

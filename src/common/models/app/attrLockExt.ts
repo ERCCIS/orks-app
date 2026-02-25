@@ -12,11 +12,12 @@ import { coreAttributes } from 'Survey/common/config';
 const isDAFOR = (val: string) =>
   ['Dominant', 'Abundant', 'Frequent', 'Occasional', 'Rare'].includes(val);
 
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 function getFullAttrName(model: 'smp' | 'occ' | any, attrName: string) {
   let attrType: any = model;
 
   if (typeof model !== 'string') {
-    attrType = model instanceof Sample ? `smp` : `occ`;
+    attrType = model instanceof Sample ? 'smp' : 'occ';
   }
 
   return `${attrType}:${attrName}`;
@@ -94,7 +95,7 @@ export default {
     const [surveyType, surveyName]: any = getSurveyConfig(model, fullAttrName);
 
     const { attrLocks } = (this as any).data;
-    if (!attrLocks[surveyType] || !attrLocks[surveyType][surveyName]) {
+    if (!attrLocks[surveyType]?.[surveyName]) {
       return {};
     }
 
@@ -108,7 +109,7 @@ export default {
     skipConfig?: boolean
   ) {
     const survey = model.getSurvey?.();
-    if (!skipConfig && survey && survey.attrs?.[attr]?.menuProps?.setLock) {
+    if (!skipConfig && survey?.attrs?.[attr]?.menuProps?.setLock) {
       survey.attrs?.[attr]?.menuProps?.setLock(model, attr, value);
       return;
     }
@@ -138,8 +139,8 @@ export default {
   },
 
   async unsetAttrLock(model: any, attr: string, skipConfig?: boolean) {
-    const survey = (model as any).getSurvey?.();
-    if (!skipConfig && survey && survey.attrs?.[attr]?.menuProps?.unsetLock) {
+    const survey = model.getSurvey?.();
+    if (!skipConfig && survey?.attrs?.[attr]?.menuProps?.unsetLock) {
       survey.attrs?.[attr]?.menuProps?.unsetLock(model, attr);
       return;
     }
@@ -160,7 +161,7 @@ export default {
 
   isAttrLocked(model: any, attr: string, skipConfig?: boolean) {
     const survey = model.getSurvey?.();
-    if (!skipConfig && survey && survey.attrs?.[attr]?.menuProps?.isLocked) {
+    if (!skipConfig && survey?.attrs?.[attr]?.menuProps?.isLocked) {
       return survey.attrs[attr].menuProps.isLocked(model);
     }
 

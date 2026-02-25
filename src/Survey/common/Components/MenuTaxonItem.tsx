@@ -4,9 +4,9 @@ import { IonItem } from '@ionic/react';
 import { Badge } from 'common/flumens';
 import Occurrence from 'models/occurrence';
 
-interface Props {
+type Props = {
   occ: Occurrence;
-}
+};
 
 const MenuTaxonItem = ({ occ }: Props) => {
   const { isDisabled } = occ;
