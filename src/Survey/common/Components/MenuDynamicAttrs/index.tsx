@@ -5,7 +5,6 @@ import Sample from 'models/sample';
 import MenuAttr from 'Survey/common/Components/MenuAttr';
 import MenuLocation from 'Survey/common/Components/MenuLocation';
 import MenuTaxonItem from 'Survey/common/Components/MenuTaxonItem';
-import MenuTypeItem from 'Survey/common/Components/MenuTypeItem';
 import './styles.scss';
 
 type Model = Sample | Occurrence;
@@ -30,14 +29,6 @@ const MenuDynamicAttrs = ({
     }
 
     return <MenuTaxonItem key={element} occ={occ} />;
-  };
-
-  const getTypeAttr = (element: any, occ: Occurrence) => {
-    if (!(occ instanceof Occurrence)) {
-      throw new Error('Invalid type attr configuration');
-    }
-
-    return <MenuTypeItem key={element} occ={occ} />;
   };
 
   const getAttrParts = (element: any) => {
@@ -99,9 +90,6 @@ const MenuDynamicAttrs = ({
       const attrConfig = surveyConfig.attrs[attrName];
       return getLocationAttr(element, selectedModel, attrConfig);
     }
-
-    if (attrName === 'type')
-      return getTypeAttr(element, selectedModel as Occurrence);
 
     const routerLink = getRouterLink(element, selectedModel);
 
