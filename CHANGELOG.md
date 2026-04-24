@@ -1,3 +1,7 @@
+## 6.3.4
+
+- Updated UKCEH logo.
+  
 ## 6.3.3
 
 - Fixed bryophyte and dragonfly upload.
