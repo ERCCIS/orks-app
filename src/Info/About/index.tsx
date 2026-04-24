@@ -32,13 +32,13 @@ const About = () => (
       <Section>
         <H>App Development</H>
         <P>
-          This app was hand crafted with love by
+          This app was handcrafted with love by
           <a href="https://flumens.io" style={{ whiteSpace: 'nowrap' }}>
             {' '}
-            Flumens.
+            Flumens,
           </a>{' '}
-          Agency specializing in building bespoke data oriented sollutions. For
-          suggestions and feedback please do not hesitate to{' '}
+          an agency specialising in building bespoke data-oriented solutions.
+          For suggestions and feedback please do not hesitate to{' '}
           <a href="mailto:apps%40ceh.ac.uk?subject=iRecord%20App">contact us</a>
           .
         </P>
