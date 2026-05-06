@@ -1,7 +1,13 @@
+/* eslint-disable no-restricted-syntax */
+import { Migration } from '@flumens';
 import MigrationsManager from '@flumens/utils/dist/MigrationManager';
 import config from './config';
-import { Migration } from './flumens';
 import { db } from './models/store';
+
+// Run first migration
+// TODO: remove in future when all users have updated
+if (!window.localStorage.getItem('_lastAppMigratedVersion'))
+  window.localStorage.setItem('_lastAppMigratedVersion', '1.0.0');
 
 const migrations: Migration[] = [
   {
@@ -9,8 +15,6 @@ const migrations: Migration[] = [
     name: 'Move models to new schema',
     up: async () => {
       console.log('🔵 Starting migration to new model schema');
-
-      await db.init();
 
       try {
         await db.query({ sql: "UPDATE samples SET id = NULL WHERE id is ''" });
