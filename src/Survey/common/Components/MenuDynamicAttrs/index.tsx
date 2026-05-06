@@ -8,12 +8,9 @@ import MenuTaxonItem from 'Survey/common/Components/MenuTaxonItem';
 import { AttrConfig } from 'Survey/common/config';
 import './styles.scss';
 
-type Model = Sample | Occurrence;
-
 type Props = {
-  model: Model;
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-  config: AttrConfig | string | any;
+  model: Sample | Occurrence;
+  config: AttrConfig;
   skipLocks?: boolean;
 };
 

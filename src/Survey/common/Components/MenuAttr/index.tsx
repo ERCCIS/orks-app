@@ -19,19 +19,12 @@ import './styles.scss';
 
 function parseValue(value: any, parse: any, model: Sample | Occurrence) {
   // process value with custom parser, even if value is empty
-  if (typeof parse === 'function') {
-    return parse(value, model);
-  }
+  if (typeof parse === 'function') return parse(value, model);
 
   if (!value) return null;
 
-  if (parse === 'date') {
-    return getRelativeDate(value);
-  }
-
-  if (value instanceof Array) {
-    return value.join(', ');
-  }
+  if (parse === 'date') return getRelativeDate(value);
+  if (value instanceof Array) return value.join(', ');
 
   return value;
 }
@@ -46,7 +39,6 @@ type Props = {
 
 export type Config = Omit<MenuAttrItemProps, 'type'> &
   LockConfig & {
-    metadata?: boolean;
     type?: string;
     parse?: (value: any, model: Sample | Occurrence) => any;
     get?: (model: Sample | Occurrence) => any;
@@ -64,23 +56,17 @@ const MenuAttr = ({ attr, model, onChange, itemProps, className }: Props) => {
     label: labelProp,
     icon,
     required,
-    metadata,
     parse,
     type,
     get,
     set,
     skipValueTranslation,
   } = menuProps;
-  const valueRaw = metadata
-    ? (model.metadata as any)[attr]
-    : (model.data as any)[attr];
+  const valueRaw = (model.data as any)[attr];
   const value = parseValue(valueRaw, parse, model);
-  const { isDisabled } = model;
-
-  const link = `${match.url}/${attr}`;
-
   const label = labelProp || capitalize(attr);
 
+  const { isDisabled } = model;
   if (isDisabled && !value) return null;
 
   if (type === 'toggle') {
@@ -138,7 +124,7 @@ const MenuAttr = ({ attr, model, onChange, itemProps, className }: Props) => {
 
   return (
     <MenuAttrItem
-      routerLink={link}
+      routerLink={`${match.url}/${attr}`}
       disabled={isDisabled}
       value={value}
       label={label}
