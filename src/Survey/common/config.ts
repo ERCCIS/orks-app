@@ -48,6 +48,7 @@ export const dateAttr = {
     },
   },
 
+  /** @deprecated  TODO: remove in the future once everyone uploads their records */
   values: (date: any) => dateFormat.format(new Date(date)),
 } as const;
 

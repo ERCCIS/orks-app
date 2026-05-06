@@ -358,7 +358,7 @@ const survey: Survey = {
       data: {
         surveyId: survey.id,
         inputForm: survey.webForm,
-        date: new Date().toISOString(),
+        date: new Date().toISOString().split('T')[0],
         enteredSrefSystem: 'OSGB',
         sampleMethodId: 7305,
         recorders,

@@ -140,7 +140,7 @@ const survey: Survey = {
       data: {
         surveyId: survey.id,
         inputForm: survey.webForm,
-        date: new Date().toISOString(),
+        date: new Date().toISOString().split('T')[0],
         enteredSrefSystem: 4326,
         location: {},
         recorder,
