@@ -117,11 +117,7 @@ export default class Occurrence extends OccurrenceOriginal<Attrs, Metadata> {
     if (Number.isFinite(taxon.foundInName))
       return taxon.commonNames[taxon.foundInName as number];
 
-    return (
-      taxon?.scientificName ||
-      // backwards compatible
-      (taxon as any)?.scientific_name
-    );
+    return taxon?.scientificName;
   }
 
   getVerificationStatus():

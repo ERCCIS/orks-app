@@ -48,7 +48,7 @@ export const dateAttr = {
     },
   },
 
-  /** @deprecated  TODO: remove in the future once everyone uploads their records */
+  /** @deprecated  TODO: keep it backwards compatible, remove in the future once everyone uploads their records */
   values: (date: any) => dateFormat.format(new Date(date)),
 } as const;
 
@@ -129,26 +129,18 @@ export const coreAttributes = [
   'smp:location',
   'smp:locationName',
   'smp:enteredSrefSystem',
-  'smp:location_type', // backwards compatible
   'smp:date',
   'smp:recorder',
   'occ:comment',
   'occ:sensitivityPrecision',
   'smp:groupId',
-  'smp:activity', // backwards compatible
 ];
 
 export const taxonAttr = {
   id: 'taxon',
   remote: {
     id: 'taxa_taxon_list_id',
-    values(taxon: Taxon) {
-      return (
-        taxon.warehouseId ||
-        // backwards compatible
-        (taxon as any).warehouse_id
-      );
-    },
+    values: (taxon: Taxon) => taxon.warehouseId,
   },
 } as const;
 

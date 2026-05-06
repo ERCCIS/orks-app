@@ -14,10 +14,7 @@ const MenuTaxonItem = ({ occ }: Props) => {
 
   const { taxon } = occ.data;
 
-  const scientificName =
-    taxon?.scientificName ||
-    // backwards compatible
-    (taxon as any)?.scientific_name;
+  const scientificName = taxon?.scientificName;
 
   let commonName = '';
 
