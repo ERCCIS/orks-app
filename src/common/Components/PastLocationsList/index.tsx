@@ -10,7 +10,6 @@ import {
   IonItem,
   IonItemOptions,
   IonItemSliding,
-  IonLabel,
 } from '@ionic/react';
 import appModel from 'models/app';
 import StringHelp from 'helpers/string';
@@ -112,10 +111,8 @@ const PastLocations = ({ onSelect }: Props) => {
 
     function getPastLocation(location: Location) {
       const locationStr = appModel.printLocation(location);
-      const { id, name, favourite, source, latitude, longitude } = location;
+      const { id, name, favourite, source } = location;
 
-      const lat = parseFloat(latitude).toFixed(3);
-      const lon = parseFloat(longitude).toFixed(3);
       return (
         <IonItemSliding
           className={clsx('location', favourite && 'favourite')}
@@ -125,22 +122,17 @@ const PastLocations = ({ onSelect }: Props) => {
             detail
             detailIcon={favourite ? star : starOutline}
             onClick={() => selectLocation(id)}
+            className="[--padding-top:0]!"
           >
-            <IonLabel className="details" position="stacked" mode="ios">
-              <IonLabel slot="start" className="font-medium">
-                {name}
-              </IonLabel>
-              <IonLabel slot="start">{locationStr}</IonLabel>
-              <IonLabel slot="start" className="location-raw">
-                {`${lat}, ${lon}`}
-              </IonLabel>
-            </IonLabel>
-
-            <IonLabel slot="end" position="stacked" mode="ios">
-              <span className="location-source">
-                <T>source</T>: <T>{source}</T>
-              </span>
-            </IonLabel>
+            <div className="flex flex-col gap-1  w-full py-2">
+              <div className="font-semibold line-clamp-1">{name}</div>
+              <div className="flex gap-2 opacity-70 text-xs justify-between items-center">
+                <div>{locationStr}</div>
+                <div>
+                  <T>source</T>: <T>{source}</T>
+                </div>
+              </div>
+            </div>
           </IonItem>
 
           <IonItemOptions side="end">

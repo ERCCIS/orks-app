@@ -15,7 +15,6 @@ const extension: any = {
   async setLocation(origLocation: FullLocation, allowedMaxSaved = MAX_SAVED) {
     let locations: FullLocation[] = [...this.data.locations];
     const location = JSON.parse(JSON.stringify(origLocation));
-
     if (!isValidLocation(location)) throw new Error('invalid location');
 
     if (!location.name) return;

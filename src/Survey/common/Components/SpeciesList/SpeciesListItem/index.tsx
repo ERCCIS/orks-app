@@ -113,7 +113,7 @@ const SpeciesListItem = ({
 
   const modelPath = useSubSamples ? 'smp' : 'occ';
 
-  const isValid = !isDisabled && !model.validateRemote();
+  const isValid = isDisabled || !model.validateRemote();
 
   const getStartElement = () =>
     isBulkEditing ? getEditButton() : getIncrementButton();

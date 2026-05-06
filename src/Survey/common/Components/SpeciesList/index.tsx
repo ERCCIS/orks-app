@@ -94,10 +94,12 @@ const SpeciesList = ({
       />
     ));
 
+  const onBulkEditWrap = sample.isDisabled ? undefined : onBulkEdit;
+
   return (
     <div className="w-full">
       <BulkEdit
-        onBulkEdit={onBulkEdit}
+        onBulkEdit={onBulkEditWrap}
         onEditChange={setIsBulkEditing}
         models={models}
       >

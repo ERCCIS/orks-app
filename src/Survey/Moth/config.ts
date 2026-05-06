@@ -161,9 +161,7 @@ const survey: Survey = {
       method: string({ error: 'Method is missing.' })
         .min(1, 'Method is missing.')
         .nullable(),
-      recorder: string({
-        error: 'Recorder field is missing.',
-      })
+      recorder: string({ error: 'Recorder field is missing.' })
         .min(1, 'Recorder field is missing.')
         .nullable(),
     }).safeParse(attrs).error,
