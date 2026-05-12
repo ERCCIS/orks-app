@@ -7,20 +7,16 @@ import MenuLocation from 'Survey/common/Components/MenuLocation';
 import MenuTaxonItem from 'Survey/common/Components/MenuTaxonItem';
 import PhotoPicker from 'Survey/common/Components/PhotoPicker';
 import VerificationMessage from 'Survey/common/Components/VerificationMessage';
+import surveyConfig from '../config';
 
 const PlantOccurrenceHome = () => {
   const { subSample } = useSample<Sample>();
   if (!subSample) return null;
 
-  const surveyConfig = subSample.getSurvey();
-
   const [occ] = subSample.occurrences;
   const { isDisabled } = subSample;
 
-  const renderArray =
-    typeof surveyConfig?.render === 'function'
-      ? surveyConfig.render(subSample)
-      : surveyConfig?.render;
+  const renderArray = surveyConfig.smp.occ.render;
 
   return (
     <Page id="survey-default-edit">
@@ -41,11 +37,12 @@ const PlantOccurrenceHome = () => {
           <div className="rounded-list">
             <MenuTaxonItem occ={occ} />
             <MenuLocation sample={subSample} skipName isRequired={false} />
-            {renderArray?.map((config: any) => (
+            {renderArray?.map((attr: any) => (
               <MenuDynamicAttr
-                key={config.id}
-                model={subSample}
-                config={config}
+                key={attr.id}
+                model={occ}
+                attr={attr}
+                useSeparateOccPage
               />
             ))}
           </div>

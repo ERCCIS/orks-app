@@ -19,6 +19,8 @@ import {
   locationAttrValidator,
 } from 'Survey/common/config';
 
+export { commentAttr, dateAttr, recorderAttr } from 'Survey/common/config';
+
 const sex = [
   { value: 'Male', id: 1947 },
   { value: 'Female', id: 1948 },
@@ -41,7 +43,7 @@ const methodOptions = [
   { value: 'Other method (add comment)', id: 2206 },
 ];
 
-const methodAttr = {
+export const methodAttr = {
   id: 'method',
   menuProps: { icon: numberIcon },
   pageProps: {
@@ -54,7 +56,7 @@ const methodAttr = {
   remote: { id: 263, values: methodOptions },
 } as const;
 
-const numberAttr = {
+export const numberAttr = {
   id: 'number',
   menuProps: { icon: numberIcon, label: 'Quantity' },
   pageProps: {
@@ -71,7 +73,7 @@ const numberAttr = {
   remote: { id: 133 },
 } as const;
 
-const sexAttr = {
+export const sexAttr = {
   id: 'sex',
   menuProps: { icon: genderIcon },
   pageProps: {
@@ -89,14 +91,17 @@ const mothSensitivityPrecisionAttr = {
   ...sensitivityPrecisionAttr(1000),
 } as const;
 
-const survey: Survey = {
+const SURVEY_ID = 90;
+const SURVEY_WEBFORM = 'enter-moth-sightings';
+
+const survey = {
   name: 'moth',
   label: 'Moth List Survey',
-  id: 90,
+  id: SURVEY_ID,
 
   taxaGroups: [groups.moth],
 
-  webForm: 'enter-moth-sightings',
+  webForm: SURVEY_WEBFORM,
 
   attrs: {
     [locationAttr.id]: locationAttr,
@@ -175,8 +180,8 @@ const survey: Survey = {
 
     const sample = new Sample({
       data: {
-        surveyId: survey.id,
-        inputForm: survey.webForm,
+        surveyId: SURVEY_ID,
+        inputForm: SURVEY_WEBFORM,
         date: undefined, // user should specify the trap time
         enteredSrefSystem: 4326,
         location: {},
@@ -200,6 +205,6 @@ const survey: Survey = {
 
     return submission;
   },
-};
+} as const satisfies Survey;
 
 export default survey;

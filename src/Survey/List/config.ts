@@ -18,6 +18,13 @@ import {
   locationAttrValidator,
 } from 'Survey/common/config';
 
+export {
+  sensitivityPrecisionAttr,
+  commentAttr,
+  groupIdAttr,
+} from 'Survey/common/config';
+export { defaultSensitivityPrecisionAttr } from 'Survey/Default/config';
+
 function appendLockedAttrs(sample: AppSample) {
   const defaultSurveyLocks = appModel.data.attrLocks.complex || {};
   const locks = defaultSurveyLocks['default-default'] || {}; // bypassing the API here!
@@ -48,20 +55,15 @@ function autoIncrementAbundance(sample: AppSample) {
   }
 }
 
-const survey: Survey = {
+const SURVEY_ID = 576;
+const SURVEY_WEBFORM = 'enter-app-record-list';
+
+const survey = {
   name: 'list',
   label: 'Species List Survey',
-  id: 576,
+  id: SURVEY_ID,
 
-  webForm: 'enter-app-record-list',
-
-  render: [
-    { ...locationAttr, model: 'sample' },
-    { ...childGeolocationAttr, model: 'sample' },
-    { ...dateAttr, model: 'sample' },
-    { ...recorderAttr, model: 'sample' },
-    { ...commentAttr, model: 'sample' },
-  ],
+  webForm: SURVEY_WEBFORM,
 
   attrs: {
     [locationAttr.id]: locationAttr,
@@ -111,8 +113,8 @@ const survey: Survey = {
           forceSurveyId: defaultSurvey.id, // not list since it looks for taxa specific attrs
         },
         data: {
-          surveyId: survey.id,
-          inputForm: survey.webForm,
+          surveyId: SURVEY_ID,
+          inputForm: SURVEY_WEBFORM,
           enteredSrefSystem: 4326,
           location: {},
           groupId,
@@ -164,8 +166,8 @@ const survey: Survey = {
 
     const sample = new Sample({
       data: {
-        surveyId: survey.id,
-        inputForm: survey.webForm,
+        surveyId: SURVEY_ID,
+        inputForm: SURVEY_WEBFORM,
         date: new Date().toISOString().split('T')[0],
         enteredSrefSystem: 4326,
         location: {},
@@ -185,6 +187,6 @@ const survey: Survey = {
 
     return submission;
   },
-};
+} as const satisfies Survey;
 
 export default survey;

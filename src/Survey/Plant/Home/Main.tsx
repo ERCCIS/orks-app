@@ -11,6 +11,13 @@ import MenuLocation from 'Survey/common/Components/MenuLocation';
 import { usePromptImageSource } from 'Survey/common/Components/PhotoPicker';
 import SpeciesList from 'Survey/common/Components/SpeciesList';
 import { Action } from 'Survey/common/Components/SpeciesList/BulkEdit';
+import {
+  childGeolocationAttr,
+  commentAttr,
+  dateAttr,
+  recordersAttr,
+  viceCountyAttr,
+} from '../config';
 
 type Props = {
   sample: Sample;
@@ -61,7 +68,7 @@ const PlantHomeMain = ({
           <MenuLocation sample={sample} label="Square" />
           <MenuAttr
             model={sample}
-            attr="childGeolocation"
+            attr={childGeolocationAttr}
             className="menu-attr-item"
             onChange={(val: boolean) => {
               if (!val || sample?.data?.location?.gridref) return;
@@ -71,16 +78,20 @@ const PlantHomeMain = ({
           />
           <MenuAttr
             model={sample}
-            attr="vice-county"
+            attr={viceCountyAttr}
             className="menu-attr-item"
           />
-          <MenuAttr model={sample} attr="date" className="menu-attr-item" />
+          <MenuAttr model={sample} attr={dateAttr} className="menu-attr-item" />
           <MenuAttr
             model={sample}
-            attr="recorders"
+            attr={recordersAttr}
             className="menu-attr-item"
           />
-          <MenuAttr model={sample} attr="comment" className="menu-attr-item" />
+          <MenuAttr
+            model={sample}
+            attr={commentAttr}
+            className="menu-attr-item"
+          />
         </div>
       </IonList>
 

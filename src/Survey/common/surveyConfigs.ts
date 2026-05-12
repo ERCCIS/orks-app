@@ -2,8 +2,9 @@ import defaultSurvey from 'Survey/Default/config';
 import listSurvey from 'Survey/List/config';
 import mothSurvey from 'Survey/Moth/config';
 import plantSurvey from 'Survey/Plant/config';
+import { Survey } from './config';
 
-const getSurveyConfigs = () => ({
+const getSurveyConfigs = (): Record<any, Survey> => ({
   [defaultSurvey.id]: defaultSurvey,
   [listSurvey.id]: listSurvey,
   [plantSurvey.id]: plantSurvey,

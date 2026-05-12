@@ -6,6 +6,13 @@ import { Main, useAlert } from '@flumens';
 import { IonList, IonIcon, useIonViewDidEnter } from '@ionic/react';
 import appModel from 'models/app';
 import Sample from 'models/sample';
+import {
+  commentAttr,
+  dateAttr,
+  defaultSensitivityPrecisionAttr,
+  groupIdAttr,
+  recorderAttr,
+} from 'Survey/Default/config';
 import DisabledRecordMessage from 'Survey/common/Components/DisabledRecordMessage';
 import MenuAttr from 'Survey/common/Components/MenuAttr';
 import MenuDynamicAttr from 'Survey/common/Components/MenuDynamicAttrs';
@@ -74,11 +81,6 @@ const EditMain = ({ sample }: Props) => {
 
   const { isDisabled } = sample;
 
-  const renderArray =
-    typeof surveyConfig.render === 'function'
-      ? surveyConfig.render(sample)
-      : surveyConfig.render;
-
   return (
     <Main className="[--padding-bottom:30px]">
       <IonList lines="full" className="mb-2 flex! flex-col gap-4">
@@ -97,7 +99,7 @@ const EditMain = ({ sample }: Props) => {
         {/* Only showing if pre-selected */}
         {groupId && (
           <div className="rounded-list">
-            <MenuAttr.WithLock model={sample} attr="groupId" />
+            <MenuAttr.WithLock model={sample} attr={groupIdAttr} />
           </div>
         )}
 
@@ -108,21 +110,27 @@ const EditMain = ({ sample }: Props) => {
         <div className="rounded-list">
           <MenuTaxonItem occ={occ} />
           <MenuLocation.WithLock sample={sample} />
-          <MenuAttr.WithLock model={sample} attr="date" />
-          <MenuAttr.WithLock model={sample} attr="recorder" />
+          <MenuAttr.WithLock model={sample} attr={dateAttr} />
+          <MenuAttr.WithLock model={sample} attr={recorderAttr} />
           <MenuAttr.WithLock
             model={occ}
-            attr="comment"
-            itemProps={{
-              routerLink: `${url}/occ/${occ.cid}/comment`,
-            }}
+            attr={commentAttr}
+            itemProps={{ routerLink: `${url}/occ/${occ.cid}/comment` }}
           />
-          {renderArray?.map((config: any) => (
-            <MenuDynamicAttr key={config.id} model={sample} config={config} />
+          {surveyConfig.render?.map((attr: any) => (
+            <MenuDynamicAttr key={attr.id} model={sample} attr={attr} />
+          ))}
+          {surveyConfig.occ?.render?.map((attr: any) => (
+            <MenuDynamicAttr
+              key={attr.id}
+              model={occ}
+              attr={attr}
+              useSeparateOccPage
+            />
           ))}
           <MenuAttr.WithLock
             model={occ}
-            attr="sensitivityPrecision"
+            attr={defaultSensitivityPrecisionAttr}
             onChange={showSensitivityWarning}
           />
         </div>

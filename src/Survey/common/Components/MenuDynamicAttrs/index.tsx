@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react';
 import { useRouteMatch } from 'react-router';
+import { BlockT } from 'common/flumens';
 import Occurrence from 'models/occurrence';
 import Sample from 'models/sample';
 import MenuAttr from 'Survey/common/Components/MenuAttr';
@@ -10,52 +11,54 @@ import './styles.scss';
 
 type Props = {
   model: Sample | Occurrence;
-  config: AttrConfig;
+  attr: BlockT | AttrConfig;
   skipLocks?: boolean;
+  useSeparateOccPage?: boolean;
 };
 
-const MenuDynamicAttr = ({ model, config, skipLocks }: Props) => {
+const MenuDynamicAttr = ({
+  model,
+  attr,
+  skipLocks,
+  useSeparateOccPage,
+}: Props) => {
   const { url } = useRouteMatch();
 
-  const isOccurrenceOnly = model instanceof Occurrence;
-  const isSampleAttr = config.model === 'sample';
-
-  // handle complex elements with group property
-  const hasGroup = 'group' in config && config.group;
-  if (hasGroup && !Array.isArray(config.group))
-    throw new Error('No page description found when rendering menu item.');
-
-  if (isSampleAttr && isOccurrenceOnly)
-    throw new Error('Invalid attribute configuration');
-
-  const selectedModel =
-    isSampleAttr || isOccurrenceOnly ? model : model.occurrences[0];
-
-  if (config.id === 'taxon')
-    return <MenuTaxonItem key={config.id} occ={selectedModel as Occurrence} />;
-
-  if (config.id === 'location')
-    return (
-      <MenuLocation.WithLock
-        key={config.id}
-        sample={selectedModel as Sample}
-        skipLocks={skipLocks}
-        label={config.menuProps?.label}
-      />
+  if (!(model instanceof Occurrence) && useSeparateOccPage)
+    throw new Error(
+      'useSeparateOccPage can only be used with occurrence model.'
     );
 
-  let routerLink = `${url}/${config.id}`;
-  const isOnSampleEditPageButPointToOcc = !isSampleAttr && !isOccurrenceOnly;
-  if (isOnSampleEditPageButPointToOcc) {
-    routerLink = `${url}/occ/${selectedModel.cid}/${config.id}`;
+  const { id } = attr;
+
+  if (id === 'taxon')
+    return <MenuTaxonItem key={id} occ={model as Occurrence} />;
+
+  if (id === 'location') {
+    const label =
+      'title' in attr ? attr.title : (attr as AttrConfig).menuProps?.label;
+
+    return (
+      <MenuLocation.WithLock
+        key={id}
+        sample={model as Sample}
+        skipLocks={skipLocks}
+        label={label}
+      />
+    );
+  }
+
+  let routerLink = `${url}/${id}`;
+  if (useSeparateOccPage) {
+    routerLink = `${url}/occ/${model.cid}/${id}`;
   }
 
   if (skipLocks)
     return (
       <MenuAttr
-        key={config.id}
-        model={selectedModel}
-        attr={config.id}
+        key={id}
+        model={model}
+        attr={attr}
         className="menu-attr-item"
         itemProps={{ routerLink }}
       />
@@ -63,9 +66,9 @@ const MenuDynamicAttr = ({ model, config, skipLocks }: Props) => {
 
   return (
     <MenuAttr.WithLock
-      key={config.id}
-      model={selectedModel}
-      attr={config.id}
+      key={id}
+      model={model}
+      attr={attr}
       itemProps={{ routerLink }}
     />
   );

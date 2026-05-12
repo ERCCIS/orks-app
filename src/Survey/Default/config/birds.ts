@@ -2,7 +2,7 @@ import { clipboardOutline } from 'ionicons/icons';
 import { groupsReverse as groups } from 'common/data/informalGroups';
 import progressIcon from 'common/images/progress-circles.svg';
 import { identifiersAttr, Survey } from 'Survey/common/config';
-import { numberAttr, numberRangesAttr, sexAttr } from './common';
+import { numberAttr, sexAttr } from './common';
 
 const breedingOptions = [
   { value: null, isDefault: true, label: 'Not recorded' },
@@ -72,20 +72,9 @@ const survey: Partial<Survey> & { taxa: string } = {
   taxa: 'birds',
   taxaGroups: [groups.bird],
 
-  render: [
-    {
-      ...numberAttr,
-      label: 'Abundance',
-      icon: 'number',
-      group: [numberAttr, numberRangesAttr],
-    },
-    birdStageAttr,
-    breedingAttr,
-    sexAttr,
-    identifiersAttr,
-  ],
-
   occ: {
+    render: [numberAttr, birdStageAttr, breedingAttr, sexAttr, identifiersAttr],
+
     attrs: {
       [birdStageAttr.id]: birdStageAttr,
       [breedingAttr.id]: breedingAttr,

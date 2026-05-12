@@ -145,23 +145,23 @@ const survey: Partial<Survey> & { taxa: string } = {
   taxaPriority: 2, // must be higher than arthropods
   taxaGroups: [groups.dragonfly],
 
-  render: [
-    { ...siteAttr, model: 'sample' },
-    adCountAttr,
-    coCountAttr,
-    ovCountAttr,
-    scCountAttr,
-    laCountAttr,
-    exCountAttr,
-    emCountAttr,
-    // 'smp:siteOther',
-  ],
+  render: [siteAttr],
 
   attrs: {
     [siteAttr.id]: siteAttr,
   },
 
   occ: {
+    render: [
+      adCountAttr,
+      coCountAttr,
+      ovCountAttr,
+      scCountAttr,
+      laCountAttr,
+      exCountAttr,
+      emCountAttr,
+    ],
+
     skipAutoIncrement: true,
 
     attrs: {

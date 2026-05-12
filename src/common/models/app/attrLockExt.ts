@@ -217,9 +217,9 @@ export default {
         return;
       }
 
-      const attrParts = attr.split(':');
-      const attrType = attrParts[0] as 'smp' | 'occ';
-      const attrName = attrParts[1];
+      const [attrTypeRaw, ...attrNameParts] = attr.split(':');
+      const attrType = attrTypeRaw as 'smp' | 'occ';
+      const attrName = attrNameParts.join(':');
 
       const selectedModel = selectModel(attrType);
 

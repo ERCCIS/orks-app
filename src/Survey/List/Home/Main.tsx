@@ -7,10 +7,17 @@ import { IonIcon, IonList, NavContext } from '@ionic/react';
 import Sample from 'models/sample';
 import DisabledRecordMessage from 'Survey/common/Components/DisabledRecordMessage';
 import MenuAttr from 'Survey/common/Components/MenuAttr';
-import MenuDynamicAttr from 'Survey/common/Components/MenuDynamicAttrs';
+import MenuLocation from 'Survey/common/Components/MenuLocation';
 import { usePromptImageSource } from 'Survey/common/Components/PhotoPicker';
 import SpeciesList from 'Survey/common/Components/SpeciesList';
 import { Action } from 'Survey/common/Components/SpeciesList/BulkEdit';
+import {
+  childGeolocationAttr,
+  commentAttr,
+  dateAttr,
+  recorderAttr,
+} from 'Survey/common/config';
+import { groupIdAttr } from '../config';
 
 type Props = {
   sample: Sample;
@@ -31,16 +38,9 @@ const HomeMain = ({
   const { navigate } = useContext(NavContext);
   const promptImageSource = usePromptImageSource();
 
-  const surveyConfig = sample.getSurvey();
-
   const { groupId } = sample.data;
 
   const { isDisabled } = sample;
-
-  const renderArray =
-    typeof surveyConfig.render === 'function'
-      ? surveyConfig.render(sample)
-      : surveyConfig.render;
 
   const attachSpeciesImagesWrap = async () => {
     const shouldUseCamera = await promptImageSource();
@@ -62,7 +62,7 @@ const HomeMain = ({
         {/* Only showing if pre-selected */}
         {groupId && (
           <div className="rounded-list">
-            <MenuAttr.WithLock model={sample} attr="groupId" />
+            <MenuAttr.WithLock model={sample} attr={groupIdAttr} />
           </div>
         )}
 
@@ -73,14 +73,12 @@ const HomeMain = ({
               that this is correct.
             </InfoMessage>
           )}
-          {renderArray?.map((config: any) => (
-            <MenuDynamicAttr
-              key={config.id}
-              model={sample}
-              config={config}
-              skipLocks
-            />
-          ))}
+
+          <MenuLocation sample={sample} />
+          <MenuAttr model={sample} attr={childGeolocationAttr} />
+          <MenuAttr model={sample} attr={dateAttr} />
+          <MenuAttr model={sample} attr={recorderAttr} />
+          <MenuAttr model={sample} attr={commentAttr} />
         </div>
       </IonList>
 

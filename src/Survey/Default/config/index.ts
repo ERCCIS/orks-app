@@ -30,6 +30,13 @@ import mothsSurvey from './moths';
 import plantFungiSurvey from './plantFungi';
 import reptilesSurvey from './reptiles';
 
+export {
+  dateAttr,
+  commentAttr,
+  recorderAttr,
+  groupIdAttr,
+} from 'Survey/common/config';
+
 export const taxonGroupSurveys = {
   arthropods: arthropodSurvey,
   dragonflies: dragonfliesSurvey,
@@ -57,30 +64,21 @@ export function getTaxaGroupSurvey(taxaGroup: number) {
   return matchingSurveys[0] as Survey;
 }
 
-const defaultSensitivityPrecisionAttr = {
+export const defaultSensitivityPrecisionAttr = {
   ...sensitivityPrecisionAttr(1000),
   id: 'sensitivityPrecision',
 };
 
-const survey: Survey = {
+const SURVEY_ID = 374;
+const SURVEY_WEBFORM = 'enter-app-record';
+
+const survey = {
   name: 'default',
-  id: 374,
-  webForm: 'enter-app-record',
+  id: SURVEY_ID,
+  webForm: SURVEY_WEBFORM,
   webViewForm: 'record-details',
 
   taxaGroups: [], // all // TODO: remove?
-
-  render: [
-    {
-      ...numberAttr,
-      label: 'Abundance',
-      icon: 'number',
-      group: [numberAttr, numberRangesAttr],
-    },
-    stageAttr,
-    sexAttr,
-    identifiersAttr,
-  ],
 
   attrs: {
     [locationAttr.id]: locationAttr,
@@ -100,6 +98,8 @@ const survey: Survey = {
     }).safeParse(attrs).error,
 
   occ: {
+    render: [numberAttr, stageAttr, sexAttr, identifiersAttr],
+
     attrs: {
       [taxonAttr.id]: taxonAttr,
       [numberAttr.id]: numberAttr,
@@ -138,8 +138,8 @@ const survey: Survey = {
 
     const sample = new Sample({
       data: {
-        surveyId: survey.id,
-        inputForm: survey.webForm,
+        surveyId: SURVEY_ID,
+        inputForm: SURVEY_WEBFORM,
         date: new Date().toISOString().split('T')[0],
         enteredSrefSystem: 4326,
         location: {},
@@ -191,9 +191,9 @@ const survey: Survey = {
 
   get(sample: AppSample) {
     const getTaxaSpecifigConfig = () => {
-      if (!sample.occurrences.length) return survey;
+      if (!sample.occurrences.length) return this;
 
-      if (!sample.metadata.taxa) return survey;
+      if (!sample.metadata.taxa) return this;
 
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
       return getFullTaxaGroupSurvey(sample.metadata.taxa);
@@ -211,7 +211,7 @@ const survey: Survey = {
 
     return getTaxaSpecifigConfig();
   },
-};
+} as const satisfies Survey;
 
 export default survey;
 
@@ -238,7 +238,7 @@ export function getFullTaxaGroupSurvey(
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { render, taxaGroups, ...defaultSurveyCopy } = survey;
+  const { render, taxaGroups, ...defaultSurveyCopy } = survey as any;
   const mergedDefaultSurvey: Survey = mergeWith(
     {},
     defaultSurveyCopy,

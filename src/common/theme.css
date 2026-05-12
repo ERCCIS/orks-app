@@ -271,3 +271,8 @@ ion-header ion-toolbar ion-icon {
 ion-header ion-toolbar ion-back-button {
   background-color: transparent !important;
 }
+
+/* fix block label weight */
+.menu-attr-item .choice-input-block .field-label + span {
+  font-weight: 500;
+}

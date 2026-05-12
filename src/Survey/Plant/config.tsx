@@ -1,5 +1,7 @@
 import { peopleOutline, businessOutline, pencilOutline } from 'ionicons/icons';
 import { object, array, string } from 'zod';
+import { ChoiceInputConf } from '@flumens/tailwind/dist/Survey';
+import { IonIcon } from '@ionic/react';
 import { groupsReverse as groups } from 'common/data/informalGroups';
 import VCs from 'common/data/vice_counties.data.json';
 import { InfoButton } from 'common/flumens';
@@ -21,17 +23,11 @@ import {
   plantStageAttr,
 } from 'Survey/common/config';
 
-const statusOptions = [
-  { label: 'Not Recorded', value: null, isDefault: true },
-  { value: 'Native', id: 5709 },
-  { value: 'Unknown', id: 5710 },
-  { value: 'Introduced', id: 6775 },
-  { value: 'Introduced - planted', id: 5711 },
-  { value: 'Introduced - surviving', id: 10662 },
-  { value: 'Introduced - casual', id: 10663 },
-  { value: 'Introduced - established', id: 5712 },
-  { value: 'Introduced - invasive', id: 5713 },
-];
+export {
+  commentAttr,
+  dateAttr,
+  childGeolocationAttr,
+} from 'Survey/common/config';
 
 const plantLocationAttr = {
   ...locationAttr,
@@ -47,7 +43,7 @@ const plantLocationAttr = {
   },
 } as const;
 
-const recordersAttr = {
+export const recordersAttr = {
   id: 'recorders',
   menuProps: { icon: peopleOutline, skipValueTranslation: true },
   pageProps: {
@@ -94,7 +90,7 @@ const recordersAttr = {
   },
 } as const;
 
-const viceCountyAttr = {
+export const viceCountyAttr = {
   id: 'vice-county',
   menuProps: {
     icon: businessOutline,
@@ -183,18 +179,44 @@ const abundanceAttr = {
   },
 } as const;
 
-const statusAttr = {
+// remove after migration is complete
+/** @deprecated */
+export const statusAttrOld = {
   id: 'status',
-  menuProps: { icon: pencilOutline },
-  pageProps: {
-    attrProps: {
-      input: 'radio',
-      info: 'Please pick the status.',
-      inputProps: { options: statusOptions },
-    },
+  remote: {
+    id: 507,
+    values: [
+      { label: 'Not Recorded', value: null, isDefault: true },
+      { value: 'Native', id: 5709 },
+      { value: 'Unknown', id: 5710 },
+      { value: 'Introduced', id: 6775 },
+      { value: 'Introduced - planted', id: 5711 },
+      { value: 'Introduced - surviving', id: 10662 },
+      { value: 'Introduced - casual', id: 10663 },
+      { value: 'Introduced - established', id: 5712 },
+      { value: 'Introduced - invasive', id: 5713 },
+    ],
   },
-  remote: { id: 507, values: statusOptions },
-} as const;
+};
+
+export const statusAttr = {
+  id: 'occAttr:507',
+  title: 'Status',
+  prefix: <IonIcon src={pencilOutline} className="size-6" />,
+  type: 'choiceInput',
+  appearance: 'button',
+  choices: [
+    { title: 'Not Recorded', dataName: '' },
+    { title: 'Native', dataName: '5709' },
+    { title: 'Unknown', dataName: '5710' },
+    { title: 'Introduced', dataName: '6775' },
+    { title: 'Introduced - planted', dataName: '5711' },
+    { title: 'Introduced - surviving', dataName: '10662' },
+    { title: 'Introduced - casual', dataName: '10663' },
+    { title: 'Introduced - established', dataName: '5712' },
+    { title: 'Introduced - invasive', dataName: '5713' },
+  ],
+} as const satisfies ChoiceInputConf;
 
 const plantOccIdentifiersAttr = {
   id: 'identifiers',
@@ -221,11 +243,14 @@ const plantSensitivityPrecisionAttr = {
   id: 'sensitivityPrecision',
 } as const;
 
-const survey: Survey = {
+const SURVEY_ID = 325;
+const SURVEY_WEBFORM = 'enter-vascular-plants';
+
+const survey = {
   name: 'plant',
   label: 'Plant List Survey',
-  id: 325,
-  webForm: 'enter-vascular-plants',
+  id: SURVEY_ID,
+  webForm: SURVEY_WEBFORM,
 
   taxaGroups: [
     groups['flower. plant'],
@@ -248,21 +273,20 @@ const survey: Survey = {
   },
 
   smp: {
-    render: [
-      statusAttr,
-      plantStageAttr,
-      abundanceAttr,
-      plantOccIdentifiersAttr,
-      commentAttr,
-      plantSensitivityPrecisionAttr,
-    ],
-
     attrs: {
       [dateAttr.id]: dateAttr,
       [plantSmpLocationAttr.id]: plantSmpLocationAttr,
     },
 
     occ: {
+      render: [
+        statusAttr,
+        plantStageAttr,
+        abundanceAttr,
+        plantOccIdentifiersAttr,
+        commentAttr,
+        plantSensitivityPrecisionAttr,
+      ],
       attrs: {
         [taxonAttr.id]: taxonAttr,
         [abundanceAttr.id]: abundanceAttr,
@@ -298,8 +322,8 @@ const survey: Survey = {
 
         metadata: { gridSquareUnit },
         data: {
-          surveyId: survey.id,
-          inputForm: survey.webForm,
+          surveyId: SURVEY_ID,
+          inputForm: SURVEY_WEBFORM,
           enteredSrefSystem: 'OSGB',
           location: {},
         },
@@ -356,8 +380,8 @@ const survey: Survey = {
         gridSquareUnit,
       },
       data: {
-        surveyId: survey.id,
-        inputForm: survey.webForm,
+        surveyId: SURVEY_ID,
+        inputForm: SURVEY_WEBFORM,
         date: new Date().toISOString().split('T')[0],
         enteredSrefSystem: 'OSGB',
         sampleMethodId: 7305,
@@ -375,6 +399,6 @@ const survey: Survey = {
 
     return submission;
   },
-};
+} as const satisfies Survey;
 
 export default survey;

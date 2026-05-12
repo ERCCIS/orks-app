@@ -10,6 +10,7 @@ import MenuTaxonItem from 'Survey/common/Components/MenuTaxonItem';
 import PhotoPicker from 'Survey/common/Components/PhotoPicker';
 import VerificationMessage from 'Survey/common/Components/VerificationMessage';
 import useSensitivityTip from 'Survey/common/Components/hooks';
+import { commentAttr, defaultSensitivityPrecisionAttr } from './config';
 
 const ListOccurrenceHome = () => {
   const { url } = useRouteMatch();
@@ -22,11 +23,6 @@ const ListOccurrenceHome = () => {
 
   const [occ] = subSample.occurrences;
   const { isDisabled } = subSample;
-
-  const renderArray =
-    typeof surveyConfig.render === 'function'
-      ? surveyConfig.render(subSample)
-      : surveyConfig.render;
 
   return (
     <Page id="survey-default-edit">
@@ -48,22 +44,31 @@ const ListOccurrenceHome = () => {
             <MenuLocation sample={subSample} skipName isRequired={false} />
             <MenuAttr
               model={occ}
-              attr="comment"
+              attr={commentAttr}
               itemProps={{
                 routerLink: `${url}/occ/${occ.cid}/comment`,
               }}
             />
-            {renderArray?.map((config: any) => (
+            {surveyConfig.render?.map((attr: any) => (
               <MenuDynamicAttr
-                key={config.id}
+                key={attr.id}
                 model={subSample}
-                config={config}
+                attr={attr}
                 skipLocks
+              />
+            ))}
+            {surveyConfig.occ?.render?.map((attr: any) => (
+              <MenuDynamicAttr
+                key={attr.id}
+                model={occ}
+                attr={attr}
+                skipLocks
+                useSeparateOccPage
               />
             ))}
             <MenuAttr
               model={occ}
-              attr="sensitivityPrecision"
+              attr={defaultSensitivityPrecisionAttr}
               onChange={showSensitivityWarning}
             />
           </div>

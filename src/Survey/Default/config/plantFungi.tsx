@@ -2,9 +2,11 @@ import Tooltip from 'common/Components/Tooltip';
 import { groupsReverse as groups } from 'common/data/informalGroups';
 import numberIcon from 'common/images/number.svg';
 import appModel from 'models/app';
-import Sample from 'models/sample';
-import { identifiersAttr, plantStageAttr, Survey } from 'Survey/common/config';
-import defaultSurveyConf from '.';
+import {
+  identifiersAttr,
+  plantStageAttrOld,
+  Survey,
+} from 'Survey/common/config';
 import { sexAttr } from './common';
 
 const numberOptions = [
@@ -157,36 +159,13 @@ const survey: Partial<Survey> & { taxa: string } = {
     // groups.liverwort
   ],
 
-  render(model: Sample) {
-    const group: any[] = [plantFungiNumberAttr, plantFungiNumberRangesAttr];
-    const getTopParent = (m: Sample): Sample =>
-      m.parent ? getTopParent(m.parent) : m;
-    const topParent = getTopParent(model);
-    if (topParent.data.surveyId !== defaultSurveyConf.id) {
-      group.splice(1, 0, plantFungiNumberDAFORAttr);
-    }
-
-    return [
-      {
-        ...plantFungiNumberAttr,
-        label: 'Abundance',
-        icon: 'number',
-        info: 'How many individuals of this species did you see?',
-        group,
-      },
-
-      plantStageAttr,
-      sexAttr,
-      identifiersAttr,
-    ];
-  },
-
   attrs: {},
   occ: {
+    render: [plantFungiNumberAttr, plantStageAttrOld, sexAttr, identifiersAttr],
     skipAutoIncrement: true,
 
     attrs: {
-      [plantStageAttr.id]: plantStageAttr,
+      [plantStageAttrOld.id]: plantStageAttrOld,
       [plantFungiNumberAttr.id]: plantFungiNumberAttr,
       [plantFungiNumberDAFORAttr.id]: plantFungiNumberDAFORAttr,
       [plantFungiNumberRangesAttr.id]: plantFungiNumberRangesAttr,

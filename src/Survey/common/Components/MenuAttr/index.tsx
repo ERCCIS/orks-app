@@ -9,11 +9,14 @@ import {
   AttrProps,
   Toggle,
   getRelativeDate,
+  BlockT,
+  Block,
 } from '@flumens';
 import { IonIcon, IonItem } from '@ionic/react';
 import { capitalize } from 'common/helpers/string';
 import Occurrence from 'models/occurrence';
 import Sample from 'models/sample';
+import { AttrConfig } from 'Survey/common/config';
 import { WithLock, LockConfig } from './Lock';
 import './styles.scss';
 
@@ -30,7 +33,7 @@ function parseValue(value: any, parse: any, model: Sample | Occurrence) {
 }
 
 type Props = {
-  attr: string;
+  attr: AttrConfig | BlockT;
   model: Sample | Occurrence;
   onChange?: any;
   itemProps?: any;
@@ -50,8 +53,17 @@ export type Config = Omit<MenuAttrItemProps, 'type'> &
 const MenuAttr = ({ attr, model, onChange, itemProps, className }: Props) => {
   const match = useRouteMatch();
 
-  const survey = model.getSurvey();
-  const menuProps: Config = survey.attrs?.[attr].menuProps || {};
+  const { id } = attr;
+
+  if ('type' in attr) {
+    return (
+      <IonItem className="[--border-style:none] [--inner-padding-end:0] [--padding-start:0] [&>div]:w-full">
+        <Block record={model.data} block={attr} />
+      </IonItem>
+    );
+  }
+
+  const menuProps: Config = 'menuProps' in attr ? (attr.menuProps as any) : {};
   const {
     label: labelProp,
     icon,
@@ -62,9 +74,9 @@ const MenuAttr = ({ attr, model, onChange, itemProps, className }: Props) => {
     set,
     skipValueTranslation,
   } = menuProps;
-  const valueRaw = (model.data as any)[attr];
+  const valueRaw = (model.data as any)[id];
   const value = parseValue(valueRaw, parse, model);
-  const label = labelProp || capitalize(attr);
+  const label = labelProp || capitalize(id);
 
   const { isDisabled } = model;
   if (isDisabled && !value) return null;
@@ -75,7 +87,7 @@ const MenuAttr = ({ attr, model, onChange, itemProps, className }: Props) => {
         set(checked, model);
       } else {
         // eslint-disable-next-line no-param-reassign
-        (model.data as any)[attr] = checked;
+        (model.data as any)[id] = checked;
       }
 
       onChange?.(checked);
@@ -102,13 +114,13 @@ const MenuAttr = ({ attr, model, onChange, itemProps, className }: Props) => {
 
   if (menuProps.attrProps) {
     // date attr needs wrapper because of the sliding options overlap
-    const Wrapper = attr === 'date' ? IonItem : Fragment;
+    const Wrapper = id === 'date' ? IonItem : Fragment;
 
     return (
       <Wrapper className={clsx('attr-wrapper', className)}>
         <Attr
           model={model}
-          attr={attr}
+          attr={id}
           onChange={onChange}
           {...(menuProps.attrProps as Omit<AttrProps, 'model' | 'attr'>)}
           {...itemProps}
@@ -124,7 +136,7 @@ const MenuAttr = ({ attr, model, onChange, itemProps, className }: Props) => {
 
   return (
     <MenuAttrItem
-      routerLink={`${match.url}/${attr}`}
+      routerLink={`${match.url}/${id}`}
       disabled={isDisabled}
       value={value}
       label={label}

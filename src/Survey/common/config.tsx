@@ -7,6 +7,8 @@ import {
 } from 'ionicons/icons';
 import { z } from 'zod';
 import { dateFormat, device, PageProps, RemoteConfig } from '@flumens';
+import { ChoiceInputConf } from '@flumens/tailwind/dist/Survey';
+import { IonIcon } from '@ionic/react';
 import config from 'common/config';
 import progressIcon from 'common/images/progress-circles.svg';
 import groups from 'common/models/collections/groups';
@@ -250,7 +252,8 @@ const plantStageOptions = [
   { value: 'Gametophyte', id: 23875 },
 ];
 
-export const plantStageAttr = {
+/** @deprecated */
+export const plantStageAttrOld = {
   id: 'stage',
   menuProps: { icon: progressIcon },
   pageProps: {
@@ -263,9 +266,27 @@ export const plantStageAttr = {
   remote: { id: 466, values: plantStageOptions },
 } as const;
 
+export const plantStageAttr = {
+  id: 'occAttr:466',
+  title: 'Stage',
+  prefix: <IonIcon src={progressIcon} className="size-6" />,
+  type: 'choiceInput',
+  appearance: 'button',
+  choices: [
+    { title: 'Not Recorded', dataName: '' },
+    { title: 'Flowering', dataName: '5331' },
+    { title: 'Fruiting', dataName: '5330' },
+    { title: 'Juvenile', dataName: '5328' },
+    { title: 'Mature', dataName: '5332' },
+    { title: 'Seedling', dataName: '5327' },
+    { title: 'Vegetative', dataName: '5329' },
+    { title: 'Sporophyte', dataName: '23874' },
+    { title: 'Gametophyte', dataName: '23875' },
+  ],
+} as const satisfies ChoiceInputConf;
+
 export type AttrConfig = {
   id: string;
-  model?: 'sample' | 'occurrence'; // defaults to 'occurrence' if not specified
   menuProps?: MenuProps;
   pageProps?: Omit<PageProps, 'attr' | 'model'>;
   remote?: RemoteConfig;
@@ -274,7 +295,7 @@ export type AttrConfig = {
 type Attrs = Record<string, AttrConfig>;
 
 type OccurrenceConfig = {
-  render?: any[] | ((model: Occurrence) => any[]);
+  render?: any[];
   attrs: Attrs;
   create?: (props: {
     Occurrence: typeof Occurrence;
@@ -291,7 +312,7 @@ type OccurrenceConfig = {
 };
 
 export type SampleConfig = {
-  render?: any[] | ((model: Sample) => any[]);
+  render?: any[];
   attrs?: Attrs;
   create?: (props: {
     Sample: typeof Sample;

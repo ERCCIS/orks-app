@@ -87,22 +87,23 @@ const survey: Partial<Survey> & { taxa: string } = {
   taxa: 'bryophytes',
   taxaGroups: [groups.moss, groups.liverwort],
 
-  render: [
-    { ...habitatAttr, model: 'sample' },
-    microscopicallyCheckedAttr,
-    fruitAttr,
-    maleAttr,
-    femaleAttr,
-    bulbilsAttr,
-    gemmaeAttr,
-    tubersAttr,
-  ],
+  render: [habitatAttr],
 
   attrs: {
     [habitatAttr.id]: habitatAttr,
   },
 
   occ: {
+    render: [
+      microscopicallyCheckedAttr,
+      fruitAttr,
+      maleAttr,
+      femaleAttr,
+      bulbilsAttr,
+      gemmaeAttr,
+      tubersAttr,
+    ],
+
     skipAutoIncrement: true,
 
     attrs: {

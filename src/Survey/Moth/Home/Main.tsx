@@ -11,6 +11,7 @@ import MenuLocation from 'Survey/common/Components/MenuLocation';
 import { usePromptImageSource } from 'Survey/common/Components/PhotoPicker';
 import SpeciesList from 'Survey/common/Components/SpeciesList';
 import { Action } from 'Survey/common/Components/SpeciesList/BulkEdit';
+import { commentAttr, dateAttr, methodAttr, recorderAttr } from '../config';
 
 type Props = {
   sample: Sample;
@@ -52,16 +53,16 @@ const MothHomeMain = ({
 
         <div className="rounded-list">
           <MenuLocation sample={sample} />
-          <MenuAttr model={sample} attr="date" />
+          <MenuAttr model={sample} attr={dateAttr} />
           {!hasDate && (
             <InfoMessage inline>
               If trapping overnight please enter the date for the evening on
               which the trap was put out.
             </InfoMessage>
           )}
-          <MenuAttr model={sample} attr="recorder" />
-          <MenuAttr model={sample} attr="method" />
-          <MenuAttr model={sample} attr="comment" />
+          <MenuAttr model={sample} attr={recorderAttr} />
+          <MenuAttr model={sample} attr={methodAttr} />
+          <MenuAttr model={sample} attr={commentAttr} />
         </div>
       </IonList>
 
