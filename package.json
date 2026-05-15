@@ -19,6 +19,7 @@
     "test:watch": "jest --watchAll",
     "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand --watch test",
     "test:eslint": "eslint src --quiet && echo '\\033[37;42;1m PASS \\033[00m'",
+    "test:e2e": "npx playwright test",
     "make:species": "cd src/common/data && tsx make.ts"
   },
   "dependencies": {
@@ -109,6 +110,7 @@
     "@types/lodash.mapkeys": "^4.6.9",
     "@types/lodash.mergewith": "^4.6.9",
     "@types/mapbox-gl": "3.4.1",
+    "@types/node": "^25.7.0",
     "@types/proj4": "^2.19.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
