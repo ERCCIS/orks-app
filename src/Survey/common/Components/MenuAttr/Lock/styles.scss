@@ -7,9 +7,10 @@
       --detail-icon-opacity: 0.55;
     }
 
-    ion-datetime,
+    .choice-input-block label + span.react-aria-SelectValue,
+    .choice-input-block svg:last-child,
     *[slot='end'] {
-      color: var(--attr-lock-color);
+      color: var(--attr-lock-color) !important;
     }
 
     .switch-input {

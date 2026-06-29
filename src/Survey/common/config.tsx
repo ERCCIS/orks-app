@@ -7,6 +7,8 @@ import {
 } from 'ionicons/icons';
 import { z } from 'zod';
 import { dateFormat, device, PageProps, RemoteConfig } from '@flumens';
+import { ChoiceInputConf } from '@flumens/tailwind/dist/Survey';
+import { IonIcon } from '@ionic/react';
 import config from 'common/config';
 import progressIcon from 'common/images/progress-circles.svg';
 import radarIcon from 'common/images/radar.svg';
@@ -23,7 +25,7 @@ export const locationAttrValidator = (obj: any = {}) =>
         latitude: z.number().nullable().optional(),
         longitude: z.number().nullable().optional(),
       },
-      { required_error: 'Location is missing.' }
+      { error: 'Location is missing.' }
     )
     .extend(obj)
     .refine(
@@ -32,8 +34,8 @@ export const locationAttrValidator = (obj: any = {}) =>
       'Location is missing.'
     );
 
-// eslint-disable-next-line import/prefer-default-export
 export const dateAttr = {
+  id: 'date',
   menuProps: {
     icon: calendarOutline,
     attrProps: {
@@ -49,10 +51,12 @@ export const dateAttr = {
     },
   },
 
+  /** @deprecated  TODO: keep it backwards compatible, remove in the future once everyone uploads their records */
   values: (date: any) => dateFormat.format(new Date(date)),
-};
+} as const;
 
 export const commentAttr = {
+  id: 'comment',
   menuProps: { icon: clipboardOutline, skipValueTranslation: true },
   pageProps: {
     attrProps: {
@@ -64,18 +68,7 @@ export const commentAttr = {
       },
     },
   },
-};
-
-/**
- * @deprecated
- */
-export const activityAttr = {
-  menuProps: {
-    icon: peopleOutline,
-    parse: (value: any) => value?.title,
-  },
-  remote: { id: 'group_id', values: (activity: any) => activity.id },
-};
+} as const;
 
 const methodOptions = [
   { label: 'Not recorded', value: null, isDefault: true },
@@ -105,15 +98,17 @@ export const methodAttr = {
 };
 
 export const groupIdAttr = {
+  id: 'groupId',
   menuProps: {
     icon: peopleOutline,
     label: 'Activity',
     parse: (groupId: any) =>
       groups.find((g: any) => g.id === groupId)?.data.title || groupId,
   },
-};
+} as const;
 
 export const recorderAttr = {
+  id: 'recorder',
   menuProps: { icon: peopleOutline, skipValueTranslation: true },
   pageProps: {
     attrProps: {
@@ -125,9 +120,10 @@ export const recorderAttr = {
 
   required: true,
   remote: { id: 127 },
-};
+} as const;
 
 export const identifiersAttr = {
+  id: 'identifiers',
   menuProps: {
     icon: peopleOutline,
     label: 'Identifiers',
@@ -144,7 +140,7 @@ export const identifiersAttr = {
     },
   },
   remote: { id: 18 },
-};
+} as const;
 
 export const sensitivityPrecisionAttr = (defaultPrecision = 2000) => ({
   menuProps: {
@@ -163,27 +159,20 @@ export const coreAttributes = [
   'smp:location',
   'smp:locationName',
   'smp:enteredSrefSystem',
-  'smp:location_type', // backwards compatible
   'smp:date',
   'smp:recorder',
   'occ:comment',
   'occ:sensitivityPrecision',
   'smp:groupId',
-  'smp:activity', // backwards compatible
 ];
 
 export const taxonAttr = {
+  id: 'taxon',
   remote: {
     id: 'taxa_taxon_list_id',
-    values(taxon: Taxon) {
-      return (
-        taxon.warehouseId ||
-        // backwards compatible
-        (taxon as any).warehouse_id
-      );
-    },
+    values: (taxon: Taxon) => taxon.warehouseId,
   },
-};
+} as const;
 
 export const systemAttrs = {
   device: {
@@ -192,14 +181,13 @@ export const systemAttrs = {
       values: {
         ios: 2398,
         android: 2399,
-        // backwards compatible
-        iOS: 2398,
-        Android: 2399,
       },
     },
   },
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   device_version: { remote: { id: 759 } },
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   app_version: { remote: { id: 1139 } },
 };
 
@@ -216,6 +204,7 @@ export const getSystemAttrs = () => {
 };
 
 export const locationAttr = {
+  id: 'location',
   remote: {
     id: 'entered_sref',
     values(location: any, submission: any) {
@@ -242,16 +231,17 @@ export const locationAttr = {
       return `${lat.toFixed(7)}, ${lon.toFixed(7)}`;
     },
   },
-};
+} as const;
 
 export const childGeolocationAttr = {
+  id: 'childGeolocation',
   menuProps: {
     label: 'Geolocate list entries',
     icon: locationOutline,
     type: 'toggle',
   },
   pageProps: { attrProps: { input: 'toggle' } },
-};
+} as const;
 
 const mothStages = [
   { value: 'Not recorded', id: 10647 },
@@ -266,6 +256,7 @@ const mothStages = [
 ];
 
 export const mothStageAttr = {
+  id: 'stage',
   menuProps: { icon: progressIcon, required: true },
   pageProps: {
     attrProps: {
@@ -275,7 +266,7 @@ export const mothStageAttr = {
     },
   },
   remote: { id: 130, values: mothStages },
-};
+} as const;
 
 const plantStageOptions = [
   { label: 'Not Recorded', value: null, isDefault: true },
@@ -289,7 +280,58 @@ const plantStageOptions = [
   { value: 'Gametophyte', id: 23875 },
 ];
 
-export const plantStageAttr = {
+export const numberAttr =  {
+        menuProps: {
+          label: 'Abundance',
+          icon: numberIcon,
+          parse: (_, model: any) =>
+            model.data['number-ranges'] || model.data.number,
+          isLocked: (model: any) => {
+            const value =
+              survey.occ?.attrs?.number?.menuProps?.getLock?.(model);
+            return (
+              value &&
+              (value === appModel.getAttrLock(model, 'number') ||
+                value === appModel.getAttrLock(model, 'number-ranges'))
+            );
+          },
+          getLock: (model: any) =>
+            model.data['number-ranges'] || model.data.number,
+          unsetLock: model => {
+            appModel.unsetAttrLock(model, 'number', true);
+            appModel.unsetAttrLock(model, 'number-ranges', true);
+          },
+          setLock: (model, _, value) => {
+            const numberRegex = /^\d+$/; // https://stackoverflow.com/questions/175739/how-can-i-check-if-a-string-is-a-valid-number
+            if (numberRegex.test(`${value}`)) {
+              appModel.setAttrLock(model, 'number', value, true);
+            } else {
+              appModel.setAttrLock(model, 'number-ranges', value, true);
+            }
+          },
+        },
+        pageProps: {
+          headerProps: { title: 'Abundance' },
+          attrProps: [
+            {
+              set: (value: number, model: AppOccurrence) =>
+                Object.assign(model.data, {
+                  number: value,
+                  'number-ranges': undefined,
+                }),
+              get: (model: AppOccurrence) => model.data.number,
+              input: 'slider',
+              info: 'How many individuals of this species did you see?',
+              inputProps: { max: 500 },
+            },
+          ],
+        },
+        remote: { id: 93 },
+      },
+
+/** @deprecated */
+export const plantStageAttrOld = {
+  id: 'stage',
   menuProps: { icon: progressIcon },
   pageProps: {
     attrProps: {
@@ -299,20 +341,38 @@ export const plantStageAttr = {
     },
   },
   remote: { id: 466, values: plantStageOptions },
-};
+} as const;
+
+export const plantStageAttr = {
+  id: 'occAttr:466',
+  title: 'Stage',
+  prefix: <IonIcon src={progressIcon} className="size-6" />,
+  type: 'choiceInput',
+  appearance: 'button',
+  choices: [
+    { title: 'Not Recorded', dataName: '' },
+    { title: 'Flowering', dataName: '5331' },
+    { title: 'Fruiting', dataName: '5330' },
+    { title: 'Juvenile', dataName: '5328' },
+    { title: 'Mature', dataName: '5332' },
+    { title: 'Seedling', dataName: '5327' },
+    { title: 'Vegetative', dataName: '5329' },
+    { title: 'Sporophyte', dataName: '23874' },
+    { title: 'Gametophyte', dataName: '23875' },
+  ],
+} as const satisfies ChoiceInputConf;
 
 export type AttrConfig = {
+  id: string;
   menuProps?: MenuProps;
   pageProps?: Omit<PageProps, 'attr' | 'model'>;
   remote?: RemoteConfig;
 };
 
-interface Attrs {
-  [key: string]: AttrConfig;
-}
+type Attrs = Record<string, AttrConfig>;
 
 type OccurrenceConfig = {
-  render?: any[] | ((model: Occurrence) => any[]);
+  render?: any[];
   attrs: Attrs;
   create?: (props: {
     Occurrence: typeof Occurrence;
@@ -329,7 +389,7 @@ type OccurrenceConfig = {
 };
 
 export type SampleConfig = {
-  render?: any[] | ((model: Sample) => any[]);
+  render?: any[];
   attrs?: Attrs;
   create?: (props: {
     Sample: typeof Sample;
@@ -337,6 +397,8 @@ export type SampleConfig = {
     taxon?: Taxon;
     images?: Media[];
     surveySample: Sample;
+    skipLocation?: any;
+    alert?: any;
   }) => Promise<Sample>;
   verify?: (attrs: any) => any;
   modifySubmission?: (submission: any, model: any) => any;
@@ -344,7 +406,7 @@ export type SampleConfig = {
   occ?: OccurrenceConfig;
 };
 
-export interface Survey extends SampleConfig {
+export type Survey = {
   /**
    * Survey version.
    */
@@ -395,4 +457,4 @@ export interface Survey extends SampleConfig {
     skipLocation?: boolean;
     alert?: any;
   }) => Promise<Sample>;
-}
+} & SampleConfig;

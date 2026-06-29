@@ -13,6 +13,22 @@ import { useIonViewWillEnter } from '@ionic/react';
 import config from 'common/config';
 import PastLocationsControl from './PastLocationsControl';
 
+const OS_MAX_BOUNDS = [
+  [-8.834, 49.562], // Southwest
+  [1.9, 60.934], // Northeast
+];
+
+const style: Record<any, any> = {
+  satellite: {
+    mapStyle: 'mapbox://styles/mapbox/satellite-streets-v11',
+  },
+  os: {
+    customAttribution:
+      '&copy; <a href="http://www.ordnancesurvey.co.uk/">Ordnance Survey</a>',
+    mapStyle: `https://api.os.uk/maps/vector/v1/vts/resources/styles?key=${config.map.osApiKey}`,
+  },
+};
+
 const getInitialView = (
   location: Location,
   parentLocation: Location
@@ -81,24 +97,12 @@ const MapboxContainer = ({
     location?.geocoded,
   ]);
 
-  const style: any = {
-    satellite: {
-      maxZoom: 19,
-      mapStyle: 'mapbox://styles/mapbox/satellite-streets-v11',
-      maxBounds: null,
-    },
-
-    os: {
-      maxZoom: 17,
-      customAttribution:
-        '&copy; <a href="http://www.ordnancesurvey.co.uk/">Ordnance Survey</a>',
-      mapStyle: `https://api.os.uk/maps/vector/v1/vts/resources/styles?key=${config.map.osApiKey}`,
-      maxBounds: [
-        [-8.834, 49.562], // Southwest
-        [1.9, 60.934], // Northeast
-      ] as any,
-    },
-  };
+  // set maxBounds imperatively to avoid react-map-gl's _updateSettings infinite loop
+  // when maxBounds changes between styles
+  useEffect(() => {
+    const map = mapRef?.getMap();
+    map?.setMaxBounds(currentStyle === 'os' ? (OS_MAX_BOUNDS as any) : null);
+  }, [mapRef, currentStyle]);
 
   const transformRequest = (url: string) =>
     url.startsWith('https://api.os.uk') ? { url: `${url}&srs=3857` } : { url };

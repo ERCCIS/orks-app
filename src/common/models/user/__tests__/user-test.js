@@ -1,8 +1,8 @@
 import sinon from 'sinon';
+// eslint-disable-next-line import-x/no-namespace
 import * as store from 'models/store';
-import { UserModel } from '../index';
+import { UserModel } from '..';
 
-/* eslint-disable no-unused-expressions */
 function initUserModel(login) {
   const userModel = new UserModel();
   return userModel.ready.then(() => {

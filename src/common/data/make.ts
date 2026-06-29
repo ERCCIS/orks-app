@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import-x/no-extraneous-dependencies */
 import axios from 'axios';
 import dotenv from 'dotenv';
 import fs from 'fs';
@@ -6,6 +6,7 @@ import camelCase from 'lodash/camelCase';
 import mapKeys from 'lodash/mapKeys';
 import { z, object } from 'zod';
 import makeCommonNameMap from './extractCommonNames';
+import makeWarehouseIdMap from './extractWarehouseIds';
 import optimise from './optimise';
 
 dotenv.config({ path: '../../../.env' });
@@ -38,7 +39,6 @@ async function fetch(): Promise<RemoteAttributes[]> {
   const data = [];
   let offset = 0;
 
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     const options = {
       url: `${warehouseURL}/index.php/services/rest/reports/library/taxa/taxa_list_for_app.xml?taxon_list_id=${UKSIListID}&limit=${FETCH_LIMIT}&offset=${offset}`,
@@ -71,9 +71,9 @@ async function fetch(): Promise<RemoteAttributes[]> {
   return docs;
 }
 
-function saveSpeciesToFile(species: any) {
+function saveSpeciesToFile(species: any): any {
   return new Promise((resolve, reject) => {
-    console.log(`Writing ./species.data.json`);
+    console.log('Writing ./species.data.json');
 
     fs.writeFile('./species.data.json', JSON.stringify(species), err => {
       if (err) {
@@ -88,9 +88,9 @@ function saveSpeciesToFile(species: any) {
 
 function saveCommonNamesToFile(commonNames: any) {
   return new Promise((resolve, reject) => {
-    console.log(`Writing ./species_names.data.json`);
+    console.log('Writing ./species_names.data.json');
     fs.writeFile(
-      `./species_names.data.json`,
+      './species_names.data.json',
       JSON.stringify(commonNames),
       err => {
         if (err) {
@@ -107,6 +107,7 @@ function saveCommonNamesToFile(commonNames: any) {
 fetch()
   .then((species: any) => optimise(species))
   .then(saveSpeciesToFile)
+  .then(makeWarehouseIdMap)
   .then(makeCommonNameMap)
   .then(saveCommonNamesToFile)
   .then(() => console.log('All done!'));

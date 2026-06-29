@@ -1,7 +1,6 @@
-/* eslint-disable import/prefer-default-export */
 import { useAlert } from 'common/flumens';
 
-export const useSensitivityTip = () => {
+const useSensitivityTip = () => {
   const alert = useAlert();
 
   const showTip = (isSelected: boolean) => {
@@ -16,3 +15,5 @@ export const useSensitivityTip = () => {
 
   return showTip;
 };
+
+export default useSensitivityTip;

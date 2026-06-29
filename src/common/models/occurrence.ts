@@ -4,7 +4,9 @@ import {
   OccurrenceData,
   OccurrenceMetadata,
   validateRemoteModel,
+  ElasticOccurrence,
 } from '@flumens';
+import speciesWarehouseIdMap from 'common/data/species_ids.data.json';
 import identify, { Suggestion, Result } from 'common/services/indiciaAI';
 import { Taxon as SearchTaxon } from 'helpers/taxonSearch';
 import { Survey } from 'Survey/common/config';
@@ -76,6 +78,22 @@ type Metadata = OccurrenceMetadata & {
 };
 
 export default class Occurrence extends OccurrenceOriginal<Attrs, Metadata> {
+  static fromElasticDTO(json: ElasticOccurrence, options: any, survey?: any) {
+    // // fix missing common names
+    const commonNames = (speciesWarehouseIdMap as any)[
+      json.taxon.taxa_taxon_list_id
+    ];
+
+    if (commonNames) {
+      // eslint-disable-next-line no-param-reassign
+      json.taxon.taxon_name = commonNames?.[0] || '';
+    }
+
+    const parsed = super.fromElasticDTO(json, options, survey) as any;
+
+    return parsed;
+  }
+
   declare media: IObservableArray<Media>;
 
   declare parent?: Sample;
@@ -94,14 +112,13 @@ export default class Occurrence extends OccurrenceOriginal<Attrs, Metadata> {
     const { taxon } = this.data;
     if (!taxon) return '';
 
+    // when the common name is pulled from warehouse - we should drop the array format at some point
+    if ((taxon as any).commonName) return (taxon as any).commonName;
+
     if (Number.isFinite(taxon.foundInName))
       return taxon.commonNames[taxon.foundInName as number];
 
-    return (
-      taxon?.scientificName ||
-      // backwards compatible
-      (taxon as any)?.scientific_name
-    );
+    return taxon?.scientificName;
   }
 
   getVerificationStatus():
@@ -134,7 +151,7 @@ export default class Occurrence extends OccurrenceOriginal<Attrs, Metadata> {
   }
 
   getVerificationStatusMessage() {
-    const codes: { [keyof: string]: string } = {
+    const codes: Record<string, string> = {
       V: 'Accepted',
       V1: 'Accepted as correct',
       V2: 'Accepted as considered correct',

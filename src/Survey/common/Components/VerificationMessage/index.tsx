@@ -13,7 +13,7 @@ const getVerificationText = (
   t: any
 ) => {
   const statusMessage = message || status;
-  const verifyStatus: { [key: string]: any } = {
+  const verifyStatus: Record<string, any> = {
     queried: (
       <>
         <h2 className="mb-5">
@@ -92,7 +92,7 @@ type Props = {
   occurrence: Occurrence;
 };
 
-const icons: { [key: string]: string } = {
+const icons: Record<string, string> = {
   queried: helpOutline,
   verified: checkmarkCircle,
   plausible: checkmarkCircle,

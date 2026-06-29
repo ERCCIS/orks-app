@@ -1,5 +1,7 @@
 import stringify from 'json-stable-stringify';
 import { AppModel } from 'models/app';
+import Occurrence from 'models/occurrence';
+import Sample from 'models/sample';
 
 async function getAppModel() {
   const genericStoreMock = { find: async () => null, save: async () => null };
@@ -10,6 +12,27 @@ async function getAppModel() {
 }
 
 describe('App Model attr locks extension', () => {
+  describe('appendAttrLocks', () => {
+    it('should append locks for attributes with colon in id', async () => {
+      // Given
+      const appModel = await getAppModel();
+      const sample = new Sample({ data: { location: { name: 'Test' } } });
+      sample.occurrences.push(new Occurrence());
+
+      const locks = {
+        'occ:occAttr:466': '5331',
+        'occ:occAttr:507': '5709',
+      };
+
+      // When
+      appModel.appendAttrLocks(sample, locks);
+
+      // Then
+      expect(sample.occurrences[0].data['occAttr:466']).toEqual('5331');
+      expect(sample.occurrences[0].data['occAttr:507']).toEqual('5709');
+    });
+  });
+
   describe('getAllLocks', () => {
     it('should return all locks', async () => {
       // Given

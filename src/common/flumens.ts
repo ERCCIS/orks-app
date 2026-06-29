@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 export { options as sentryOptions } from '@flumens/utils/dist/sentry';
 export { default as Main } from '@flumens/ionic/dist/components/Main';
 export { default as Page } from '@flumens/ionic/dist/components/Page';
@@ -40,6 +39,10 @@ export {
 export * from '@flumens/utils/dist/date';
 export { default as device } from '@flumens/utils/dist/device';
 export * from '@flumens/utils/dist/uuid';
+export {
+  default as MigrationManager,
+  type Migration,
+} from '@flumens/utils/dist/MigrationManager';
 export { useToast, useAlert, useLoader } from '@flumens/ionic/dist/hooks';
 export { default as Collapse } from '@flumens/ionic/dist/components/Collapse';
 export { default as InfoMessage } from '@flumens/tailwind/dist/components/InfoMessage';
@@ -98,7 +101,7 @@ export {
 export * from '@flumens/utils/dist/errors';
 export * from '@flumens/utils/dist/location';
 export * from '@flumens/utils/dist/image';
-export * from '@flumens/utils/dist/type';
+export type * from '@flumens/utils/dist/type';
 export { default as ImageWithBackground } from '@flumens/ionic/dist/components/ImageWithBackground';
 export { default as Store } from '@flumens/models/dist/Stores/SQLiteStore';
 export { default as Collection } from '@flumens/models/dist/Collection';
@@ -114,6 +117,7 @@ export {
   default as TailwindContext,
   type ContextValue as TailwindContextValue,
 } from '@flumens/tailwind/dist/components/Context';
+export { default as Block } from '@flumens/tailwind/dist/components/Block';
 export {
   type BlockConf as BlockT,
   type ChoiceValues,

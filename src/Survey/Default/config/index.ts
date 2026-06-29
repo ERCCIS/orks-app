@@ -1,10 +1,13 @@
 /* eslint-disable no-param-reassign */
 import mergeWith from 'lodash.mergewith';
 import { object, string } from 'zod';
+<<<<<<< HEAD
 import fingerprintIcon from 'common/images/fingerprint.svg';
 import numberIcon from 'common/images/number.svg';
 import progressIcon from 'common/images/progress-circles.svg';
 import targetIcon from 'common/images/target.svg';
+=======
+>>>>>>> upstream/master
 import userModel from 'common/models/user';
 import appModel from 'models/app';
 import AppOccurrence, { MachineInvolvement } from 'models/occurrence';
@@ -12,7 +15,6 @@ import AppSample from 'models/sample';
 import {
   coreAttributes,
   dateAttr,
-  activityAttr,
   Survey,
   locationAttr,
   taxonAttr,
@@ -28,11 +30,19 @@ import arthropodSurvey from './arthropods';
 import birdsSurvey from './birds';
 import bryophytesSurvey from './bryophytes';
 import butterfliesSurvey from './butterflies';
+import { numberAttr, numberRangesAttr, sexAttr, stageAttr } from './common';
 import dragonfliesSurvey from './dragonflies';
 import mammalsSurvey from './mammals';
 import mothsSurvey from './moths';
 import plantFungiSurvey from './plantFungi';
 import reptilesSurvey from './reptiles';
+
+export {
+  dateAttr,
+  commentAttr,
+  recorderAttr,
+  groupIdAttr,
+} from 'Survey/common/config';
 
 export const taxonGroupSurveys = {
   arthropods: arthropodSurvey,
@@ -61,6 +71,7 @@ export function getTaxaGroupSurvey(taxaGroup: number) {
   return matchingSurveys[0] as Survey;
 }
 
+<<<<<<< HEAD
 const stageOptions = [
   { label: 'Not Recorded', value: null, isDefault: true },
   { value: 'Male', id: 3484 },
@@ -123,10 +134,25 @@ const survey: Survey = {
   name: 'default',
   id: 490,
   webForm: 'enter-app-record',
+=======
+export const defaultSensitivityPrecisionAttr = {
+  ...sensitivityPrecisionAttr(1000),
+  id: 'sensitivityPrecision',
+};
+
+const SURVEY_ID = 374;
+const SURVEY_WEBFORM = 'enter-app-record';
+
+const survey = {
+  name: 'default',
+  id: SURVEY_ID,
+  webForm: SURVEY_WEBFORM,
+>>>>>>> upstream/master
   webViewForm: 'record-details',
 
   taxaGroups: [], // all // TODO: remove?
 
+<<<<<<< HEAD
   render: [
     {
       id: 'occ:number',
@@ -157,12 +183,19 @@ const survey: Survey = {
     activity: activityAttr,
 
     method: methodAttr,
+=======
+  attrs: {
+    [locationAttr.id]: locationAttr,
+    [dateAttr.id]: dateAttr,
+    [recorderAttr.id]: recorderAttr,
+    [groupIdAttr.id]: groupIdAttr,
+>>>>>>> upstream/master
   },
 
   verify: (attrs: any) =>
     object({
       location: locationAttrValidator({
-        name: string({ required_error: 'Location name is missing' }).min(
+        name: string({ error: 'Location name is missing' }).min(
           1,
           'Location name is missing'
         ),
@@ -170,7 +203,10 @@ const survey: Survey = {
     }).safeParse(attrs).error,
 
   occ: {
+    render: [numberAttr, stageAttr, sexAttr, identifiersAttr],
+
     attrs: {
+<<<<<<< HEAD
       taxon: taxonAttr,
 
       number: {
@@ -258,12 +294,26 @@ const survey: Survey = {
         remote: { values: sensitivityOptions },
       },
       comment: commentAttr,
+=======
+      [taxonAttr.id]: taxonAttr,
+      [numberAttr.id]: numberAttr,
+      [numberRangesAttr.id]: numberRangesAttr,
+      [stageAttr.id]: stageAttr,
+      [sexAttr.id]: sexAttr,
+      [identifiersAttr.id]: identifiersAttr,
+      [commentAttr.id]: commentAttr,
+      [defaultSensitivityPrecisionAttr.id]: defaultSensitivityPrecisionAttr,
+>>>>>>> upstream/master
     },
 
     verify: (attrs: any) =>
       object({
+<<<<<<< HEAD
         taxon: object({}, { required_error: 'Species is missing.' }).nullable(),
         type: string({ required_error: 'Type is missing.' }).nullable(),
+=======
+        taxon: object({}, { error: 'Species is missing.' }).nullable(),
+>>>>>>> upstream/master
       }).safeParse(attrs).error,
 
     modifySubmission(submission: any, occ: AppOccurrence) {
@@ -288,9 +338,9 @@ const survey: Survey = {
 
     const sample = new Sample({
       data: {
-        surveyId: survey.id,
-        inputForm: survey.webForm,
-        date: new Date().toISOString(),
+        surveyId: SURVEY_ID,
+        inputForm: SURVEY_WEBFORM,
+        date: new Date().toISOString().split('T')[0],
         enteredSrefSystem: 4326,
         location: {},
         recorder,
@@ -341,12 +391,12 @@ const survey: Survey = {
 
   get(sample: AppSample) {
     const getTaxaSpecifigConfig = () => {
-      if (!sample.occurrences.length) return survey;
+      if (!sample.occurrences.length) return this;
 
-      if (!sample.metadata.taxa) return survey;
+      if (!sample.metadata.taxa) return this;
 
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      return _getFullTaxaGroupSurvey(sample.metadata.taxa);
+      return getFullTaxaGroupSurvey(sample.metadata.taxa);
     };
 
     const isSubSample = sample.parent;
@@ -361,7 +411,7 @@ const survey: Survey = {
 
     return getTaxaSpecifigConfig();
   },
-};
+} as const satisfies Survey;
 
 export default survey;
 
@@ -369,7 +419,7 @@ export default survey;
  * Finds the matching species group survey.
  * @param taxa species group name e.g. 'birds'.
  */
-export function _getFullTaxaGroupSurvey(
+export function getFullTaxaGroupSurvey(
   taxa?: keyof typeof taxonGroupSurveys
 ): Survey {
   if (!taxa) return { ...survey };
@@ -387,8 +437,8 @@ export function _getFullTaxaGroupSurvey(
     return undefined;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
-  const { render, taxaGroups, ...defaultSurveyCopy } = survey;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { render, taxaGroups, ...defaultSurveyCopy } = survey as any;
   const mergedDefaultSurvey: Survey = mergeWith(
     {},
     defaultSurveyCopy,

@@ -1,7 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import defaultSurvey, {
-  _getFullTaxaGroupSurvey,
+  getFullTaxaGroupSurvey,
   getTaxaGroupSurvey,
 } from 'Survey/Default/config';
 import birdsSurvey from '../birds';
@@ -9,13 +9,13 @@ import dragonfliesSurvey from '../dragonflies';
 
 i18n.use(initReactI18next).init({ lng: 'en' });
 
-describe('_getFullTaxaGroupSurvey', () => {
+describe('getFullTaxaGroupSurvey', () => {
   it('should return default survey if no species group', () => {
     // Given
     const speciesGroup = null;
 
     // When
-    const survey = _getFullTaxaGroupSurvey(speciesGroup);
+    const survey = getFullTaxaGroupSurvey(speciesGroup);
 
     // Then
     expect(survey.taxa).toBe(defaultSurvey.taxa);
@@ -26,7 +26,7 @@ describe('_getFullTaxaGroupSurvey', () => {
     const speciesGroup = 111111111; // some random one
 
     // When
-    const survey = _getFullTaxaGroupSurvey(speciesGroup);
+    const survey = getFullTaxaGroupSurvey(speciesGroup);
 
     // Then
     expect(survey.taxa).toBe(defaultSurvey.taxa);
@@ -37,7 +37,7 @@ describe('_getFullTaxaGroupSurvey', () => {
     const speciesGroup = 1; // some random one
 
     // When
-    const survey = _getFullTaxaGroupSurvey(speciesGroup);
+    const survey = getFullTaxaGroupSurvey(speciesGroup);
 
     // Then
     expect(survey.taxa).toBe(defaultSurvey.taxa);
@@ -48,7 +48,7 @@ describe('_getFullTaxaGroupSurvey', () => {
     const speciesGroup = 104;
 
     // When
-    const survey = _getFullTaxaGroupSurvey(speciesGroup);
+    const survey = getFullTaxaGroupSurvey(speciesGroup);
 
     // Then
     expect(survey.render).toBe(defaultSurvey.render);

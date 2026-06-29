@@ -12,27 +12,30 @@ const stage = [
   { value: 'Other', id: 17673 },
 ];
 
+const reptileStageAttr = {
+  id: 'stage',
+  menuProps: { icon: progressIcon },
+  pageProps: {
+    attrProps: {
+      input: 'radio',
+      inputProps: { options: stage },
+    },
+  },
+  remote: { id: 874, values: stage },
+} as const;
+
 const survey: Partial<Survey> & { taxa: string } = {
   taxa: 'reptiles',
   taxaGroups: [groups.reptile, groups.amphibian],
 
   occ: {
     attrs: {
-      stage: {
-        menuProps: { icon: progressIcon },
-        pageProps: {
-          attrProps: {
-            input: 'radio',
-            inputProps: { options: stage },
-          },
-        },
-        remote: { id: 874, values: stage },
-      },
+      [reptileStageAttr.id]: reptileStageAttr,
     },
 
     verify: (attrs: any) =>
       object({
-        taxon: object({}, { required_error: 'Species is missing.' }).nullable(),
+        taxon: object({}, { error: 'Species is missing.' }).nullable(),
       }).safeParse(attrs).error,
   },
 };

@@ -53,7 +53,7 @@ const exportDatabase = async () => {
 
   await writeBlob({ path, directory, blob });
   const { uri: url } = await Filesystem.getUri({ directory, path });
-  await Share.share({ title: `App database`, files: [url] });
+  await Share.share({ title: 'App database', files: [url] });
   await Filesystem.deleteFile({ directory, path });
 };
 
@@ -62,7 +62,7 @@ const importDatabase = async () => {
   const blob = await new Promise<Blob>(resolve => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.addEventListener('change', function () {
+    input.addEventListener('change', () => {
       const fileReader = new FileReader();
       fileReader.onloadend = async (e: any) =>
         resolve(
@@ -101,28 +101,6 @@ const useDeleteUser = () => {
 
   return deleteUser;
 };
-
-// TODO:
-// toggleGridAlertService(on) {
-//   if (!on) {
-//     gridAlertService.stop();
-//     return;
-//   }
-
-//   gridAlertService.start(location => {
-//     console.log(location.gridref);
-//     API.showGridNotification(location);
-//   });
-// },
-
-// showGridNotification(location) {
-//   const body = `<h1 style="text-align: center;">${location.gridref}</h1>`;
-
-//   radio.trigger('app:dialog', {
-//     title: 'Grid Square',
-//     body,
-//   });
-// },
 
 function onToggle(
   setting: keyof PickByType<AppModelData, boolean>,

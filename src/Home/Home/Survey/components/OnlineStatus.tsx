@@ -5,11 +5,11 @@ import { IonIcon, IonSpinner } from '@ionic/react';
 import { Badge, Button } from 'common/flumens';
 import Sample from 'models/sample';
 
-interface Props {
+type Props = {
   sample: Sample;
   onUpload: (e?: any) => void;
   uploadIsPrimary?: boolean;
-}
+};
 
 const OnlineStatus = ({ onUpload, sample, uploadIsPrimary }: Props) => {
   const { saved } = sample.metadata;

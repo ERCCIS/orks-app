@@ -6,19 +6,27 @@ import { Main, useAlert } from '@flumens';
 import { IonList, IonIcon, useIonViewDidEnter } from '@ionic/react';
 import appModel from 'models/app';
 import Sample from 'models/sample';
+import {
+  commentAttr,
+  dateAttr,
+  defaultSensitivityPrecisionAttr,
+  groupIdAttr,
+  recorderAttr,
+} from 'Survey/Default/config';
 import DisabledRecordMessage from 'Survey/common/Components/DisabledRecordMessage';
 import MenuAttr from 'Survey/common/Components/MenuAttr';
-import MenuDynamicAttrs from 'Survey/common/Components/MenuDynamicAttrs';
+import MenuDynamicAttr from 'Survey/common/Components/MenuDynamicAttrs';
 import MenuLocation from 'Survey/common/Components/MenuLocation';
 import MenuTaxonItem from 'Survey/common/Components/MenuTaxonItem';
 import PhotoPicker from 'Survey/common/Components/PhotoPicker';
 import VerificationMessage from 'Survey/common/Components/VerificationMessage';
+import useSensitivityTip from 'Survey/common/Components/hooks';
 import lockScreenshot from './lock.png';
 import './styles.scss';
 
-interface Props {
+type Props = {
   sample: Sample;
-}
+};
 
 const useAttributeLockingTip = (sample: Sample) => {
   const alert = useAlert();
@@ -60,6 +68,9 @@ const useAttributeLockingTip = (sample: Sample) => {
 
 const EditMain = ({ sample }: Props) => {
   useAttributeLockingTip(sample);
+  const showSensitivityWarning = useSensitivityTip();
+
+  const surveyConfig = sample.getSurvey();
 
   const { url } = useRouteMatch();
 
@@ -71,8 +82,8 @@ const EditMain = ({ sample }: Props) => {
   const { isDisabled } = sample;
 
   return (
-    <Main>
-      <IonList lines="full" className="mb-2 flex flex-col gap-4">
+    <Main className="[--padding-bottom:30px]">
+      <IonList lines="full" className="mb-2 flex! flex-col gap-4">
         {isDisabled && (
           <div className="rounded-list mb-2">
             <VerificationMessage occurrence={occ} />
@@ -88,7 +99,7 @@ const EditMain = ({ sample }: Props) => {
         {/* Only showing if pre-selected */}
         {groupId && (
           <div className="rounded-list">
-            <MenuAttr.WithLock model={sample} attr="groupId" />
+            <MenuAttr.WithLock model={sample} attr={groupIdAttr} />
           </div>
         )}
 
@@ -99,16 +110,29 @@ const EditMain = ({ sample }: Props) => {
         <div className="rounded-list">
           <MenuTaxonItem occ={occ} />
           <MenuLocation.WithLock sample={sample} />
-          <MenuAttr.WithLock model={sample} attr="date" />
-          <MenuAttr.WithLock model={sample} attr="recorder" />
+          <MenuAttr.WithLock model={sample} attr={dateAttr} />
+          <MenuAttr.WithLock model={sample} attr={recorderAttr} />
           <MenuAttr.WithLock
             model={occ}
-            attr="comment"
-            itemProps={{
-              routerLink: `${url}/occ/${occ.cid}/comment`,
-            }}
+            attr={commentAttr}
+            itemProps={{ routerLink: `${url}/occ/${occ.cid}/comment` }}
           />
-          <MenuDynamicAttrs model={sample} />
+          {surveyConfig.render?.map((attr: any) => (
+            <MenuDynamicAttr key={attr.id} model={sample} attr={attr} />
+          ))}
+          {surveyConfig.occ?.render?.map((attr: any) => (
+            <MenuDynamicAttr
+              key={attr.id}
+              model={occ}
+              attr={attr}
+              useSeparateOccPage
+            />
+          ))}
+          <MenuAttr.WithLock
+            model={occ}
+            attr={defaultSensitivityPrecisionAttr}
+            onChange={showSensitivityWarning}
+          />
         </div>
       </IonList>
     </Main>

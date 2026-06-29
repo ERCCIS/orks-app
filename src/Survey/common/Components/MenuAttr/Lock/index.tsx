@@ -8,7 +8,7 @@ import {
   chevronDownOutline,
 } from 'ionicons/icons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { useToast } from '@flumens';
+import { BlockT, useToast } from '@flumens';
 import {
   IonItemSliding,
   IonItemOptions,
@@ -19,22 +19,23 @@ import {
 import appModel from 'models/app';
 import Occurrence from 'models/occurrence';
 import Sample from 'models/sample';
+import { AttrConfig } from 'Survey/common/config';
 import MenuAttr from '..';
 import './styles.scss';
 
 type Props = {
   model: Sample | Occurrence;
-  attr: string;
+  id: string;
   children: any;
 };
 
-const Lock = ({ model, attr, children }: Props) => {
+const Lock = observer(({ model, id, children }: Props) => {
   const toast = useToast();
 
-  let value = (model.data as any)[attr];
+  let value = (model.data as any)[id];
   const survey = model.getSurvey();
-  if (!value && survey.attrs?.[attr]?.menuProps?.getLock) {
-    value = survey.attrs[attr].menuProps?.getLock?.(model);
+  if (!value && survey.attrs?.[id]?.menuProps?.getLock) {
+    value = survey.attrs[id].menuProps?.getLock?.(model);
   }
 
   const allowLocking = !!value;
@@ -43,9 +44,11 @@ const Lock = ({ model, attr, children }: Props) => {
 
   if (model.isDisabled) return <>{children}</>;
 
-  const isLocked = appModel.isAttrLocked(model, attr);
+  const isLocked = appModel.isAttrLocked(model, id);
   const toggleLockWrap = async () => {
-    const isOpen = sliderRef.current.firstChild.style.transform;
+    const isOpen = sliderRef.current.classList.contains(
+      'item-sliding-active-slide'
+    );
     if (!isOpen) return;
 
     sliderRef.current.close(); // needs to be after the openness check
@@ -53,19 +56,16 @@ const Lock = ({ model, attr, children }: Props) => {
     isPlatform('hybrid') && Haptics.impact({ style: ImpactStyle.Light });
 
     if (isLocked) {
-      appModel.unsetAttrLock(model, attr);
+      appModel.unsetAttrLock(model, id);
       return;
     }
 
     if (value) {
-      appModel.setAttrLock(model, attr, value);
+      appModel.setAttrLock(model, id, value);
 
       toast.success(
         'The attribute value was locked and will be pre-filled for subsequent records.',
-        {
-          color: 'secondary',
-          position: 'bottom',
-        }
+        { color: 'secondary', position: 'bottom' }
       );
     }
   };
@@ -93,7 +93,7 @@ const Lock = ({ model, attr, children }: Props) => {
       </IonItemOptions>
     </IonItemSliding>
   );
-};
+});
 
 export type LockConfig = {
   /**
@@ -116,7 +116,7 @@ export type LockConfig = {
 
 export type MenuAttrWithLockProps = {
   model: Sample | Occurrence;
-  attr: string;
+  attr: AttrConfig | BlockT;
   itemProps?: any;
   onChange?: any;
 };
@@ -128,20 +128,21 @@ export const WithLock = observer(
     itemProps: itemPropsProp,
     ...other
   }: MenuAttrWithLockProps) => {
-    const isLocked = appModel.isAttrLocked(model, attr);
+    const { id } = attr;
+    const isLocked = appModel.isAttrLocked(model, id);
 
-    // eslint-disable-next-line no-unused-expressions
-    (model.data as any)[attr]; // force rerender on val change
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    (model.data as any)[id]; // force rerender on val change
 
     const onChange = (newValue: any) => {
       if (!isLocked) return;
 
       if (!newValue) {
-        appModel.unsetAttrLock(model, attr);
+        appModel.unsetAttrLock(model, id);
         return;
       }
 
-      appModel.setAttrLock(model, attr, newValue);
+      appModel.setAttrLock(model, id, newValue);
     };
 
     const itemProps = {
@@ -151,7 +152,7 @@ export const WithLock = observer(
       detailIcon: isLocked ? lockClosedOutline : chevronForwardOutline,
     };
 
-    if (attr === 'date') {
+    if (id === 'date') {
       itemProps.inputProps = {
         ...itemProps.inputProps,
         accordionProps: {
@@ -161,7 +162,7 @@ export const WithLock = observer(
     }
 
     return (
-      <Lock model={model} attr={attr}>
+      <Lock model={model} id={id}>
         <MenuAttr
           model={model}
           attr={attr}
@@ -174,4 +175,4 @@ export const WithLock = observer(
   }
 );
 
-export default observer(Lock);
+export default Lock;

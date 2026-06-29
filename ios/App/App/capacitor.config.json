@@ -1,21 +1,21 @@
 {
-	"appId": "uk.org.orks.app",
-	"appName": "ORKS App",
-	"webDir": "build",
-	"cordova": {},
-	"packageClassList": [
-		"CapacitorSQLitePlugin",
-		"AppPlugin",
-		"CAPCameraPlugin",
-		"DevicePlugin",
-		"FilesystemPlugin",
-		"GeolocationPlugin",
-		"HapticsPlugin",
-		"KeyboardPlugin",
-		"CAPNetworkPlugin",
-		"SharePlugin",
-		"SplashScreenPlugin",
-		"StatusBarPlugin",
-		"BlobWriter"
-	]
+    "appId": "uk.org.orks.app",
+    "appName": "ORKS App",
+    "webDir": "build",
+    "cordova": {},
+    "packageClassList": [
+        "CapacitorSQLitePlugin",
+        "AppPlugin",
+        "CAPCameraPlugin",
+        "DevicePlugin",
+        "FilesystemPlugin",
+        "GeolocationPlugin",
+        "HapticsPlugin",
+        "KeyboardPlugin",
+        "CAPNetworkPlugin",
+        "SharePlugin",
+        "SplashScreenPlugin",
+        "StatusBarPlugin",
+        "BlobWriter"
+    ]
 }
