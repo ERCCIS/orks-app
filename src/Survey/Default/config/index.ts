@@ -74,7 +74,11 @@ const stageOptions = [
   { value: 'Juvenile male', id: 3409 },
   { value: 'Juvenile female', id: 3410 },
   { value: 'Breeding pair', id: 3411 },
-  { value: 'If a group contained mixed adults and juveniles, both male, female or unknown', id: 5262 },
+  {
+    value:
+      'If a group contained mixed adults and juveniles, both male, female or unknown',
+    id: 5262,
+  },
   { value: 'Mixed group', id: 5261 },
   { value: 'In flower', id: 3412 },
   { value: 'Fruiting', id: 3413 },
@@ -83,7 +87,7 @@ const stageOptions = [
   { value: 'Nymph', id: 3959 },
   { value: 'Spawn', id: 3960 },
   { value: 'Pupa', id: 3958 },
-  { value: 'Exuviae', id: 14241},
+  { value: 'Exuviae', id: 14241 },
   { value: 'Other (please add to comments)', id: 3414 },
 ];
 
@@ -192,7 +196,7 @@ const survey: Survey = {
           },
           setLock: (model, _, value) => {
             const numberRegex = /^\d+$/; // https://stackoverflow.com/questions/175739/how-can-i-check-if-a-string-is-a-valid-number
-            if (numberRegex.test(`${ value}`))  {
+            if (numberRegex.test(`${value}`)) {
               appModel.setAttrLock(model, 'number', value, true);
             } else {
               appModel.setAttrLock(model, 'number-ranges', value, true);
@@ -231,7 +235,7 @@ const survey: Survey = {
       },
 
       type: {
-        menuProps: { icon: progressIcon, label: 'Type' },
+        menuProps: { icon: progressIcon, label: 'Type', required: true },
         pageProps: {
           attrProps: {
             input: 'radio',
@@ -259,6 +263,7 @@ const survey: Survey = {
     verify: (attrs: any) =>
       object({
         taxon: object({}, { required_error: 'Species is missing.' }).nullable(),
+        type: string({ required_error: 'Type is missing.' }).nullable(),
       }).safeParse(attrs).error,
 
     modifySubmission(submission: any, occ: AppOccurrence) {
