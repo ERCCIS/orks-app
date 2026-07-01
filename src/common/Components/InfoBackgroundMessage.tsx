@@ -2,12 +2,12 @@ import { observer } from 'mobx-react';
 import { InfoBackgroundMessage } from '@flumens';
 import appModel, { Data } from 'models/app';
 
-interface Props {
+type Props = {
   name?: keyof Data;
   children: any;
   className?: string;
   skipTranslation?: boolean;
-}
+};
 
 const Message = ({ name, children, ...props }: Props) => {
   if (name && !appModel.data[name]) {

@@ -10,14 +10,22 @@ import MenuAttr from 'Survey/common/Components/MenuAttr';
 import MenuLocation from 'Survey/common/Components/MenuLocation';
 import { usePromptImageSource } from 'Survey/common/Components/PhotoPicker';
 import SpeciesList from 'Survey/common/Components/SpeciesList';
+import { Action } from 'Survey/common/Components/SpeciesList/BulkEdit';
+import { commentAttr, dateAttr, methodAttr, recorderAttr } from '../config';
 
 type Props = {
   sample: Sample;
   attachSpeciesImages: any;
   onDelete: any;
+  onBulkEdit?: (action: Action, modelIds: string[], value?: any) => void;
 };
 
-const MothHomeMain = ({ sample, onDelete, attachSpeciesImages }: Props) => {
+const MothHomeMain = ({
+  sample,
+  onDelete,
+  attachSpeciesImages,
+  onBulkEdit,
+}: Props) => {
   const { url } = useRouteMatch();
   const { navigate } = useContext(NavContext);
   const promptImageSource = usePromptImageSource();
@@ -45,21 +53,21 @@ const MothHomeMain = ({ sample, onDelete, attachSpeciesImages }: Props) => {
 
         <div className="rounded-list">
           <MenuLocation sample={sample} />
-          <MenuAttr model={sample} attr="date" />
+          <MenuAttr model={sample} attr={dateAttr} />
           {!hasDate && (
             <InfoMessage inline>
               If trapping overnight please enter the date for the evening on
               which the trap was put out.
             </InfoMessage>
           )}
-          <MenuAttr model={sample} attr="recorder" />
-          <MenuAttr model={sample} attr="method" />
-          <MenuAttr model={sample} attr="comment" />
+          <MenuAttr model={sample} attr={recorderAttr} />
+          <MenuAttr model={sample} attr={methodAttr} />
+          <MenuAttr model={sample} attr={commentAttr} />
         </div>
       </IonList>
 
       {!isDisabled && (
-        <div className="mx-auto mb-2.5 mt-8 flex items-center justify-center gap-5">
+        <div className="mx-3 mb-2.5 mt-8 flex items-center justify-center gap-5">
           <Button
             color="primary"
             onPress={() => navigate(`${url}/taxon`)}
@@ -80,7 +88,11 @@ const MothHomeMain = ({ sample, onDelete, attachSpeciesImages }: Props) => {
         </div>
       )}
 
-      <SpeciesList sample={sample} onDelete={onDelete} />
+      <SpeciesList
+        sample={sample}
+        onDelete={onDelete}
+        onBulkEdit={onBulkEdit}
+      />
     </Main>
   );
 };

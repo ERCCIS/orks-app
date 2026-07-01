@@ -21,7 +21,8 @@ const sixMonthsAgo = new Date(
 today = new Date();
 const yearAgo = new Date(today.setMonth(today.getMonth() - 12)).toISOString();
 
-export const dateRanges = [
+// a function because the language for translations is set at runtime later
+export const getDateRanges = () => [
   { label: t('Last three days'), value: threeDaysAgo },
   { label: t('Last month'), value: monthAgo },
   { label: t('Last six months'), value: sixMonthsAgo },
@@ -71,14 +72,14 @@ const Filter = ({
   );
 };
 
-interface MapFiltersProps {
+type MapFiltersProps = {
   children: ReactNode;
   className?: string;
-}
-
-const MapFilters = ({ children, className }: MapFiltersProps) => {
-  return <div className={clsx('map-filters', className)}>{children}</div>;
 };
+
+const MapFilters = ({ children, className }: MapFiltersProps) => (
+  <div className={clsx('map-filters', className)}>{children}</div>
+);
 
 MapFilters.Filter = Filter;
 MapFilters.Select = FilterSelect;

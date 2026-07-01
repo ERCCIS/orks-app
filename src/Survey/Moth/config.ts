@@ -16,7 +16,10 @@ import {
   identifiersAttr,
   mothStageAttr,
   locationAttrValidator,
+  sensitivityPrecisionAttr,
 } from 'Survey/common/config';
+
+export { commentAttr, dateAttr, recorderAttr } from 'Survey/common/config';
 
 const sex = [
   { value: 'Male', id: 1947 },
@@ -40,87 +43,99 @@ const methodOptions = [
   { value: 'Other method (add comment)', id: 2206 },
 ];
 
-const survey: Survey = {
+export const methodAttr = {
+  id: 'method',
+  menuProps: { icon: numberIcon },
+  pageProps: {
+    attrProps: {
+      input: 'radio',
+      info: 'Please enter your sampling method (i.e. type of trap or recording method).',
+      inputProps: { options: methodOptions },
+    },
+  },
+  remote: { id: 263, values: methodOptions },
+} as const;
+
+export const numberAttr = {
+  id: 'number',
+  menuProps: { icon: numberIcon, label: 'Quantity' },
+  pageProps: {
+    headerProps: { title: 'Quantity' },
+    attrProps: {
+      input: 'slider',
+      info: 'How many individuals of this species did you see?',
+      inputProps: {
+        inputProps: { max: 500 },
+      },
+    },
+  },
+
+  remote: { id: 133 },
+} as const;
+
+export const sexAttr = {
+  id: 'sex',
+  menuProps: { icon: genderIcon },
+  pageProps: {
+    attrProps: {
+      input: 'radio',
+      info: 'Please indicate the sex of the organism.',
+      inputProps: { options: sex },
+    },
+  },
+  remote: { id: 105, values: sex },
+} as const;
+
+const mothSensitivityPrecisionAttr = {
+  id: 'sensitivityPrecision',
+  ...sensitivityPrecisionAttr(1000),
+} as const;
+
+const SURVEY_ID = 90;
+const SURVEY_WEBFORM = 'enter-moth-sightings';
+
+const survey = {
   name: 'moth',
   label: 'Moth List Survey',
-  id: 90,
+  id: SURVEY_ID,
 
   taxaGroups: [groups.moth],
 
-  webForm: 'enter-moth-sightings',
+  webForm: SURVEY_WEBFORM,
 
   attrs: {
-    location: locationAttr,
-
-    date: dateAttr,
-
-    recorder: recorderAttr,
-    /** @deprecated */
-    recorders: recorderAttr,
-
-    method: {
-      menuProps: { icon: numberIcon },
-      pageProps: {
-        attrProps: {
-          input: 'radio',
-          info: 'Please enter your sampling method (i.e. type of trap or recording method).',
-          inputProps: { options: methodOptions },
-        },
-      },
-      remote: { id: 263, values: methodOptions },
-    },
-
-    comment: commentAttr,
+    [locationAttr.id]: locationAttr,
+    [dateAttr.id]: dateAttr,
+    [recorderAttr.id]: recorderAttr,
+    [methodAttr.id]: methodAttr,
+    [commentAttr.id]: commentAttr,
   },
 
   occ: {
     render: [
-      'occ:taxon',
-      'occ:number',
-      'occ:stage',
-      'occ:sex',
-      'occ:identifiers',
-      'occ:comment',
-      'occ:sensitivityPrecision',
+      taxonAttr,
+      numberAttr,
+      mothStageAttr,
+      sexAttr,
+      identifiersAttr,
+      commentAttr,
+      mothSensitivityPrecisionAttr,
     ],
 
     attrs: {
-      taxon: taxonAttr,
-      number: {
-        menuProps: { icon: numberIcon, label: 'Quantity' },
-        pageProps: {
-          headerProps: { title: 'Quantity' },
-          attrProps: {
-            input: 'slider',
-            info: 'How many individuals of this species did you see?',
-            inputProps: {
-              inputProps: { max: 500 },
-            },
-          },
-        },
-
-        remote: { id: 133 },
-      },
-      stage: mothStageAttr,
-      sex: {
-        menuProps: { icon: genderIcon },
-        pageProps: {
-          attrProps: {
-            input: 'radio',
-            info: 'Please indicate the sex of the organism.',
-            inputProps: { options: sex },
-          },
-        },
-        remote: { id: 105, values: sex },
-      },
-      identifiers: identifiersAttr,
-      comment: commentAttr,
+      [taxonAttr.id]: taxonAttr,
+      [numberAttr.id]: numberAttr,
+      [mothStageAttr.id]: mothStageAttr,
+      [sexAttr.id]: sexAttr,
+      [identifiersAttr.id]: identifiersAttr,
+      [commentAttr.id]: commentAttr,
+      [mothSensitivityPrecisionAttr.id]: mothSensitivityPrecisionAttr,
     },
 
     verify: (attrs: any) =>
       object({
-        taxon: object({}, { required_error: 'Species is missing.' }).nullable(),
-        stage: string({ required_error: 'Stage is missing.' }).nullable(),
+        taxon: object({}, { error: 'Species is missing.' }).nullable(),
+        stage: string({ error: 'Stage is missing.' }).nullable(),
       }).safeParse(attrs).error,
 
     create({ Occurrence, taxon, images }) {
@@ -142,18 +157,16 @@ const survey: Survey = {
   verify: (attrs: any) =>
     object({
       location: locationAttrValidator({
-        name: string({ required_error: 'Location name is missing' }).min(
+        name: string({ error: 'Location name is missing' }).min(
           1,
           'Location name is missing'
         ),
       }),
-      date: string({ required_error: 'Date is missing.' }).nullable(),
-      method: string({ required_error: 'Method is missing.' })
+      date: string({ error: 'Date is missing.' }).nullable(),
+      method: string({ error: 'Method is missing.' })
         .min(1, 'Method is missing.')
         .nullable(),
-      recorder: string({
-        required_error: 'Recorder field is missing.',
-      })
+      recorder: string({ error: 'Recorder field is missing.' })
         .min(1, 'Recorder field is missing.')
         .nullable(),
     }).safeParse(attrs).error,
@@ -167,8 +180,8 @@ const survey: Survey = {
 
     const sample = new Sample({
       data: {
-        surveyId: survey.id,
-        inputForm: survey.webForm,
+        surveyId: SURVEY_ID,
+        inputForm: SURVEY_WEBFORM,
         date: undefined, // user should specify the trap time
         enteredSrefSystem: 4326,
         location: {},
@@ -192,6 +205,6 @@ const survey: Survey = {
 
     return submission;
   },
-};
+} as const satisfies Survey;
 
 export default survey;

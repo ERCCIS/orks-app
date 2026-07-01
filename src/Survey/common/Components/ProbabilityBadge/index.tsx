@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { IonContent, IonPopover } from '@ionic/react';
 import Badge from './Badge';
 
-interface Props {
+type Props = {
   probability?: number;
   className?: string;
   showInfo?: boolean;
-}
+};
 
 const ProbabilityBadge = ({ probability, className, showInfo }: Props) => {
-  const [infoState, setShowInfo] = useState<any>({
+  const [infoState, setInfoState] = useState<any>({
     showInfo: false,
     event: undefined,
   });
@@ -17,10 +17,10 @@ const ProbabilityBadge = ({ probability, className, showInfo }: Props) => {
   const onShowInfo = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
-    setShowInfo({ showInfo: true, event: e });
+    setInfoState({ showInfo: true, event: e });
   };
 
-  const hideInfo = () => setShowInfo({ showInfo: false, event: undefined });
+  const hideInfo = () => setInfoState({ showInfo: false, event: undefined });
 
   return (
     <>

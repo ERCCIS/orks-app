@@ -43,10 +43,7 @@ const Attributes = ({ occ }: Props) => {
         </Badge>
       )}
       {!!type && (
-        <Badge
-          size="small"
-          className={`text-xs ${typeLocked ? 'locked' : ''}`}
-        >
+        <Badge size="small" className={`text-xs ${typeLocked ? 'locked' : ''}`}>
           {type}
         </Badge>
       )}

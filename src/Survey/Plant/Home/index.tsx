@@ -19,6 +19,7 @@ import Media from 'common/models/media';
 import Occurrence from 'common/models/occurrence';
 import Sample, { useValidateCheck } from 'models/sample';
 import userModel, { useUserStatusCheck } from 'models/user';
+import { Action } from 'Survey/common/Components/SpeciesList/BulkEdit';
 import SurveyHeaderButton from 'Survey/common/Components/SurveyHeaderButton';
 import TrainingBand from 'Survey/common/Components/TrainingBand';
 import Main from './Main';
@@ -41,7 +42,37 @@ const PlantHome = () => {
 
   if (!sample) return null;
 
-  const _processSubmission = async () => {
+  const onBulkEdit = async (
+    action: Action,
+    modelIds: string[],
+    value?: any
+  ) => {
+    if (action === 'delete') {
+      modelIds.forEach(async modelId => {
+        const subSample = sample.samples.find(smp => smp.cid === modelId);
+        if (subSample) await subSample.destroy();
+      });
+      return;
+    }
+
+    if (action === 'stage') {
+      modelIds.forEach(async modelId => {
+        const subSample = sample.samples.find(smp => smp.cid === modelId);
+        if (subSample) (subSample as any).occurrences[0].data.stage = value;
+      });
+      return;
+    }
+
+    if (action === 'comment') {
+      modelIds.forEach(async modelId => {
+        const subSample = sample.samples.find(smp => smp.cid === modelId);
+        if (subSample) (subSample as any).occurrences[0].data.comment = value;
+      });
+      // return;
+    }
+  };
+
+  const processSubmission = async () => {
     const isUserOK = await checkUserStatus();
     if (!isUserOK) return;
 
@@ -49,20 +80,18 @@ const PlantHome = () => {
     if (!isValid) return;
 
     sample.upload().catch(toast.error);
-    navigate(`/home/surveys`, 'root');
+    navigate('/home/surveys', 'root');
   };
 
-  const _processDraft = async () => {
+  const processDraft = async () => {
     const isValid = checkSampleStatus();
     if (!isValid) return;
 
     gridAlertService.stop(sample.cid);
-
-    // eslint-disable-next-line no-param-reassign
     sample.metadata.saved = true;
     sample.save();
 
-    navigate(`/home/surveys`, 'root');
+    navigate('/home/surveys', 'root');
   };
 
   const onSubSampleDelete = async (subSample: Sample) => subSample.destroy();
@@ -71,7 +100,7 @@ const PlantHome = () => {
   const isSaved = sample.metadata.saved;
 
   const onFinish = async () =>
-    !isSaved ? _processDraft() : _processSubmission();
+    !isSaved ? processDraft() : processSubmission();
 
   const finishButton = (
     <SurveyHeaderButton sample={sample} onClick={onFinish} />
@@ -148,6 +177,7 @@ const PlantHome = () => {
         onDelete={onSubSampleDelete}
         attachSpeciesImages={onSpeciesImageAttach}
         showChildSampleDistanceWarning={showChildSampleDistanceWarning}
+        onBulkEdit={onBulkEdit}
       />
     </Page>
   );

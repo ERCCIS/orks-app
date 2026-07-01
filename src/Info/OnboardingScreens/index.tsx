@@ -32,23 +32,22 @@ const OnBoardingScreens = ({ children }: Props) => {
 
   const { showWelcome } = appModel.data;
   if (!showWelcome) {
-    return <>{children}</>; // eslint-disable-line react/jsx-no-useless-fragment
+    return <>{children}</>;
   }
 
   function exit() {
-    // eslint-disable-next-line no-param-reassign
     appModel.data.showWelcome = false;
     appModel.save();
   }
 
   const handleSlideChangeStart = async () => {
-    const isEnd = controlledSwiper && controlledSwiper.isEnd;
+    const isEnd = controlledSwiper?.isEnd;
     setMoreSlidesExist(!isEnd);
   };
 
   const slideNextOrClose = () => {
     if (moreSlidesExist) {
-      controlledSwiper && controlledSwiper.slideNext();
+      controlledSwiper?.slideNext();
       return;
     }
 

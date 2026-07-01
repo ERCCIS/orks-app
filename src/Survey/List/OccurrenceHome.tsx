@@ -4,17 +4,23 @@ import { Page, Header, Main, useSample } from '@flumens';
 import { IonList } from '@ionic/react';
 import Sample from 'common/models/sample';
 import MenuAttr from 'Survey/common/Components/MenuAttr';
-import MenuDynamicAttrs from 'Survey/common/Components/MenuDynamicAttrs';
+import MenuDynamicAttr from 'Survey/common/Components/MenuDynamicAttrs';
 import MenuLocation from 'Survey/common/Components/MenuLocation';
 import MenuTaxonItem from 'Survey/common/Components/MenuTaxonItem';
 import PhotoPicker from 'Survey/common/Components/PhotoPicker';
 import VerificationMessage from 'Survey/common/Components/VerificationMessage';
+import useSensitivityTip from 'Survey/common/Components/hooks';
+import { commentAttr, defaultSensitivityPrecisionAttr } from './config';
 
 const ListOccurrenceHome = () => {
   const { url } = useRouteMatch();
 
+  const showSensitivityWarning = useSensitivityTip();
+
   const { subSample } = useSample<Sample>();
   if (!subSample) return null;
+
+  const surveyConfig = subSample.getSurvey();
 
   const [occ] = subSample.occurrences;
   const { isDisabled } = subSample;
@@ -23,8 +29,8 @@ const ListOccurrenceHome = () => {
     <Page id="survey-default-edit">
       <Header title="Edit" />
 
-      <Main>
-        <IonList lines="full" className="mb-2 flex flex-col gap-4">
+      <Main className="[--padding-bottom:30px]">
+        <IonList lines="full" className="mb-2 flex! flex-col gap-4">
           {isDisabled && (
             <div className="rounded-list">
               <VerificationMessage occurrence={occ} />
@@ -39,12 +45,33 @@ const ListOccurrenceHome = () => {
             <MenuLocation sample={subSample} skipName isRequired={false} />
             <MenuAttr
               model={occ}
-              attr="comment"
+              attr={commentAttr}
               itemProps={{
                 routerLink: `${url}/occ/${occ.cid}/comment`,
               }}
             />
-            <MenuDynamicAttrs model={subSample} skipLocks />
+            {surveyConfig.render?.map((attr: any) => (
+              <MenuDynamicAttr
+                key={attr.id}
+                model={subSample}
+                attr={attr}
+                skipLocks
+              />
+            ))}
+            {surveyConfig.occ?.render?.map((attr: any) => (
+              <MenuDynamicAttr
+                key={attr.id}
+                model={occ}
+                attr={attr}
+                skipLocks
+                useSeparateOccPage
+              />
+            ))}
+            <MenuAttr
+              model={occ}
+              attr={defaultSensitivityPrecisionAttr}
+              onChange={showSensitivityWarning}
+            />
           </div>
         </IonList>
       </Main>

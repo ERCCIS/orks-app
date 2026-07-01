@@ -1,7 +1,8 @@
 import { clipboardOutline } from 'ionicons/icons';
 import { groupsReverse as groups } from 'common/data/informalGroups';
 import progressIcon from 'common/images/progress-circles.svg';
-import { Survey } from 'Survey/common/config';
+import { identifiersAttr, Survey } from 'Survey/common/config';
+import { numberAttr, sexAttr } from './common';
 
 const breedingOptions = [
   { value: null, isDefault: true, label: 'Not recorded' },
@@ -42,48 +43,41 @@ const stage = [
   { value: 'Other', id: 17663 },
 ];
 
+const breedingAttr = {
+  id: 'breeding',
+  menuProps: { icon: clipboardOutline },
+  pageProps: {
+    attrProps: {
+      input: 'radio',
+      info: 'Please pick the breeding details for this record.',
+      inputProps: { options: breedingOptions },
+    },
+  },
+  remote: { id: 823, values: breedingOptions },
+} as const;
+
+const birdStageAttr = {
+  id: 'stage',
+  menuProps: { icon: progressIcon },
+  pageProps: {
+    attrProps: {
+      input: 'radio',
+      inputProps: { options: stage },
+    },
+  },
+  remote: { id: 872, values: stage },
+} as const;
+
 const survey: Partial<Survey> & { taxa: string } = {
   taxa: 'birds',
   taxaGroups: [groups.bird],
 
-  render: [
-    {
-      id: 'occ:number',
-      label: 'Abundance',
-      icon: 'number',
-      group: ['occ:number', 'occ:number-ranges'],
-    },
-
-    'occ:stage',
-    'occ:breeding',
-    'occ:sex',
-    'occ:identifiers',
-  ],
-
   occ: {
-    attrs: {
-      stage: {
-        menuProps: { icon: progressIcon },
-        pageProps: {
-          attrProps: {
-            input: 'radio',
-            inputProps: { options: stage },
-          },
-        },
-        remote: { id: 872, values: stage },
-      },
+    render: [numberAttr, birdStageAttr, breedingAttr, sexAttr, identifiersAttr],
 
-      breeding: {
-        menuProps: { icon: clipboardOutline },
-        pageProps: {
-          attrProps: {
-            input: 'radio',
-            info: 'Please pick the breeding details for this record.',
-            inputProps: { options: breedingOptions },
-          },
-        },
-        remote: { id: 823, values: breedingOptions },
-      },
+    attrs: {
+      [birdStageAttr.id]: birdStageAttr,
+      [breedingAttr.id]: breedingAttr,
     },
   },
 };

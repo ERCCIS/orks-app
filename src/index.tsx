@@ -6,12 +6,11 @@ import { App as AppPlugin } from '@capacitor/app';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { StatusBar, Style as StatusBarStyle } from '@capacitor/status-bar';
 import { sentryOptions } from '@flumens';
-import { loadingController } from '@ionic/core';
 import { setupIonicReact, isPlatform } from '@ionic/react';
-import * as SentryBrowser from '@sentry/browser';
+import { init } from '@sentry/browser';
 import config from 'common/config';
+import migrationManager from 'common/migrations';
 import groups from 'common/models/collections/groups';
-import migrate, { fixRecords } from 'common/models/migrate';
 import { db } from 'common/models/store';
 import appModel from 'models/app';
 import samples from 'models/collections/samples';
@@ -27,35 +26,16 @@ setupIonicReact();
 mobxConfig({ enforceActions: 'never' });
 
 (async function () {
-  if (isPlatform('hybrid') && !localStorage.getItem('sqliteMigrated')) {
-    SentryBrowser.init({
-      ...sentryOptions,
-      release: config.version,
-      dist: config.build,
-      dsn: config.sentryDSN,
-    });
-    (await loadingController.create({ message: 'Upgrading...' })).present();
-    await migrate();
-    localStorage.setItem('sqliteMigrated', 'true');
-    window.location.reload();
-    return;
-  }
-
-  if (isPlatform('hybrid') && !localStorage.getItem('sqliteMigrationFixed')) {
-    await fixRecords();
-    localStorage.setItem('sqliteMigrationFixed', 'true');
-    window.location.reload();
-    return;
-  }
-
   await db.init();
+  await migrationManager.run();
+
   await userModel.fetch();
   await appModel.fetch();
   await samples.fetch();
   await groups.fetch();
 
   appModel.data.sendAnalytics &&
-    SentryBrowser.init({
+    init({
       ...sentryOptions,
       dsn: config.sentryDSN,
       environment: config.environment,

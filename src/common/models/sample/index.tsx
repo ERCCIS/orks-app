@@ -1,5 +1,3 @@
-/* eslint-disable max-classes-per-file */
-
 /* eslint-disable no-param-reassign */
 import { IObservableArray } from 'mobx';
 import { useTranslation } from 'react-i18next';
@@ -23,7 +21,7 @@ import defaultSurvey, {
   getTaxaGroupSurvey,
 } from 'Survey/Default/config';
 import { coreAttributes, Survey } from 'Survey/common/config';
-import { getSurveyConfigs } from 'Survey/common/surveyConfigs';
+import getSurveyConfigs from 'Survey/common/surveyConfigs';
 import Media from '../media';
 import Occurrence, { Taxon } from '../occurrence';
 import { samplesStore } from '../store';
@@ -121,10 +119,6 @@ export default class Sample extends SampleOriginal<Data, Metadata> {
     return this.saveRemote();
   }
 
-  async save() {
-    super.save();
-  }
-
   getSurvey(): Survey {
     let surveyId = this.metadata.forceSurveyId || this.data.surveyId;
 
@@ -154,11 +148,11 @@ export default class Sample extends SampleOriginal<Data, Metadata> {
     if (!survey) {
       console.log(JSON.stringify(this.metadata));
       console.log(JSON.stringify(this.data));
-      console.error(`Survey config was missing`);
+      console.error('Survey config was missing');
       return {} as Survey;
     }
 
-    return survey as Survey;
+    return survey;
   }
 
   setTaxon(newTaxon: Taxon, occurrenceId?: string) {
@@ -211,7 +205,7 @@ export default class Sample extends SampleOriginal<Data, Metadata> {
       if (!ATTRS_TO_LEAVE.includes(`occ:${key}`)) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        // eslint-disable-next-line no-param-reassign
+
         delete occ.data[key];
       }
     };

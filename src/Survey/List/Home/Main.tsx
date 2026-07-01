@@ -7,15 +7,24 @@ import { IonIcon, IonList, NavContext } from '@ionic/react';
 import Sample from 'models/sample';
 import DisabledRecordMessage from 'Survey/common/Components/DisabledRecordMessage';
 import MenuAttr from 'Survey/common/Components/MenuAttr';
-import MenuDynamicAttrs from 'Survey/common/Components/MenuDynamicAttrs';
+import MenuLocation from 'Survey/common/Components/MenuLocation';
 import { usePromptImageSource } from 'Survey/common/Components/PhotoPicker';
 import SpeciesList from 'Survey/common/Components/SpeciesList';
+import { Action } from 'Survey/common/Components/SpeciesList/BulkEdit';
+import {
+  childGeolocationAttr,
+  commentAttr,
+  dateAttr,
+  recorderAttr,
+} from 'Survey/common/config';
+import { groupIdAttr } from '../config';
 
 type Props = {
   sample: Sample;
   onDelete: any;
   attachSpeciesImages: any;
   showChildSampleDistanceWarning: boolean;
+  onBulkEdit?: (action: Action, modelIds: string[], value?: any) => void;
 };
 
 const HomeMain = ({
@@ -23,6 +32,7 @@ const HomeMain = ({
   onDelete,
   showChildSampleDistanceWarning,
   attachSpeciesImages,
+  onBulkEdit,
 }: Props) => {
   const { url } = useRouteMatch();
   const { navigate } = useContext(NavContext);
@@ -42,7 +52,7 @@ const HomeMain = ({
 
   return (
     <Main>
-      <IonList lines="full" className="mb-2 flex flex-col gap-4">
+      <IonList lines="full" className="mb-2 flex! flex-col gap-4">
         {isDisabled && (
           <div className="rounded-list mb-2">
             <DisabledRecordMessage sample={sample} />
@@ -52,7 +62,7 @@ const HomeMain = ({
         {/* Only showing if pre-selected */}
         {groupId && (
           <div className="rounded-list">
-            <MenuAttr.WithLock model={sample} attr="groupId" />
+            <MenuAttr.WithLock model={sample} attr={groupIdAttr} />
           </div>
         )}
 
@@ -63,12 +73,17 @@ const HomeMain = ({
               that this is correct.
             </InfoMessage>
           )}
-          <MenuDynamicAttrs model={sample} skipLocks />
+
+          <MenuLocation sample={sample} />
+          <MenuAttr model={sample} attr={childGeolocationAttr} />
+          <MenuAttr model={sample} attr={dateAttr} />
+          <MenuAttr model={sample} attr={recorderAttr} />
+          <MenuAttr model={sample} attr={commentAttr} />
         </div>
       </IonList>
 
       {!isDisabled && (
-        <div className="mx-auto mb-2.5 mt-8 flex items-center justify-center gap-5">
+        <div className="mx-3 mb-2.5 mt-8 flex items-center justify-center gap-5">
           <Button
             color="primary"
             onPress={() => navigate(`${url}/taxon`)}
@@ -89,7 +104,12 @@ const HomeMain = ({
         </div>
       )}
 
-      <SpeciesList sample={sample} onDelete={onDelete} useSubSamples />
+      <SpeciesList
+        sample={sample}
+        onDelete={onDelete}
+        onBulkEdit={onBulkEdit}
+        useSubSamples
+      />
     </Main>
   );
 };

@@ -7,10 +7,10 @@ import Help from './Help';
 export default [
   <Route path="/info/credits" key="/info/credits" exact component={Credits} />,
   <Route path="/info/about" key="/info/about" exact component={About} />,
-  <Route path="/info/help" key="/info/about" exact component={Help} />,
+  <Route path="/info/help" key="/info/help" exact component={Help} />,
   <Route
     path="/info/brc-approved"
-    key="/info/about"
+    key="/info/brc-approved"
     exact
     component={BRCApproved}
   />,

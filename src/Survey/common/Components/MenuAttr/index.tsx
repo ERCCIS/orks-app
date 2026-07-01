@@ -9,35 +9,31 @@ import {
   AttrProps,
   Toggle,
   getRelativeDate,
+  BlockT,
+  Block,
 } from '@flumens';
 import { IonIcon, IonItem } from '@ionic/react';
 import { capitalize } from 'common/helpers/string';
 import Occurrence from 'models/occurrence';
 import Sample from 'models/sample';
+import { AttrConfig } from 'Survey/common/config';
 import { WithLock, LockConfig } from './Lock';
 import './styles.scss';
 
 function parseValue(value: any, parse: any, model: Sample | Occurrence) {
   // process value with custom parser, even if value is empty
-  if (typeof parse === 'function') {
-    return parse(value, model);
-  }
+  if (typeof parse === 'function') return parse(value, model);
 
   if (!value) return null;
 
-  if (parse === 'date') {
-    return getRelativeDate(value);
-  }
-
-  if (value instanceof Array) {
-    return value.join(', ');
-  }
+  if (parse === 'date') return getRelativeDate(value);
+  if (value instanceof Array) return value.join(', ');
 
   return value;
 }
 
 type Props = {
-  attr: string;
+  attr: AttrConfig | BlockT;
   model: Sample | Occurrence;
   onChange?: any;
   itemProps?: any;
@@ -46,7 +42,6 @@ type Props = {
 
 export type Config = Omit<MenuAttrItemProps, 'type'> &
   LockConfig & {
-    metadata?: boolean;
     type?: string;
     parse?: (value: any, model: Sample | Occurrence) => any;
     get?: (model: Sample | Occurrence) => any;
@@ -58,29 +53,32 @@ export type Config = Omit<MenuAttrItemProps, 'type'> &
 const MenuAttr = ({ attr, model, onChange, itemProps, className }: Props) => {
   const match = useRouteMatch();
 
-  const survey = model.getSurvey();
-  const menuProps: Config = survey.attrs?.[attr].menuProps || {};
+  const { id } = attr;
+
+  if ('type' in attr) {
+    return (
+      <IonItem className="[--border-style:none] [--inner-padding-end:0] [--padding-start:0] [&>div]:w-full">
+        <Block record={model.data} block={attr} />
+      </IonItem>
+    );
+  }
+
+  const menuProps: Config = 'menuProps' in attr ? (attr.menuProps as any) : {};
   const {
     label: labelProp,
     icon,
     required,
-    metadata,
     parse,
     type,
     get,
     set,
     skipValueTranslation,
   } = menuProps;
-  const valueRaw = metadata
-    ? (model.metadata as any)[attr]
-    : (model.data as any)[attr];
+  const valueRaw = (model.data as any)[id];
   const value = parseValue(valueRaw, parse, model);
+  const label = labelProp || capitalize(id);
+
   const { isDisabled } = model;
-
-  const link = `${match.url}/${attr}`;
-
-  const label = labelProp || capitalize(attr);
-
   if (isDisabled && !value) return null;
 
   if (type === 'toggle') {
@@ -89,10 +87,10 @@ const MenuAttr = ({ attr, model, onChange, itemProps, className }: Props) => {
         set(checked, model);
       } else {
         // eslint-disable-next-line no-param-reassign
-        (model.data as any)[attr] = checked;
+        (model.data as any)[id] = checked;
       }
 
-      onChange && onChange(checked);
+      onChange?.(checked);
       return model.save();
     };
 
@@ -102,7 +100,7 @@ const MenuAttr = ({ attr, model, onChange, itemProps, className }: Props) => {
     return (
       <IonItem className="[--border-style:none] [--inner-padding-end:0] [--padding-start:0]">
         <Toggle
-          defaultSelected={get ? get(model) : value}
+          isSelected={get ? get(model) : value}
           className="w-full"
           label={label}
           prefix={<IonIcon src={icon as string} className="size-6" />}
@@ -116,13 +114,13 @@ const MenuAttr = ({ attr, model, onChange, itemProps, className }: Props) => {
 
   if (menuProps.attrProps) {
     // date attr needs wrapper because of the sliding options overlap
-    const Wrapper = attr === 'date' ? IonItem : Fragment;
+    const Wrapper = id === 'date' ? IonItem : Fragment;
 
     return (
       <Wrapper className={clsx('attr-wrapper', className)}>
         <Attr
           model={model}
-          attr={attr}
+          attr={id}
           onChange={onChange}
           {...(menuProps.attrProps as Omit<AttrProps, 'model' | 'attr'>)}
           {...itemProps}
@@ -138,7 +136,7 @@ const MenuAttr = ({ attr, model, onChange, itemProps, className }: Props) => {
 
   return (
     <MenuAttrItem
-      routerLink={link}
+      routerLink={`${match.url}/${id}`}
       disabled={isDisabled}
       value={value}
       label={label}

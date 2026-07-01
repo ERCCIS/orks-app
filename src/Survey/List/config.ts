@@ -11,13 +11,19 @@ import {
   recorderAttr,
   commentAttr,
   Survey,
-  activityAttr,
   locationAttr,
   getSystemAttrs,
   groupIdAttr,
   childGeolocationAttr,
   locationAttrValidator,
 } from 'Survey/common/config';
+
+export {
+  sensitivityPrecisionAttr,
+  commentAttr,
+  groupIdAttr,
+} from 'Survey/common/config';
+export { defaultSensitivityPrecisionAttr } from 'Survey/Default/config';
 
 function appendLockedAttrs(sample: AppSample) {
   const defaultSurveyLocks = appModel.data.attrLocks.complex || {};
@@ -49,37 +55,22 @@ function autoIncrementAbundance(sample: AppSample) {
   }
 }
 
-const survey: Survey = {
+const SURVEY_ID = 576;
+const SURVEY_WEBFORM = 'enter-app-record-list';
+
+const survey = {
   name: 'list',
   label: 'Species List Survey',
-  id: 576,
+  id: SURVEY_ID,
 
-  webForm: 'enter-app-record-list',
-
-  render: [
-    'smp:location',
-    'smp:childGeolocation',
-    'smp:date',
-    'smp:recorder',
-    'smp:comment',
-  ],
+  webForm: SURVEY_WEBFORM,
 
   attrs: {
-    location: locationAttr,
-
-    childGeolocation: childGeolocationAttr,
-
-    recorder: recorderAttr,
-
-    /** @deprecated */
-    recorders: recorderAttr,
-
-    comment: commentAttr,
-
-    /** @deprecated */
-    activity: activityAttr,
-
-    groupId: groupIdAttr,
+    [locationAttr.id]: locationAttr,
+    [childGeolocationAttr.id]: childGeolocationAttr,
+    [recorderAttr.id]: recorderAttr,
+    [commentAttr.id]: commentAttr,
+    [groupIdAttr.id]: groupIdAttr,
 
     date: {
       ...dateAttr,
@@ -122,8 +113,8 @@ const survey: Survey = {
           forceSurveyId: defaultSurvey.id, // not list since it looks for taxa specific attrs
         },
         data: {
-          surveyId: survey.id,
-          inputForm: survey.webForm,
+          surveyId: SURVEY_ID,
+          inputForm: SURVEY_WEBFORM,
           enteredSrefSystem: 4326,
           location: {},
           groupId,
@@ -151,14 +142,14 @@ const survey: Survey = {
   verify: (attrs: any) =>
     object({
       location: locationAttrValidator({
-        name: string({ required_error: 'Location name is missing' }).min(
+        name: string({ error: 'Location name is missing' }).min(
           1,
           'Location name is missing'
         ),
       }),
-      date: string({ required_error: 'Date is missing.' }).nullable(),
+      date: string({ error: 'Date is missing.' }).nullable(),
       recorder: string({
-        required_error: 'Recorder field is missing.',
+        error: 'Recorder field is missing.',
       })
         .min(1, 'Recorder field is missing.')
         .nullable(),
@@ -175,9 +166,9 @@ const survey: Survey = {
 
     const sample = new Sample({
       data: {
-        surveyId: survey.id,
-        inputForm: survey.webForm,
-        date: new Date().toISOString(),
+        surveyId: SURVEY_ID,
+        inputForm: SURVEY_WEBFORM,
+        date: new Date().toISOString().split('T')[0],
         enteredSrefSystem: 4326,
         location: {},
         recorder,
@@ -196,6 +187,6 @@ const survey: Survey = {
 
     return submission;
   },
-};
+} as const satisfies Survey;
 
 export default survey;

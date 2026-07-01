@@ -4,7 +4,6 @@ import { object, string } from 'zod';
 import fingerprintIcon from 'common/images/fingerprint.svg';
 import numberIcon from 'common/images/number.svg';
 import progressIcon from 'common/images/progress-circles.svg';
-import targetIcon from 'common/images/target.svg';
 import userModel from 'common/models/user';
 import appModel from 'models/app';
 import AppOccurrence, { MachineInvolvement } from 'models/occurrence';
@@ -12,7 +11,6 @@ import AppSample from 'models/sample';
 import {
   coreAttributes,
   dateAttr,
-  activityAttr,
   Survey,
   locationAttr,
   taxonAttr,
@@ -22,7 +20,7 @@ import {
   recorderAttr,
   groupIdAttr,
   locationAttrValidator,
-  methodAttr,
+  sensitivityPrecisionAttr,
 } from 'Survey/common/config';
 import arthropodSurvey from './arthropods';
 import birdsSurvey from './birds';
@@ -33,6 +31,13 @@ import mammalsSurvey from './mammals';
 import mothsSurvey from './moths';
 import plantFungiSurvey from './plantFungi';
 import reptilesSurvey from './reptiles';
+
+export {
+  dateAttr,
+  commentAttr,
+  recorderAttr,
+  groupIdAttr,
+} from 'Survey/common/config';
 
 export const taxonGroupSurveys = {
   arthropods: arthropodSurvey,
@@ -111,58 +116,107 @@ const typeOptions = [
   { value: 'Other (please add to comments)', id: 3393 },
 ];
 
-const sensitivityOptions = [
-  { label: 'Not Sensitive', value: null, isDefault: true },
-  { value: 'Blur to 1km', id: 1000 },
-  { value: 'Blur to 2km', id: 2000 },
-  { value: 'Blur to 10km', id: 10000 },
-  { value: 'Blur to 100km', id: 100000 },
-];
+export const defaultSensitivityPrecisionAttr = {
+  ...sensitivityPrecisionAttr(1000),
+  id: 'sensitivityPrecision',
+};
 
-const survey: Survey = {
+const numberAttr = {
+  id: 'number',
+  menuProps: {
+    label: 'Abundance',
+    icon: numberIcon,
+    parse: (_: any, model: any) =>
+      model.data['number-ranges'] || model.data.number,
+    isLocked: (model: any) => {
+      const value = numberAttr.menuProps?.getLock?.(model);
+      return (
+        value &&
+        (value === appModel.getAttrLock(model, 'number') ||
+          value === appModel.getAttrLock(model, 'number-ranges'))
+      );
+    },
+    getLock: (model: any) => model.data['number-ranges'] || model.data.number,
+    unsetLock: (model: any) => {
+      appModel.unsetAttrLock(model, 'number', true);
+      appModel.unsetAttrLock(model, 'number-ranges', true);
+    },
+    setLock: (model: any, _: any, value: any) => {
+      const numberRegex = /^\d+$/; // https://stackoverflow.com/questions/175739/how-can-i-check-if-a-string-is-a-valid-number
+      if (numberRegex.test(`${value}`)) {
+        appModel.setAttrLock(model, 'number', value, true);
+      } else {
+        appModel.setAttrLock(model, 'number-ranges', value, true);
+      }
+    },
+  },
+  pageProps: {
+    headerProps: { title: 'Abundance' },
+    attrProps: [
+      {
+        set: (value: number, model: AppOccurrence) =>
+          Object.assign(model.data, {
+            number: value,
+            'number-ranges': undefined,
+          }),
+        get: (model: AppOccurrence) => model.data.number,
+        input: 'slider',
+        info: 'How many individuals of this species did you see?',
+        inputProps: { max: 500 },
+      },
+    ],
+  },
+  remote: { id: 93 },
+};
+
+const stageAttr = {
+  id: 'stage',
+  menuProps: { label: 'Life Stage/Sex', icon: fingerprintIcon },
+  pageProps: {
+    attrProps: {
+      input: 'radio',
+      info: 'Please pick the life stage and sex of the organism, if recorded.',
+      inputProps: { options: stageOptions },
+    },
+  },
+  remote: { id: 218, values: stageOptions },
+};
+
+const typeAttr = {
+  id: 'type',
+  menuProps: { icon: progressIcon, label: 'Type', required: true },
+  pageProps: {
+    attrProps: {
+      input: 'radio',
+      info: 'Please pick the type of observation.',
+      inputProps: { options: typeOptions },
+    },
+  },
+  remote: { id: 217, values: typeOptions },
+};
+
+const SURVEY_ID = 490;
+const SURVEY_WEBFORM = 'enter-app-record';
+
+const survey = {
   name: 'default',
-  id: 490,
-  webForm: 'enter-app-record',
+  id: SURVEY_ID,
+  webForm: SURVEY_WEBFORM,
   webViewForm: 'record-details',
 
   taxaGroups: [], // all // TODO: remove?
 
-  render: [
-    {
-      id: 'occ:number',
-      label: 'Abundance',
-      icon: 'number',
-      group: ['occ:number', 'occ:number-ranges'],
-    },
-    'occ:stage',
-    'smp:method',
-    'occ:type',
-    'occ:identifiers',
-    'occ:sensitivity_precision',
-  ],
-
   attrs: {
-    location: locationAttr,
-
-    date: dateAttr,
-
-    recorder: recorderAttr,
-
-    /** @deprecated */
-    recorders: recorderAttr,
-
-    groupId: groupIdAttr,
-
-    /** @deprecated */
-    activity: activityAttr,
-
-    method: methodAttr,
+    [locationAttr.id]: locationAttr,
+    [dateAttr.id]: dateAttr,
+    [recorderAttr.id]: recorderAttr,
+    [groupIdAttr.id]: groupIdAttr,
   },
 
   verify: (attrs: any) =>
     object({
       location: locationAttrValidator({
-        name: string({ required_error: 'Location name is missing' }).min(
+        name: string({ error: 'Location name is missing' }).min(
           1,
           'Location name is missing'
         ),
@@ -170,100 +224,22 @@ const survey: Survey = {
     }).safeParse(attrs).error,
 
   occ: {
+    render: [numberAttr, stageAttr, typeAttr, identifiersAttr],
+
     attrs: {
-      taxon: taxonAttr,
-
-      number: {
-        menuProps: {
-          label: 'Abundance',
-          icon: numberIcon,
-          parse: (_, model: any) =>
-            model.data['number-ranges'] || model.data.number,
-          isLocked: (model: any) => {
-            const value =
-              survey.occ?.attrs?.number?.menuProps?.getLock?.(model);
-            return (
-              value &&
-              (value === appModel.getAttrLock(model, 'number') ||
-                value === appModel.getAttrLock(model, 'number-ranges'))
-            );
-          },
-          getLock: (model: any) =>
-            model.data['number-ranges'] || model.data.number,
-          unsetLock: model => {
-            appModel.unsetAttrLock(model, 'number', true);
-            appModel.unsetAttrLock(model, 'number-ranges', true);
-          },
-          setLock: (model, _, value) => {
-            const numberRegex = /^\d+$/; // https://stackoverflow.com/questions/175739/how-can-i-check-if-a-string-is-a-valid-number
-            if (numberRegex.test(`${value}`)) {
-              appModel.setAttrLock(model, 'number', value, true);
-            } else {
-              appModel.setAttrLock(model, 'number-ranges', value, true);
-            }
-          },
-        },
-        pageProps: {
-          headerProps: { title: 'Abundance' },
-          attrProps: [
-            {
-              set: (value: number, model: AppOccurrence) =>
-                Object.assign(model.data, {
-                  number: value,
-                  'number-ranges': undefined,
-                }),
-              get: (model: AppOccurrence) => model.data.number,
-              input: 'slider',
-              info: 'How many individuals of this species did you see?',
-              inputProps: { max: 500 },
-            },
-          ],
-        },
-        remote: { id: 93 },
-      },
-
-      stage: {
-        menuProps: { label: 'Life Stage/Sex', icon: fingerprintIcon },
-        pageProps: {
-          attrProps: {
-            input: 'radio',
-            info: 'Please pick the life stage and sex of the organism, if recorded.',
-            inputProps: { options: stageOptions },
-          },
-        },
-        remote: { id: 218, values: stageOptions },
-      },
-
-      type: {
-        menuProps: { icon: progressIcon, label: 'Type', required: true },
-        pageProps: {
-          attrProps: {
-            input: 'radio',
-            info: 'Please pick the type of observation.',
-            inputProps: { options: typeOptions },
-          },
-        },
-        remote: { id: 217, values: typeOptions },
-      },
-      identifiers: identifiersAttr,
-      sensitivity_precision: {
-        menuProps: { label: 'Sensitivity', icon: targetIcon },
-        pageProps: {
-          attrProps: {
-            input: 'radio',
-            info: 'This is the precision that the record will be shown at for public viewing.',
-            inputProps: { options: sensitivityOptions },
-          },
-        },
-        remote: { values: sensitivityOptions },
-      },
-      comment: commentAttr,
+      [taxonAttr.id]: taxonAttr,
+      [numberAttr.id]: numberAttr,
+      [stageAttr.id]: stageAttr,
+      [typeAttr.id]: typeAttr,
+      [identifiersAttr.id]: identifiersAttr,
+      [commentAttr.id]: commentAttr,
+      [defaultSensitivityPrecisionAttr.id]: defaultSensitivityPrecisionAttr,
     },
 
     verify: (attrs: any) =>
       object({
-        taxon: object({}, { required_error: 'Species is missing.' }).nullable(),
-        type: string({ required_error: 'Type is missing.' }).nullable(),
+        taxon: object({}, { error: 'Species is missing.' }).nullable(),
+        type: string({ error: 'Type is missing.' }).nullable(),
       }).safeParse(attrs).error,
 
     modifySubmission(submission: any, occ: AppOccurrence) {
@@ -288,9 +264,9 @@ const survey: Survey = {
 
     const sample = new Sample({
       data: {
-        surveyId: survey.id,
-        inputForm: survey.webForm,
-        date: new Date().toISOString(),
+        surveyId: SURVEY_ID,
+        inputForm: SURVEY_WEBFORM,
+        date: new Date().toISOString().split('T')[0],
         enteredSrefSystem: 4326,
         location: {},
         recorder,
@@ -341,12 +317,12 @@ const survey: Survey = {
 
   get(sample: AppSample) {
     const getTaxaSpecifigConfig = () => {
-      if (!sample.occurrences.length) return survey;
+      if (!sample.occurrences.length) return this;
 
-      if (!sample.metadata.taxa) return survey;
+      if (!sample.metadata.taxa) return this;
 
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      return _getFullTaxaGroupSurvey(sample.metadata.taxa);
+      return getFullTaxaGroupSurvey(sample.metadata.taxa);
     };
 
     const isSubSample = sample.parent;
@@ -361,7 +337,7 @@ const survey: Survey = {
 
     return getTaxaSpecifigConfig();
   },
-};
+} as const satisfies Survey;
 
 export default survey;
 
@@ -369,7 +345,7 @@ export default survey;
  * Finds the matching species group survey.
  * @param taxa species group name e.g. 'birds'.
  */
-export function _getFullTaxaGroupSurvey(
+export function getFullTaxaGroupSurvey(
   taxa?: keyof typeof taxonGroupSurveys
 ): Survey {
   if (!taxa) return { ...survey };
@@ -387,8 +363,8 @@ export function _getFullTaxaGroupSurvey(
     return undefined;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
-  const { render, taxaGroups, ...defaultSurveyCopy } = survey;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { render, taxaGroups, ...defaultSurveyCopy } = survey as any;
   const mergedDefaultSurvey: Survey = mergeWith(
     {},
     defaultSurveyCopy,

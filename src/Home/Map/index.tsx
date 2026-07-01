@@ -17,7 +17,7 @@ import GeolocateButton from 'common/Components/GeolocateButton';
 import config from 'common/config';
 import { groups as informalGroups } from 'common/data/informalGroups';
 import userModel from 'models/user';
-import MapFilters, { dateRanges, monthAgo } from './Filters';
+import MapFilters, { getDateRanges, monthAgo } from './Filters';
 import RecordProfiles from './RecordProfiles';
 import { fetchRecords, fetchSquares, Square } from './recordsService';
 import './styles.scss';
@@ -44,7 +44,7 @@ const Map = () => {
   const { t } = useTranslation();
   const [mapRef, setMapRef] = useState<MapRef>();
 
-  const [isFetchingRecords, setFetchingRecords] = useState<any>(null);
+  const [isFetchingRecords, setIsFetchingRecords] = useState<any>(null);
   const toast = useToast();
 
   const [totalSquares, setTotalSquares] = useState<number>(1);
@@ -89,7 +89,7 @@ const Map = () => {
 
     const shouldFetchRecords = zoomLevel >= 13;
     if (shouldFetchRecords) {
-      setFetchingRecords(true);
+      setIsFetchingRecords(true);
       const fetchedRecords = await fetchRecords({
         northWest,
         southEast,
@@ -100,13 +100,13 @@ const Map = () => {
       if (!fetchedRecords) return;
       setRecords(fetchedRecords);
       setSquares([]);
-      setFetchingRecords(false);
+      setIsFetchingRecords(false);
       return;
     }
 
     const squareSize = getSquareSize(zoomLevel);
 
-    setFetchingRecords(true);
+    setIsFetchingRecords(true);
     const fetchedSquares = await fetchSquares({
       northWest,
       southEast,
@@ -121,7 +121,7 @@ const Map = () => {
 
     setTotalSquares(getTotalSquares(fetchedSquares));
     setSquares(fetchedSquares);
-    setFetchingRecords(false);
+    setIsFetchingRecords(false);
   };
 
   const updateMapCentre = () => updateRecords();
@@ -178,7 +178,7 @@ const Map = () => {
 
     const [longitude, latitude] = square.key.split(' ').map(parseFloat);
 
-    const radius = square.size! / 2;
+    const radius = square.size / 2;
     const padding = 1.1; // extra padding between squares
     const metersToPixels =
       radius / padding / 0.075 / Math.cos((latitude * Math.PI) / 180);
@@ -251,7 +251,7 @@ const Map = () => {
             <div className="filters-column">
               <div className="filters-row">
                 <MapFilters.Select
-                  options={dateRanges}
+                  options={getDateRanges()}
                   onChange={onStartDateSelect}
                   value={startDate}
                 />
