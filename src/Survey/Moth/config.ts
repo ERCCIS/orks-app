@@ -16,6 +16,7 @@ import {
   identifiersAttr,
   mothStageAttr,
   locationAttrValidator,
+  sensitivityPrecisionAttr,
 } from 'Survey/common/config';
 
 export { commentAttr, dateAttr, recorderAttr } from 'Survey/common/config';
@@ -133,8 +134,8 @@ const survey = {
 
     verify: (attrs: any) =>
       object({
-        taxon: object({}, { required_error: 'Species is missing.' }).nullable(),
-        stage: string({ required_error: 'Stage is missing.' }).nullable(),
+        taxon: object({}, { error: 'Species is missing.' }).nullable(),
+        stage: string({ error: 'Stage is missing.' }).nullable(),
       }).safeParse(attrs).error,
 
     create({ Occurrence, taxon, images }) {

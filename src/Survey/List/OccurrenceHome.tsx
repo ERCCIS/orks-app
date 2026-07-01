@@ -15,6 +15,8 @@ import { commentAttr, defaultSensitivityPrecisionAttr } from './config';
 const ListOccurrenceHome = () => {
   const { url } = useRouteMatch();
 
+  const showSensitivityWarning = useSensitivityTip();
+
   const { subSample } = useSample<Sample>();
   if (!subSample) return null;
 

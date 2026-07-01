@@ -1,5 +1,6 @@
 import { object, string } from 'zod';
 import { groupsReverse as groups } from 'common/data/informalGroups';
+import landIcon from 'common/images/land.svg';
 import numberIcon from 'common/images/number.svg';
 import { Survey } from 'Survey/common/config';
 

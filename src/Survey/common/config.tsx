@@ -72,20 +72,19 @@ export const commentAttr = {
 
 const methodOptions = [
   { label: 'Not recorded', value: null, isDefault: true },
-  { value:'Auditory record', id: 21965 },  
-  { value:'Bat detector', id: 21947 },   
-  { value:'Camera trap', id: 21948 },   
-  { value:'Kick sample', id: 21967 },   
-  { value:'Light trap', id: 21949 },   
-  { value:'Net trap', id: 21950 },   
-  { value:'Trap', id: 21951 },   
-  { value:'Visual observation', id: 21952 },  
+  { value: 'Auditory record', id: 21965 },
+  { value: 'Bat detector', id: 21947 },
+  { value: 'Camera trap', id: 21948 },
+  { value: 'Kick sample', id: 21967 },
+  { value: 'Light trap', id: 21949 },
+  { value: 'Net trap', id: 21950 },
+  { value: 'Trap', id: 21951 },
+  { value: 'Visual observation', id: 21952 },
 ];
 
 export const methodAttr = {
   menuProps: {
     icon: radarIcon,
-    
   },
   pageProps: {
     attrProps: {
@@ -184,10 +183,8 @@ export const systemAttrs = {
       },
     },
   },
-
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   device_version: { remote: { id: 759 } },
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   app_version: { remote: { id: 1139 } },
 };
 
@@ -279,55 +276,6 @@ const plantStageOptions = [
   { value: 'Sporophyte', id: 23874 },
   { value: 'Gametophyte', id: 23875 },
 ];
-
-export const numberAttr =  {
-        menuProps: {
-          label: 'Abundance',
-          icon: numberIcon,
-          parse: (_, model: any) =>
-            model.data['number-ranges'] || model.data.number,
-          isLocked: (model: any) => {
-            const value =
-              survey.occ?.attrs?.number?.menuProps?.getLock?.(model);
-            return (
-              value &&
-              (value === appModel.getAttrLock(model, 'number') ||
-                value === appModel.getAttrLock(model, 'number-ranges'))
-            );
-          },
-          getLock: (model: any) =>
-            model.data['number-ranges'] || model.data.number,
-          unsetLock: model => {
-            appModel.unsetAttrLock(model, 'number', true);
-            appModel.unsetAttrLock(model, 'number-ranges', true);
-          },
-          setLock: (model, _, value) => {
-            const numberRegex = /^\d+$/; // https://stackoverflow.com/questions/175739/how-can-i-check-if-a-string-is-a-valid-number
-            if (numberRegex.test(`${value}`)) {
-              appModel.setAttrLock(model, 'number', value, true);
-            } else {
-              appModel.setAttrLock(model, 'number-ranges', value, true);
-            }
-          },
-        },
-        pageProps: {
-          headerProps: { title: 'Abundance' },
-          attrProps: [
-            {
-              set: (value: number, model: AppOccurrence) =>
-                Object.assign(model.data, {
-                  number: value,
-                  'number-ranges': undefined,
-                }),
-              get: (model: AppOccurrence) => model.data.number,
-              input: 'slider',
-              info: 'How many individuals of this species did you see?',
-              inputProps: { max: 500 },
-            },
-          ],
-        },
-        remote: { id: 93 },
-      },
 
 /** @deprecated */
 export const plantStageAttrOld = {
