@@ -77,8 +77,8 @@ const getVerificationText = (
         </div>
         <div className="mt-5">
           <T>
-            Please log in to the ORKS website to see any additional
-            information that the verifier may have provided.
+            Please log in to the ORKS website to see any additional information
+            that the verifier may have provided.
           </T>
         </div>
       </>
