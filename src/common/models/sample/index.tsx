@@ -121,10 +121,6 @@ export default class Sample extends SampleOriginal<Data, Metadata> {
     return this.saveRemote();
   }
 
-  async save() {
-    super.save();
-  }
-
   getSurvey(): Survey {
     let surveyId = this.metadata.forceSurveyId || this.data.surveyId;
 
@@ -178,8 +174,8 @@ export default class Sample extends SampleOriginal<Data, Metadata> {
     if (this.getSurvey().name === 'default') {
       if (occ.data.taxon) this.removeOldTaxonAttributes(occ, newTaxon);
 
-      // const survey = getTaxaGroupSurvey(newTaxon.group);
-      //  this.metadata.taxa = survey?.taxa as any;
+      const survey = getTaxaGroupSurvey(newTaxon.group);
+      this.metadata.taxa = survey?.taxa as any;
     }
 
     occ.data.taxon = JSON.parse(JSON.stringify(newTaxon));

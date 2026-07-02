@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import { addOutline } from 'ionicons/icons';
+import { Trans as T } from 'react-i18next';
 import { useToast, getRelativeDate, VirtualList, Button } from '@flumens';
 import { IonIcon, IonLabel, IonList, NavContext } from '@ionic/react';
 import samplesCollection, {
@@ -55,7 +56,9 @@ const getSurveys = (surveys: Sample[], showUploadAll?: boolean) => {
           key={date}
           style={(itemProps as any).style}
         >
-          <IonLabel>{getRelativeDate(date)}</IonLabel>
+          <IonLabel>
+            <T>{getRelativeDate(date)}</T>
+          </IonLabel>
           {count > 1 && <IonLabel slot="end">{count}</IonLabel>}
         </div>
       );
@@ -97,7 +100,7 @@ const PendingSurveys = () => {
   const surveys = samplesCollection.filter(notUploaded).sort(bySurveyDate);
 
   const isFinished = (sample: Sample) => sample.metadata.saved;
-  const hasManyPending = () => surveys.filter(isFinished).length > 4;
+  const hasPending = () => surveys.filter(isFinished).length > 0;
 
   const onUploadAll = () => {
     const isLoggedIn = userModel.isLoggedIn();
@@ -129,7 +132,7 @@ const PendingSurveys = () => {
     );
   }
 
-  const showUploadAll = hasManyPending();
+  const showUploadAll = hasPending();
 
   return (
     <IonList>

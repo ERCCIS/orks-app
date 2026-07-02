@@ -11,7 +11,6 @@ import {
   recorderAttr,
   commentAttr,
   Survey,
-  activityAttr,
   locationAttr,
   getSystemAttrs,
   groupIdAttr,
@@ -57,29 +56,19 @@ const survey: Survey = {
   webForm: 'enter-app-record-list',
 
   render: [
-    'smp:location',
-    'smp:childGeolocation',
-    'smp:date',
-    'smp:recorder',
-    'smp:comment',
+    { ...locationAttr, model: 'sample' },
+    { ...childGeolocationAttr, model: 'sample' },
+    { ...dateAttr, model: 'sample' },
+    { ...recorderAttr, model: 'sample' },
+    { ...commentAttr, model: 'sample' },
   ],
 
   attrs: {
-    location: locationAttr,
-
-    childGeolocation: childGeolocationAttr,
-
-    recorder: recorderAttr,
-
-    /** @deprecated */
-    recorders: recorderAttr,
-
-    comment: commentAttr,
-
-    /** @deprecated */
-    activity: activityAttr,
-
-    groupId: groupIdAttr,
+    [locationAttr.id]: locationAttr,
+    [childGeolocationAttr.id]: childGeolocationAttr,
+    [recorderAttr.id]: recorderAttr,
+    [commentAttr.id]: commentAttr,
+    [groupIdAttr.id]: groupIdAttr,
 
     date: {
       ...dateAttr,

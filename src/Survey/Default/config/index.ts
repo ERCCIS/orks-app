@@ -4,7 +4,6 @@ import { object, string } from 'zod';
 import fingerprintIcon from 'common/images/fingerprint.svg';
 import numberIcon from 'common/images/number.svg';
 import progressIcon from 'common/images/progress-circles.svg';
-import targetIcon from 'common/images/target.svg';
 import userModel from 'common/models/user';
 import appModel from 'models/app';
 import AppOccurrence, { MachineInvolvement } from 'models/occurrence';
@@ -12,7 +11,6 @@ import AppSample from 'models/sample';
 import {
   coreAttributes,
   dateAttr,
-  activityAttr,
   Survey,
   locationAttr,
   taxonAttr,
@@ -21,8 +19,8 @@ import {
   getSystemAttrs,
   recorderAttr,
   groupIdAttr,
+  sensitivityPrecisionAttr,
   locationAttrValidator,
-  methodAttr,
 } from 'Survey/common/config';
 import arthropodSurvey from './arthropods';
 import birdsSurvey from './birds';
@@ -111,13 +109,84 @@ const typeOptions = [
   { value: 'Other (please add to comments)', id: 3393 },
 ];
 
-const sensitivityOptions = [
-  { label: 'Not Sensitive', value: null, isDefault: true },
-  { value: 'Blur to 1km', id: 1000 },
-  { value: 'Blur to 2km', id: 2000 },
-  { value: 'Blur to 10km', id: 10000 },
-  { value: 'Blur to 100km', id: 100000 },
-];
+const defaultSensitivityPrecisionAttr = {
+  ...sensitivityPrecisionAttr(1000),
+  id: 'sensitivityPrecision',
+};
+
+const numberAttr = {
+  id: 'number',
+  menuProps: {
+    label: 'Abundance',
+    icon: numberIcon,
+    parse: (_: any, model: any) =>
+      model.data['number-ranges'] || model.data.number,
+    isLocked: (model: any) => {
+      const value = numberAttr.menuProps?.getLock?.(model);
+      return (
+        value &&
+        (value === appModel.getAttrLock(model, 'number') ||
+          value === appModel.getAttrLock(model, 'number-ranges'))
+      );
+    },
+    getLock: (model: any) => model.data['number-ranges'] || model.data.number,
+    unsetLock: (model: any) => {
+      appModel.unsetAttrLock(model, 'number', true);
+      appModel.unsetAttrLock(model, 'number-ranges', true);
+    },
+    setLock: (model: any, _: any, value: any) => {
+      const numberRegex = /^\d+$/; // https://stackoverflow.com/questions/175739/how-can-i-check-if-a-string-is-a-valid-number
+      if (numberRegex.test(`${value}`)) {
+        appModel.setAttrLock(model, 'number', value, true);
+      } else {
+        appModel.setAttrLock(model, 'number-ranges', value, true);
+      }
+    },
+  },
+  pageProps: {
+    headerProps: { title: 'Abundance' },
+    attrProps: [
+      {
+        set: (value: number, model: AppOccurrence) =>
+          Object.assign(model.data, {
+            number: value,
+            'number-ranges': undefined,
+          }),
+        get: (model: AppOccurrence) => model.data.number,
+        input: 'slider',
+        info: 'How many individuals of this species did you see?',
+        inputProps: { max: 500 },
+      },
+    ],
+  },
+  remote: { id: 93 },
+};
+
+const stageAttr = {
+  id: 'stage',
+  menuProps: { label: 'Life Stage/Sex', icon: fingerprintIcon },
+  pageProps: {
+    attrProps: {
+      input: 'radio',
+      info: 'Please pick the life stage and sex of the organism, if recorded.',
+      inputProps: { options: stageOptions },
+    },
+  },
+  remote: { id: 218, values: stageOptions },
+};
+
+const typeAttr = {
+  id: 'type',
+  menuProps: { icon: progressIcon, label: 'Type', required: true },
+  pageProps: {
+    attrProps: {
+      input: 'radio',
+      info: 'Please pick the type of observation.',
+      inputProps: { options: typeOptions },
+    },
+  },
+  remote: { id: 217, values: typeOptions },
+};
 
 const survey: Survey = {
   name: 'default',
@@ -127,36 +196,13 @@ const survey: Survey = {
 
   taxaGroups: [], // all // TODO: remove?
 
-  render: [
-    {
-      id: 'occ:number',
-      label: 'Abundance',
-      icon: 'number',
-      group: ['occ:number', 'occ:number-ranges'],
-    },
-    'occ:stage',
-    'smp:method',
-    'occ:type',
-    'occ:identifiers',
-    'occ:sensitivity_precision',
-  ],
+  render: [numberAttr, stageAttr, typeAttr, identifiersAttr],
 
   attrs: {
-    location: locationAttr,
-
-    date: dateAttr,
-
-    recorder: recorderAttr,
-
-    /** @deprecated */
-    recorders: recorderAttr,
-
-    groupId: groupIdAttr,
-
-    /** @deprecated */
-    activity: activityAttr,
-
-    method: methodAttr,
+    [locationAttr.id]: locationAttr,
+    [dateAttr.id]: dateAttr,
+    [recorderAttr.id]: recorderAttr,
+    [groupIdAttr.id]: groupIdAttr,
   },
 
   verify: (attrs: any) =>
@@ -171,93 +217,13 @@ const survey: Survey = {
 
   occ: {
     attrs: {
-      taxon: taxonAttr,
-
-      number: {
-        menuProps: {
-          label: 'Abundance',
-          icon: numberIcon,
-          parse: (_, model: any) =>
-            model.data['number-ranges'] || model.data.number,
-          isLocked: (model: any) => {
-            const value =
-              survey.occ?.attrs?.number?.menuProps?.getLock?.(model);
-            return (
-              value &&
-              (value === appModel.getAttrLock(model, 'number') ||
-                value === appModel.getAttrLock(model, 'number-ranges'))
-            );
-          },
-          getLock: (model: any) =>
-            model.data['number-ranges'] || model.data.number,
-          unsetLock: model => {
-            appModel.unsetAttrLock(model, 'number', true);
-            appModel.unsetAttrLock(model, 'number-ranges', true);
-          },
-          setLock: (model, _, value) => {
-            const numberRegex = /^\d+$/; // https://stackoverflow.com/questions/175739/how-can-i-check-if-a-string-is-a-valid-number
-            if (numberRegex.test(`${value}`)) {
-              appModel.setAttrLock(model, 'number', value, true);
-            } else {
-              appModel.setAttrLock(model, 'number-ranges', value, true);
-            }
-          },
-        },
-        pageProps: {
-          headerProps: { title: 'Abundance' },
-          attrProps: [
-            {
-              set: (value: number, model: AppOccurrence) =>
-                Object.assign(model.data, {
-                  number: value,
-                  'number-ranges': undefined,
-                }),
-              get: (model: AppOccurrence) => model.data.number,
-              input: 'slider',
-              info: 'How many individuals of this species did you see?',
-              inputProps: { max: 500 },
-            },
-          ],
-        },
-        remote: { id: 93 },
-      },
-
-      stage: {
-        menuProps: { label: 'Life Stage/Sex', icon: fingerprintIcon },
-        pageProps: {
-          attrProps: {
-            input: 'radio',
-            info: 'Please pick the life stage and sex of the organism, if recorded.',
-            inputProps: { options: stageOptions },
-          },
-        },
-        remote: { id: 218, values: stageOptions },
-      },
-
-      type: {
-        menuProps: { icon: progressIcon, label: 'Type', required: true },
-        pageProps: {
-          attrProps: {
-            input: 'radio',
-            info: 'Please pick the type of observation.',
-            inputProps: { options: typeOptions },
-          },
-        },
-        remote: { id: 217, values: typeOptions },
-      },
-      identifiers: identifiersAttr,
-      sensitivity_precision: {
-        menuProps: { label: 'Sensitivity', icon: targetIcon },
-        pageProps: {
-          attrProps: {
-            input: 'radio',
-            info: 'This is the precision that the record will be shown at for public viewing.',
-            inputProps: { options: sensitivityOptions },
-          },
-        },
-        remote: { values: sensitivityOptions },
-      },
-      comment: commentAttr,
+      [taxonAttr.id]: taxonAttr,
+      [numberAttr.id]: numberAttr,
+      [stageAttr.id]: stageAttr,
+      [typeAttr.id]: typeAttr,
+      [identifiersAttr.id]: identifiersAttr,
+      [commentAttr.id]: commentAttr,
+      [defaultSensitivityPrecisionAttr.id]: defaultSensitivityPrecisionAttr,
     },
 
     verify: (attrs: any) =>

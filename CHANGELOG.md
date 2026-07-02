@@ -1,6 +1,42 @@
+## 6.3.4
+
+- Updated libraries.
+- Allowed Type field to be locked.
+
+## 6.3.3
+
+- Fixed bryophyte and dragonfly upload.
+
+## 6.3.2
+
+- Fixed moth survey occurrence attrs.
+  
+## 6.3.1
+
+- Fixed plant survey occurrence attrs.
+  
+## 6.3.0
+
+- Updated libraries.
+- Added bulk-editing.
+- Fixed stage value from 'Adults' to 'Adult' for consistency.
+- Added missing moth stage warning symbol.
+- Fixed plant net survey child GPS warning when parent has no location.
+- Updated arthropod stage terms.
+- Updated odonata attribute labels and verification message.
+- Added DAFOR attribute help texts.
+- Updated photo cropping instructions for better image recognition results.
+- Always show Upload all button.
+- Fixed user common or scientific name choices for AI suggestions.
+- Fixed common name AI suggestions.
+- Added photo cropping info.
+- Fixed uploaded record names.
+- Increased abundance count max values.
+- Fixed camera permissions.
+
 ## 6.2.3
 
-Allowed Type field to be locked.
+Fixed Android startup bug.
 
 ## 6.2.2
 

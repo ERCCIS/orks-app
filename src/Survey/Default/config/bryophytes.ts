@@ -1,5 +1,6 @@
 import { clipboardOutline } from 'ionicons/icons';
 import genderIcon from 'common/images/gender.svg';
+import landIcon from 'common/images/land.svg';
 import { groupsReverse as groups } from 'common/data/informalGroups';
 import { Survey } from 'Survey/common/config';
 
@@ -17,83 +18,104 @@ const habitatOptions = [
   { value: 'Woodland', id: 1574 },
 ];
 
+const habitatAttr = {
+  id: 'habitat',
+  menuProps: { icon: landIcon },
+  pageProps: {
+    attrProps: {
+      input: 'radio',
+      inputProps: { options: habitatOptions },
+    },
+  },
+  remote: { id: 208, values: habitatOptions },
+} as const;
+
+const microscopicallyCheckedAttr = {
+  id: 'microscopicallyChecked',
+  menuProps: {
+    label: 'Microscopically Checked',
+    icon: clipboardOutline,
+    type: 'toggle',
+  },
+  pageProps: { attrProps: { input: 'toggle' } },
+  remote: { id: 470 },
+} as const;
+
+const fruitAttr = {
+  id: 'fruit',
+  pageProps: { attrProps: { input: 'toggle' } },
+  remote: { id: 471 },
+  menuProps: { icon: clipboardOutline, type: 'toggle' },
+} as const;
+
+const maleAttr = {
+  id: 'male',
+  pageProps: { attrProps: { input: 'toggle' } },
+  remote: { id: 475 },
+  menuProps: { icon: genderIcon, type: 'toggle' },
+} as const;
+
+const femaleAttr = {
+  id: 'female',
+  pageProps: { attrProps: { input: 'toggle' } },
+  remote: { id: 476 },
+  menuProps: { icon: genderIcon, type: 'toggle' },
+} as const;
+
+const bulbilsAttr = {
+  id: 'bulbils',
+  pageProps: { attrProps: { input: 'toggle' } },
+  remote: { id: 472 },
+  menuProps: { icon: clipboardOutline, type: 'toggle' },
+} as const;
+
+const gemmaeAttr = {
+  id: 'gemmae',
+  pageProps: { attrProps: { input: 'toggle' } },
+  remote: { id: 473 },
+  menuProps: { icon: clipboardOutline, type: 'toggle' },
+} as const;
+
+const tubersAttr = {
+  id: 'tubers',
+  pageProps: { attrProps: { input: 'toggle' } },
+  remote: { id: 474 },
+  menuProps: { icon: clipboardOutline, type: 'toggle' },
+} as const;
+
 const survey: Partial<Survey> & { taxa: string } = {
   taxa: 'bryophytes',
   taxaGroups: [groups.moss, groups.liverwort],
 
   render: [
-    'smp:habitat',
-    'occ:microscopicallyChecked',
-    'occ:fruit',
-    'occ:male',
-    'occ:female',
-    'occ:bulbils',
-    'occ:gemmae',
-    'occ:tubers',
+    { ...habitatAttr, model: 'sample' },
+    microscopicallyCheckedAttr,
+    fruitAttr,
+    maleAttr,
+    femaleAttr,
+    bulbilsAttr,
+    gemmaeAttr,
+    tubersAttr,
   ],
 
   attrs: {
-    habitat: {
-      menuProps: { icon: genderIcon },
-      pageProps: {
-        attrProps: {
-          input: 'radio',
-          inputProps: { options: habitatOptions },
-        },
-      },
-      remote: { id: 208, values: habitatOptions },
-    },
+    [habitatAttr.id]: habitatAttr,
   },
 
   occ: {
     skipAutoIncrement: true,
 
     attrs: {
-      microscopicallyChecked: {
-        menuProps: {
-          label: 'Microscopically Checked',
-          icon: clipboardOutline,
-          type: 'toggle',
-        },
-        pageProps: { attrProps: { input: 'toggle' } },
-        remote: { id: 470 },
-      },
+      sex: null as any, // disable for bulk-editing
+      stage: null as any, // disable for bulk-editing
 
-      fruit: {
-        pageProps: { attrProps: { input: 'toggle' } },
-        remote: { id: 471 },
-        menuProps: { icon: clipboardOutline, type: 'toggle' },
-      },
-
-      male: {
-        pageProps: { attrProps: { input: 'toggle' } },
-        remote: { id: 475 },
-        menuProps: { icon: genderIcon, type: 'toggle' },
-      },
-
-      female: {
-        pageProps: { attrProps: { input: 'toggle' } },
-        remote: { id: 476 },
-        menuProps: { icon: genderIcon, type: 'toggle' },
-      },
-
-      bulbils: {
-        pageProps: { attrProps: { input: 'toggle' } },
-        remote: { id: 472 },
-        menuProps: { icon: clipboardOutline, type: 'toggle' },
-      },
-
-      gemmae: {
-        pageProps: { attrProps: { input: 'toggle' } },
-        remote: { id: 473 },
-        menuProps: { icon: clipboardOutline, type: 'toggle' },
-      },
-
-      tubers: {
-        pageProps: { attrProps: { input: 'toggle' } },
-        remote: { id: 474 },
-        menuProps: { icon: clipboardOutline, type: 'toggle' },
-      },
+      [microscopicallyCheckedAttr.id]: microscopicallyCheckedAttr,
+      [fruitAttr.id]: fruitAttr,
+      [maleAttr.id]: maleAttr,
+      [femaleAttr.id]: femaleAttr,
+      [bulbilsAttr.id]: bulbilsAttr,
+      [gemmaeAttr.id]: gemmaeAttr,
+      [tubersAttr.id]: tubersAttr,
     },
   },
 };
