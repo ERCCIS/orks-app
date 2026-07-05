@@ -41,12 +41,12 @@ const Help = () => (
                   Start off by tapping the plus{' '}
                   <IonIcon
                     icon={addOutline}
-                    className="-mb-1 rounded-full bg-primary-600 text-white"
+                    className="bg-primary-600 -mb-1 rounded-full text-white"
                     size="small"
                   />{' '}
                   button on the home page. This gives you four options:
                 </p>
-                <h4 className="mb-2 mt-4 font-bold">
+                <h4 className="mt-4 mb-2 font-bold">
                   Add a record without a photo
                 </h4>
                 <p>
@@ -54,7 +54,7 @@ const Help = () => (
                   the name of the species you are recording, and then you can
                   add the other record information.
                 </p>
-                <h4 className="mb-2 mt-4 font-bold">
+                <h4 className="mt-4 mb-2 font-bold">
                   Take a new photo of the species
                 </h4>
                 <p>
@@ -66,7 +66,7 @@ const Help = () => (
                   identifications. It is also possible to add extra photos of
                   your species.
                 </p>
-                <h4 className="mb-2 mt-4 font-bold">
+                <h4 className="mt-4 mb-2 font-bold">
                   Select multiple photos to add to a single record
                 </h4>
                 <p>
@@ -78,7 +78,7 @@ const Help = () => (
                   ID and added the other details you can save the record with
                   all the photos attached.
                 </p>
-                <h4 className="mb-2 mt-4 font-bold">Show other surveys</h4>
+                <h4 className="mt-4 mb-2 font-bold">Show other surveys</h4>
                 <p>
                   Tap here to see the other survey options in the app. These
                   allow you to add a list of records from the same site on the
@@ -128,15 +128,15 @@ const Help = () => (
                 </p>
                 <ul className="my-2">
                   <li>
-                    <div className="-mb-1 inline-block size-4 rounded-full bg-success" />{' '}
+                    <div className="bg-success -mb-1 inline-block size-4 rounded-full" />{' '}
                     = high confidence
                   </li>
                   <li>
-                    <div className="-mb-1 inline-block size-4 rounded-full bg-warning-400" />{' '}
+                    <div className="bg-warning-400 -mb-1 inline-block size-4 rounded-full" />{' '}
                     = medium confidence
                   </li>
                   <li>
-                    <div className="-mb-1 inline-block size-4 rounded-full bg-danger" />{' '}
+                    <div className="bg-danger -mb-1 inline-block size-4 rounded-full" />{' '}
                     = low confidence
                   </li>
                 </ul>
@@ -324,9 +324,9 @@ const Help = () => (
               <p>
                 <T>
                   Tap on a queried record to get a link to that record via the
-                  ORKS website. If you go to the website you will be able to
-                  see what the query is, and to add a reply or edit your record
-                  if required:
+                  ORKS website. If you go to the website you will be able to see
+                  what the query is, and to add a reply or edit your record if
+                  required:
                 </T>
               </p>
               <img src={verified3Pic} alt="" className="mx-auto my-2 block" />
@@ -450,7 +450,7 @@ const Help = () => (
                 For more help please visit the iRecord{' '}
                 <a href="https://irecord.org.uk/forum/36">forum</a> Or drop us
                 an
-                <a href="mailto:orks%40cornwallwildlifetrust.gov.uk"> email</a>.
+                <a href="mailto:orks%40cornwallwildlifetrust.org.uk"> email</a>.
               </T>
             </div>
           </IonItem>
