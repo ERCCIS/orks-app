@@ -3,7 +3,7 @@ import { object } from 'zod';
 import { groupsReverse as groups } from 'common/data/informalGroups';
 import progressIcon from 'common/images/progress-circles.svg';
 import { identifiersAttr, Survey } from 'Survey/common/config';
-import { numberAttr, numberRangesAttr, sexAttr } from './common';
+import { numberAttr, numberRangesAttr } from './common';
 
 const breedingOptions = [
   { value: null, isDefault: true, label: 'Not recorded' },
@@ -59,7 +59,7 @@ const breedingAttr = {
 
 const birdStageAttr = {
   id: 'stage',
-  menuProps: { icon: progressIcon },
+  menuProps: { icon: progressIcon, label: 'Life Stage/Sex' },
   pageProps: {
     attrProps: {
       input: 'radio',
@@ -82,7 +82,6 @@ const survey: Partial<Survey> & { taxa: string } = {
     },
     birdStageAttr,
     breedingAttr,
-    sexAttr,
     identifiersAttr,
   ],
 

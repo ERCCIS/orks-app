@@ -6,7 +6,6 @@ import appModel from 'models/app';
 import Sample from 'models/sample';
 import { identifiersAttr, plantStageAttr, Survey } from 'Survey/common/config';
 import defaultSurveyConf from '.';
-import { sexAttr } from './common';
 
 const numberOptions = [
   { isPlaceholder: true, label: 'Ranges' },
@@ -177,7 +176,6 @@ const survey: Partial<Survey> & { taxa: string } = {
       },
 
       plantStageAttr,
-      sexAttr,
       identifiersAttr,
     ];
   },
