@@ -1,7 +1,8 @@
 import { clipboardOutline } from 'ionicons/icons';
+import { object } from 'zod';
+import { groupsReverse as groups } from 'common/data/informalGroups';
 import genderIcon from 'common/images/gender.svg';
 import landIcon from 'common/images/land.svg';
-import { groupsReverse as groups } from 'common/data/informalGroups';
 import { Survey } from 'Survey/common/config';
 
 const habitatOptions = [
@@ -117,6 +118,10 @@ const survey: Partial<Survey> & { taxa: string } = {
       [gemmaeAttr.id]: gemmaeAttr,
       [tubersAttr.id]: tubersAttr,
     },
+    verify: (attrs: any) =>
+      object({
+        taxon: object({}, { required_error: 'Species is missing' }).nullable(),
+      }).safeParse(attrs).error,
   },
 };
 

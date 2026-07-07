@@ -59,7 +59,8 @@ const MenuAttr = ({ attr, model, onChange, itemProps, className }: Props) => {
   const match = useRouteMatch();
 
   const survey = model.getSurvey();
-  const menuProps: Config = survey.attrs?.[attr].menuProps || {};
+  const menuProps: Config =
+    survey.attrs?.[attr]?.menuProps || survey.attrs?.[attr]?.menuProps || {};
   const {
     label: labelProp,
     icon,

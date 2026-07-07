@@ -1,4 +1,5 @@
 import { clipboardOutline } from 'ionicons/icons';
+import { object } from 'zod';
 import { groupsReverse as groups } from 'common/data/informalGroups';
 import progressIcon from 'common/images/progress-circles.svg';
 import { identifiersAttr, Survey } from 'Survey/common/config';
@@ -90,6 +91,10 @@ const survey: Partial<Survey> & { taxa: string } = {
       [birdStageAttr.id]: birdStageAttr,
       [breedingAttr.id]: breedingAttr,
     },
+    verify: (attrs: any) =>
+      object({
+        taxon: object({}, { required_error: 'Species is missing' }).nullable(),
+      }).safeParse(attrs).error,
   },
 };
 

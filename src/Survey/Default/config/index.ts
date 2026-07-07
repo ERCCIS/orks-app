@@ -26,6 +26,7 @@ import arthropodSurvey from './arthropods';
 import birdsSurvey from './birds';
 import bryophytesSurvey from './bryophytes';
 import butterfliesSurvey from './butterflies';
+import { sexAttr } from './common';
 import dragonfliesSurvey from './dragonflies';
 import mammalsSurvey from './mammals';
 import mothsSurvey from './moths';
@@ -196,7 +197,7 @@ const survey: Survey = {
 
   taxaGroups: [], // all // TODO: remove?
 
-  render: [numberAttr, stageAttr, typeAttr, identifiersAttr],
+  render: [numberAttr, stageAttr, typeAttr, sexAttr, identifiersAttr],
 
   attrs: {
     [locationAttr.id]: locationAttr,
@@ -221,6 +222,7 @@ const survey: Survey = {
       [numberAttr.id]: numberAttr,
       [stageAttr.id]: stageAttr,
       [typeAttr.id]: typeAttr,
+      [sexAttr.id]: sexAttr,
       [identifiersAttr.id]: identifiersAttr,
       [commentAttr.id]: commentAttr,
       [defaultSensitivityPrecisionAttr.id]: defaultSensitivityPrecisionAttr,

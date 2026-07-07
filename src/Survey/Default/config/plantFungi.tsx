@@ -1,3 +1,4 @@
+import { object } from 'zod';
 import Tooltip from 'common/Components/Tooltip';
 import { groupsReverse as groups } from 'common/data/informalGroups';
 import numberIcon from 'common/images/number.svg';
@@ -23,7 +24,7 @@ const numberDAFOROptions = [
     label: (
       <>
         DAFOR{' '}
-        <Tooltip className="p-0 ml-2">
+        <Tooltip className="ml-2 p-0">
           <p>
             DAFOR refers to a subjective abundance scale comprising the
             following ordered terms: <b>D</b>ominant / <b>A</b>bundant /{' '}
@@ -191,6 +192,11 @@ const survey: Partial<Survey> & { taxa: string } = {
       [plantFungiNumberDAFORAttr.id]: plantFungiNumberDAFORAttr,
       [plantFungiNumberRangesAttr.id]: plantFungiNumberRangesAttr,
     },
+
+    verify: (attrs: any) =>
+      object({
+        taxon: object({}, { required_error: 'Species is missing' }).nullable(),
+      }).safeParse(attrs).error,
   },
 };
 

@@ -65,7 +65,7 @@ export const defaults: Data = {
   sendAnalytics: true,
   appSession: 0,
 
-  useSpeciesImageClassifier: true,
+  useSpeciesImageClassifier: false,
 
   showVerifiedRecordsNotification: true,
   verifiedRecordsTimestamp: null,
