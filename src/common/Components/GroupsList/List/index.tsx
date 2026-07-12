@@ -95,32 +95,30 @@ const GroupsList = ({
           <div className="flex w-full items-center justify-end gap-2">
             <IonSearchbar
               placeholder={t('Activity name')}
-              className={clsx('!py-0 pr-0', !showSearch && 'hidden')}
+              className={clsx('!py-0 pr-0', !showSearch && 'hidden!')}
               onIonChange={onSearch}
               ref={searchbarRef}
               value={currentSearch}
             />
 
             {!showSearch && (
-              <>
-                <IonSegment
-                  onIonChange={onSegmentClick}
-                  value={segment}
-                  className="mx-0"
-                >
-                  <IonSegmentButton value="joined">
-                    <IonLabel className="ion-text-wrap">
-                      <T>My activities</T>
-                    </IonLabel>
-                  </IonSegmentButton>
+              <IonSegment
+                onIonChange={onSegmentClick}
+                value={segment}
+                className="mx-0"
+              >
+                <IonSegmentButton value="joined">
+                  <IonLabel className="ion-text-wrap">
+                    <T>My activities</T>
+                  </IonLabel>
+                </IonSegmentButton>
 
-                  <IonSegmentButton value="all">
-                    <IonLabel className="ion-text-wrap">
-                      <T>All groups</T>
-                    </IonLabel>
-                  </IonSegmentButton>
-                </IonSegment>
-              </>
+                <IonSegmentButton value="all">
+                  <IonLabel className="ion-text-wrap">
+                    <T>All activities</T>
+                  </IonLabel>
+                </IonSegmentButton>
+              </IonSegment>
             )}
 
             <Button

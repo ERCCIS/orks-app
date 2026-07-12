@@ -602,6 +602,34 @@ msgstr "How many individuals of this type?"
 msgid "How many individuals of this species did you see?"
 msgstr "How many individuals of this species did you see?"
 
+# Dragonfly attribute info 
+msgid "Total number of adults, including teneral adults. Also include in this total twice the count of coupled pairs plus the count of ovipositing females."
+msgstr "Total number of adults, including teneral adults. Also include in this total twice the count of coupled pairs plus the count of ovipositing females."
+
+# Dragonfly attribute info 
+msgid "Number of coupled pairs or mating pairs seen."
+msgstr "Number of coupled pairs or mating pairs seen."
+
+# Dragonfly attribute info 
+msgid "Number of egg-laying females seen."
+msgstr "Number of egg-laying females seen."
+
+# Dragonfly attribute info 
+msgid "Number of live larvae seen."
+msgstr "Number of live larvae seen."
+
+# Dragonfly attribute info 
+msgid "For Willow Emerald Damselfly only, enter 1 if any egg-laying scars seen in the bark of waterside tree branches."
+msgstr "For Willow Emerald Damselfly only, enter 1 if any egg-laying scars seen in the bark of waterside tree branches."
+
+# Dragonfly attribute info 
+msgid "Number of emergents – from larvae just out of the water to pre-flight adults, including deformed adults incapable of flight (do not include these in the total count of adults)."
+msgstr "Number of emergents – from larvae just out of the water to pre-flight adults, including deformed adults incapable of flight (do not include these in the total count of adults)."
+
+# Dragonfly attribute info 
+msgid "Number of shed larval skins (left over after the adult has emerged)."
+msgstr "Number of shed larval skins (left over after the adult has emerged)."
+
 msgid "Yikes!"
 msgstr "Yikes!"
 
@@ -722,11 +750,17 @@ msgstr "Site type"
 msgid "Adults"
 msgstr "Adults"
 
-msgid "Cop. pairs"
-msgstr "Cop. pairs"
+# Odonata attribute name  
+msgid "Coupled pairs"
+msgstr "Coupled pairs"
 
-msgid "Ovip. females"
-msgstr "Ovip. females"
+# Odonata attribute name  
+msgid "Ovipositing females"
+msgstr "Ovipositing females"
+
+# Odonata attribute name  
+msgid "Oviposition scars"
+msgstr "Oviposition scars"
 
 msgid "Larvae"
 msgstr "Larvae"
@@ -1379,10 +1413,6 @@ msgstr "Please wait..."
 msgid "characters"
 msgstr "characters"
 
-# Odonata attribute name 
-msgid "Ovip. scars"
-msgstr "Ovip. scars"
-
 # Odonata attribute info message 
 msgid "This attribute should be recorded for Willow Emerald only."
 msgstr "This attribute should be recorded for Willow Emerald only."
@@ -1881,10 +1911,6 @@ msgstr "Use grid alert"
 msgid "Status"
 msgstr "Status"
 
-# Plant survey attribute
-msgid "Sensitive"
-msgstr "Sensitive"
-
 # Status attribute message
 msgid "Please pick the status."
 msgstr "Please pick the status."
@@ -2095,8 +2121,8 @@ msgid "rejected"
 msgstr "rejected"
 
 # Verification message 
-msgid "Thanks for sending in your record. A verifier has marked it as <2>"{{statusMessage}}"</2> in this case."
-msgstr "Thanks for sending in your record. A verifier has marked it as <2>"{{statusMessage}}"</2> in this case."
+msgid "Thanks for sending in your record. A verifier has marked it as <2>\"{{statusMessage}}\"</2> in this case."
+msgstr "Thanks for sending in your record. A verifier has marked it as <2>\"{{statusMessage}}\"</2> in this case."
 
 # Verification message 
 msgid "Please log in to the ORKS website to see any additional information that the verifier may have provided."
@@ -2251,6 +2277,10 @@ msgid "Gall"
 msgstr "Gall"
 
 # Arthropods stage option
+msgid "Immature"
+msgstr "Immature"
+
+# Arthropods stage option
 msgid "Dead"
 msgstr "Dead"
 
@@ -2294,9 +2324,6 @@ msgstr "Suggestions:"
 msgid "Loading suggestions"
 msgstr "Loading suggestions"
 
-# Part of species identification message 
-msgid "Identifying..."
-msgstr "Identifying..."
 
 # Error message
 msgid "Not implemented on web."
@@ -2309,3 +2336,187 @@ msgstr "Sensitivity"
 # From record attributes 
 msgid "This option will 'blur' the location details: they will be displayed as a 1 km square (rather than a precise point) and will have the site name hidden. Precise location details will be made available to verifiers and local records centres, but will not be displayed publicly."
 msgstr "This option will 'blur' the location details: they will be displayed as a 1 km square (rather than a precise point) and will have the site name hidden. Precise location details will be made available to verifiers and local records centres, but will not be displayed publicly."
+
+# From Help page
+msgid "Tap on a queried record to get a link to that record via the iRecord website. If you go to the website you will be able to see what the query is, and to add a reply or edit your record if required:"
+msgstr "Tap on a queried record to get a link to that record via the iRecord website. If you go to the website you will be able to see what the query is, and to add a reply or edit your record if required:"
+
+# Context term 
+msgid "Membership pending"
+msgstr "Membership pending"
+
+# Context term 
+msgid "Any records you add from now on will be submitted to the chosen activity."
+msgstr "Any records you add from now on will be submitted to the chosen activity."
+
+# Context term 
+msgid "Successfully left the activity."
+msgstr "Successfully left the activity."
+
+# Taxon group name 
+msgid "Amphibians and reptiles"
+msgstr "Amphibians and reptiles"
+
+# Taxon group name 
+msgid "Birds"
+msgstr "Birds"
+
+# Taxon group name 
+msgid "Fish"
+msgstr "Fish"
+
+# Taxon group name 
+msgid "Fungi and slime moulds"
+msgstr "Fungi and slime moulds"
+
+# Taxon group name 
+msgid "Insects"
+msgstr "Insects"
+
+# Taxon group name 
+msgid "Invertebrates"
+msgstr "Invertebrates"
+
+# Taxon group name 
+msgid "Lichens"
+msgstr "Lichens"
+
+# Taxon group name 
+msgid "Mammals"
+msgstr "Mammals"
+
+# Taxon group name 
+msgid "Other groups"
+msgstr "Other groups"
+
+# Taxon group name 
+msgid "Plants"
+msgstr "Plants"
+
+# Taxon group name 
+msgid "Ants, bees, sawflies, wasps"
+msgstr "Ants, bees, sawflies, wasps"
+
+# Taxon group name 
+msgid "Beetles"
+msgstr "Beetles"
+
+# Taxon group name 
+msgid "Butterflies"
+msgstr "Butterflies"
+
+# Taxon group name 
+msgid "Dragonflies and damselflies"
+msgstr "Dragonflies and damselflies"
+
+# Taxon group name 
+msgid "Grasshoppers and allies"
+msgstr "Grasshoppers and allies"
+
+# Taxon group name 
+msgid "Moths"
+msgstr "Moths"
+
+# Taxon group name 
+msgid "Other insect groups"
+msgstr "Other insect groups"
+
+# Taxon group name 
+msgid "Riverflies"
+msgstr "Riverflies"
+
+# Taxon group name 
+msgid "True bugs and hoppers"
+msgstr "True bugs and hoppers"
+
+# Taxon group name 
+msgid "True flies"
+msgstr "True flies"
+
+# Taxon group name 
+msgid "Centipedes, millipedes"
+msgstr "Centipedes, millipedes"
+
+# Taxon group name 
+msgid "Crustaceans"
+msgstr "Crustaceans"
+
+# Taxon group name 
+msgid "Molluscs"
+msgstr "Molluscs"
+
+# Taxon group name 
+msgid "Other invertebrate groups"
+msgstr "Other invertebrate groups"
+
+# Taxon group name 
+msgid "Spiders, harvestmen and other arachnids"
+msgstr "Spiders, harvestmen and other arachnids"
+
+# Taxon group name 
+msgid "Worms"
+msgstr "Worms"
+
+# Taxon group name 
+msgid "Vascular plants"
+msgstr "Vascular plants"
+
+# Taxon group name 
+msgid "Algae"
+msgstr "Algae"
+
+# Taxon group name 
+msgid "Mosses and relatives"
+msgstr "Mosses and relatives"
+
+# Attr name 
+msgid "Immature"
+msgstr "Immature"
+
+# Attr name 
+msgid "Chick"
+msgstr "Chick"
+
+# Attr name 
+msgid "Nest"
+msgstr "Nest"
+
+# Setting page 
+msgid "Export database"
+msgstr "Export database"
+
+# Map page 
+msgid "You need to <1>login</1> to your account to be able to view the records."
+msgstr "You need to <1>login</1> to your account to be able to view the records."
+
+# Setting page 
+msgid "Are you sure you want to export the data?<1>This feature is intended solely for technical support and is not a supported method for exporting your data</1>"
+msgstr "Are you sure you want to export the data?<1>This feature is intended solely for technical support and is not a supported method for exporting your data</1>"
+
+# Attr Name 
+msgid "Sensitive"
+msgstr "Sensitive"
+
+# Species list ordering option 
+msgid "Changed list ordering to alphabetical."
+msgstr "Changed list ordering to alphabetical."
+
+# Species list ordering option 
+msgid "Changed list ordering to last added."
+msgstr "Changed list ordering to last added."
+
+# Photo cropping instructions
+msgid "<0>Crop Your Photo</0><1><0>Pinch to zoom in/out</0><1>Center the species in frame</1><2>For best results from image recognition, we advise cropping in closely to the species you want to identify</2><3>Where possible, ensure your image is in focus and well lit</3></1>"
+msgstr "<0>Crop Your Photo</0><1><0>Pinch to zoom in/out</0><1>Center the species in frame</1><2>For best results from image recognition, we advise cropping in closely to the species you want to identify</2><3>Where possible, ensure your image is in focus and well lit</3></1>"
+
+# Attribute help text 
+msgid "<0>DAFOR refers to a subjective abundance scale comprising the following ordered terms: <1>D</1>ominant / <3>A</3>bundant / <6>F</6>requent / <8>O</8>ccasional / <10>R</10>are.</0><p>Assessed abundance should either relate to the scale of the survey (e.g. 1 or 2 km grid squares), or be clearly qualified in the record comments field.</p>"
+msgstr "<0>DAFOR refers to a subjective abundance scale comprising the following ordered terms: <1>D</1>ominant / <3>A</3>bundant / <6>F</6>requent / <8>O</8>ccasional / <10>R</10>are.</0><p>Assessed abundance should either relate to the scale of the survey (e.g. 1 or 2 km grid squares), or be clearly qualified in the record comments field.</p>"
+
+# Attribute help text 
+msgid "<0>Abundance (DAFOR, LA, LF or count).<1><0>DAFOR refers to a subjective abundance scale comprising the following ordered terms: <1>D</1>ominant / <3>A</3>bundant / <5>F</5>requent / <7>O</7>ccasional / <9>R</9>are. The prefix \"Locally\" can also be used with the Abundant and Frequent classes (e.g. LA = Locally Abundant).</0><p>Assessed abundance should either relate to the scale of the survey (e.g. 1 or 2 km grid squares), or be clearly qualified in the record comments field.</p></1></0>"
+msgstr "<0>Abundance (DAFOR, LA, LF or count).<1><0>DAFOR refers to a subjective abundance scale comprising the following ordered terms: <1>D</1>ominant / <3>A</3>bundant / <5>F</5>requent / <7>O</7>ccasional / <9>R</9>are. The prefix \"Locally\" can also be used with the Abundant and Frequent classes (e.g. LA = Locally Abundant).</0><p>Assessed abundance should either relate to the scale of the survey (e.g. 1 or 2 km grid squares), or be clearly qualified in the record comments field.</p></1></0>"
+
+# Survey verification message 
+msgid "Add quantity for at least one life stage."
+msgstr "Add quantity for at least one life stage."

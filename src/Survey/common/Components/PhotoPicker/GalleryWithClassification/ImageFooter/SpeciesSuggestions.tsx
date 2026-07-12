@@ -69,7 +69,7 @@ const SpeciesSuggestions = ({
       const commonName = commonNames[0];
 
       return (
-        <div className="flex min-h-20 w-full items-center justify-start gap-2 border-b border-solid p-2">
+        <div className="flex min-h-20 w-full items-center justify-start gap-2 border-b border-neutral-100 border-solid p-2">
           <ProbabilityBadge
             probability={probability}
             className="shrink-0"
@@ -98,8 +98,10 @@ const SpeciesSuggestions = ({
 
     return (
       <div className="mx-2 mt-5">
-        <h2 className="mx-2 text-lg font-semibold">Suggestions:</h2>
-        <h3 className="mx-2 my-1 text-sm">
+        <h2 className="mx-2 text-xl font-bold!">
+          <T>Suggestions</T>:
+        </h2>
+        <div className="mx-2 my-1 opacity-80 text-sm">
           <div>
             <T>Note that AI confidence levels are not absolute.</T>
           </div>
@@ -109,7 +111,7 @@ const SpeciesSuggestions = ({
               possible.
             </T>
           </div>
-        </h3>
+        </div>
         <div className="flex flex-col">{suggestions}</div>
       </div>
     );

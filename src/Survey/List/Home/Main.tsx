@@ -7,15 +7,17 @@ import { IonIcon, IonList, NavContext } from '@ionic/react';
 import Sample from 'models/sample';
 import DisabledRecordMessage from 'Survey/common/Components/DisabledRecordMessage';
 import MenuAttr from 'Survey/common/Components/MenuAttr';
-import MenuDynamicAttrs from 'Survey/common/Components/MenuDynamicAttrs';
+import MenuDynamicAttr from 'Survey/common/Components/MenuDynamicAttrs';
 import { usePromptImageSource } from 'Survey/common/Components/PhotoPicker';
 import SpeciesList from 'Survey/common/Components/SpeciesList';
+import { Action } from 'Survey/common/Components/SpeciesList/BulkEdit';
 
 type Props = {
   sample: Sample;
   onDelete: any;
   attachSpeciesImages: any;
   showChildSampleDistanceWarning: boolean;
+  onBulkEdit?: (action: Action, modelIds: string[], value?: any) => void;
 };
 
 const HomeMain = ({
@@ -23,14 +25,21 @@ const HomeMain = ({
   onDelete,
   showChildSampleDistanceWarning,
   attachSpeciesImages,
+  onBulkEdit,
 }: Props) => {
   const { url } = useRouteMatch();
   const { navigate } = useContext(NavContext);
   const promptImageSource = usePromptImageSource();
 
+  const surveyConfig = sample.getSurvey();
+
   const { groupId } = sample.data;
 
   const { isDisabled } = sample;
+
+  const renderArray = typeof surveyConfig.render === 'function' 
+    ? surveyConfig.render(sample) 
+    : surveyConfig.render;
 
   const attachSpeciesImagesWrap = async () => {
     const shouldUseCamera = await promptImageSource();
@@ -42,7 +51,7 @@ const HomeMain = ({
 
   return (
     <Main>
-      <IonList lines="full" className="mb-2 flex flex-col gap-4">
+      <IonList lines="full" className="mb-2 flex! flex-col gap-4">
         {isDisabled && (
           <div className="rounded-list mb-2">
             <DisabledRecordMessage sample={sample} />
@@ -63,12 +72,19 @@ const HomeMain = ({
               that this is correct.
             </InfoMessage>
           )}
-          <MenuDynamicAttrs model={sample} skipLocks />
+          {renderArray?.map((config: any) => (
+            <MenuDynamicAttr 
+              key={config.id}
+              model={sample}
+              config={config}
+              skipLocks
+            />
+          ))}
         </div>
       </IonList>
 
       {!isDisabled && (
-        <div className="mx-auto mb-2.5 mt-8 flex items-center justify-center gap-5">
+        <div className="mx-3 mb-2.5 mt-8 flex items-center justify-center gap-5">
           <Button
             color="primary"
             onPress={() => navigate(`${url}/taxon`)}
@@ -89,7 +105,12 @@ const HomeMain = ({
         </div>
       )}
 
-      <SpeciesList sample={sample} onDelete={onDelete} useSubSamples />
+      <SpeciesList
+        sample={sample}
+        onDelete={onDelete}
+        onBulkEdit={onBulkEdit}
+        useSubSamples
+      />
     </Main>
   );
 };

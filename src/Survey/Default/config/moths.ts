@@ -9,10 +9,7 @@ const survey: Partial<Survey> & { taxa: string } = {
 
   occ: {
     attrs: {
-      stage: {
-        ...mothStageAttr,
-        menuProps: { ...mothStageAttr.menuProps, required: false },
-      },
+      [mothStageAttr.id]: mothStageAttr,
     },
 
     verify: (attrs: any) =>

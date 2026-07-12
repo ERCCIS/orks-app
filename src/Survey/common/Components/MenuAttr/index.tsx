@@ -59,7 +59,8 @@ const MenuAttr = ({ attr, model, onChange, itemProps, className }: Props) => {
   const match = useRouteMatch();
 
   const survey = model.getSurvey();
-  const menuProps: Config = survey.attrs?.[attr].menuProps || {};
+  const menuProps: Config =
+    survey.attrs?.[attr]?.menuProps || survey.attrs?.[attr]?.menuProps || {};
   const {
     label: labelProp,
     icon,
@@ -102,7 +103,7 @@ const MenuAttr = ({ attr, model, onChange, itemProps, className }: Props) => {
     return (
       <IonItem className="[--border-style:none] [--inner-padding-end:0] [--padding-start:0]">
         <Toggle
-          defaultSelected={get ? get(model) : value}
+          isSelected={get ? get(model) : value}
           className="w-full"
           label={label}
           prefix={<IonIcon src={icon as string} className="size-6" />}

@@ -8,11 +8,12 @@ import appModel from 'models/app';
 import Sample from 'models/sample';
 import DisabledRecordMessage from 'Survey/common/Components/DisabledRecordMessage';
 import MenuAttr from 'Survey/common/Components/MenuAttr';
-import MenuDynamicAttrs from 'Survey/common/Components/MenuDynamicAttrs';
+import MenuDynamicAttr from 'Survey/common/Components/MenuDynamicAttrs';
 import MenuLocation from 'Survey/common/Components/MenuLocation';
 import MenuTaxonItem from 'Survey/common/Components/MenuTaxonItem';
 import PhotoPicker from 'Survey/common/Components/PhotoPicker';
 import VerificationMessage from 'Survey/common/Components/VerificationMessage';
+import { useSensitivityTip } from 'Survey/common/Components/hooks';
 import lockScreenshot from './lock.png';
 import './styles.scss';
 
@@ -60,6 +61,9 @@ const useAttributeLockingTip = (sample: Sample) => {
 
 const EditMain = ({ sample }: Props) => {
   useAttributeLockingTip(sample);
+  const showSensitivityWarning = useSensitivityTip();
+
+  const surveyConfig = sample.getSurvey();
 
   const { url } = useRouteMatch();
 
@@ -70,9 +74,14 @@ const EditMain = ({ sample }: Props) => {
 
   const { isDisabled } = sample;
 
+  const renderArray =
+    typeof surveyConfig.render === 'function'
+      ? surveyConfig.render(sample)
+      : surveyConfig.render;
+
   return (
-    <Main>
-      <IonList lines="full" className="mb-2 flex flex-col gap-4">
+    <Main className="[--padding-bottom:30px]">
+      <IonList lines="full" className="mb-2 flex! flex-col gap-4">
         {isDisabled && (
           <div className="rounded-list mb-2">
             <VerificationMessage occurrence={occ} />
@@ -108,7 +117,14 @@ const EditMain = ({ sample }: Props) => {
               routerLink: `${url}/occ/${occ.cid}/comment`,
             }}
           />
-          <MenuDynamicAttrs model={sample} />
+          {renderArray?.map((config: any) => (
+            <MenuDynamicAttr key={config.id} model={sample} config={config} />
+          ))}
+          <MenuAttr.WithLock
+            model={occ}
+            attr="sensitivityPrecision"
+            onChange={showSensitivityWarning}
+          />
         </div>
       </IonList>
     </Main>
