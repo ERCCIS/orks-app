@@ -45,18 +45,20 @@ export const taxonGroupSurveys = {
 };
 
 export function getTaxaGroupSurvey(taxaGroup: number) {
-  type SpeciesSurvey = Pick<Survey, 'taxaGroups' | 'taxaPriority'>;
+  console.log('getTaxaGroupSurvey', taxaGroup);
+  return undefined as unknown as Survey;
+  // type SpeciesSurvey = Pick<Survey, 'taxaGroups' | 'taxaPriority'>;
 
-  const matchesGroup = (s: SpeciesSurvey) => s.taxaGroups?.includes(taxaGroup);
+  // const matchesGroup = (s: SpeciesSurvey) => s.taxaGroups?.includes(taxaGroup);
 
-  const byTaxaPriority = (s1: SpeciesSurvey, s2: SpeciesSurvey) =>
-    (s2.taxaPriority || 1) - (s1.taxaPriority || 1);
+  // const byTaxaPriority = (s1: SpeciesSurvey, s2: SpeciesSurvey) =>
+  //   (s2.taxaPriority || 1) - (s1.taxaPriority || 1);
 
-  const matchingSurveys = Object.values<SpeciesSurvey>(taxonGroupSurveys)
-    .filter(matchesGroup)
-    .sort(byTaxaPriority);
+  // const matchingSurveys = Object.values<SpeciesSurvey>(taxonGroupSurveys)
+  //   .filter(matchesGroup)
+  //   .sort(byTaxaPriority);
 
-  return matchingSurveys[0] as Survey;
+  // return matchingSurveys[0] as Survey;
 }
 
 const stageOptions = [
