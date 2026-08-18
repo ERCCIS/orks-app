@@ -1,3 +1,11 @@
+## 6.3.6
+
+- Removed species list options.
+
+## 6.3.5
+
+- Fixed surveys.
+
 ## 6.3.4
 
 - Updated libraries.
@@ -10,11 +18,11 @@
 ## 6.3.2
 
 - Fixed moth survey occurrence attrs.
-  
+
 ## 6.3.1
 
 - Fixed plant survey occurrence attrs.
-  
+
 ## 6.3.0
 
 - Updated libraries.

@@ -4,7 +4,6 @@ import {
   addOutline,
   cameraOutline,
   closeOutline,
-  ellipsisHorizontalOutline,
   imagesOutline,
 } from 'ionicons/icons';
 import { Trans as T, useTranslation } from 'react-i18next';
@@ -52,10 +51,10 @@ const SurveyButton = ({
     setShowOptions(false);
     onGallerySurveyStart();
   };
-  const onShowOtherSurveys = () => {
-    setShowOptions(false);
-    setShowOtherSurveys(true);
-  };
+  // const onShowOtherSurveys = () => {
+  //   setShowOptions(false);
+  //   setShowOtherSurveys(true);
+  // };
   const onPlantSurveyWrap = () => {
     setShowOptions(false);
     setShowOtherSurveys(false);
@@ -102,14 +101,14 @@ const SurveyButton = ({
           />
           <T>Select multiple photos to add to a single record</T>
         </div>
-
+        {/* 
         <div className="flex items-center gap-4" onClick={onShowOtherSurveys}>
           <IonIcon
             src={ellipsisHorizontalOutline}
             className="size-5 shrink-0 rounded-full bg-primary-800 p-2 text-white shadow-md ring-[0.5px] ring-primary-800 [--ionicon-stroke-width:24px]"
           />
           <T>Show other surveys</T>
-        </div>
+        </div> */}
       </div>
     </InfoBackgroundMessage>
   );
@@ -169,12 +168,12 @@ const SurveyButton = ({
               <IonIcon src={imagesOutline} className="size-full" />
             </button>
 
-            <button
+            {/* <button
               className="absolute -right-2 bottom-0 flex size-14 items-center justify-center rounded-full bg-primary-800 p-2 text-white shadow-md ring-[0.5px] ring-primary-800"
               onClick={onShowOtherSurveys}
             >
               <IonIcon src={ellipsisHorizontalOutline} className="size-full" />
-            </button>
+            </button> */}
           </div>
 
           {infoMessage}
