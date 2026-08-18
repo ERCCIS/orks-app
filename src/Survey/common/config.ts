@@ -69,20 +69,19 @@ export const commentAttr = {
 
 const methodOptions = [
   { label: 'Not recorded', value: null, isDefault: true },
-  { value:'Auditory record', id: 21965 },  
-  { value:'Bat detector', id: 21947 },   
-  { value:'Camera trap', id: 21948 },   
-  { value:'Kick sample', id: 21967 },   
-  { value:'Light trap', id: 21949 },   
-  { value:'Net trap', id: 21950 },   
-  { value:'Trap', id: 21951 },   
-  { value:'Visual observation', id: 21952 },  
+  { value: 'Auditory record', id: 21965 },
+  { value: 'Bat detector', id: 21947 },
+  { value: 'Camera trap', id: 21948 },
+  { value: 'Kick sample', id: 21967 },
+  { value: 'Light trap', id: 21949 },
+  { value: 'Net trap', id: 21950 },
+  { value: 'Trap', id: 21951 },
+  { value: 'Visual observation', id: 21952 },
 ];
 
 export const methodAttr = {
   menuProps: {
     icon: radarIcon,
-    
   },
   pageProps: {
     attrProps: {

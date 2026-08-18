@@ -72,7 +72,7 @@ function addToResults(results: Taxon[], genus: Genus, p: NamePointer) {
 
 function getNameFromPointer(genus: Genus, p: NamePointer) {
   if (isGenusPointer(p)) {
-    const genusPointer = p as GenusNamePointer;
+    const genusPointer = p;
     const nameIndex = genusPointer[1];
     return genus[GENUS_NAMES_INDEX]![nameIndex];
   }

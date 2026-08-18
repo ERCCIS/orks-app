@@ -101,7 +101,7 @@ const SurveyButton = ({
           />
           <T>Select multiple photos to add to a single record</T>
         </div>
-        {/* 
+        {/*
         <div className="flex items-center gap-4" onClick={onShowOtherSurveys}>
           <IonIcon
             src={ellipsisHorizontalOutline}

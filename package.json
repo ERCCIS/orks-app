@@ -18,6 +18,7 @@
     "test:watch": "jest --watchAll",
     "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand --watch test",
     "test:eslint": "eslint src --quiet && echo '\\033[37;42;1m PASS \\033[00m'",
+    "test:eslint:fix": "eslint src --quiet --fix && echo '\\033[37;42;1m PASS \\033[00m'",
     "make:species": "cd src/common/data && tsx make.ts"
   },
   "dependencies": {
