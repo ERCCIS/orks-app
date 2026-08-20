@@ -230,8 +230,8 @@ const survey: Survey = {
 
     verify: (attrs: any) =>
       object({
-        taxon: object({}, { required_error: 'Species is missing.' }).nullable(),
-        type: string({ required_error: 'Type is missing.' }).nullable(),
+        taxon: object({}, { error: 'Species is missing.' }).nullable(),
+        type: string({ error: 'Type is missing.' }).nullable(),
       }).safeParse(attrs).error,
 
     modifySubmission(submission: any, occ: AppOccurrence) {
