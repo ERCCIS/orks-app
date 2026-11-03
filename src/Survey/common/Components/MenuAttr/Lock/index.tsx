@@ -1,14 +1,17 @@
-import { useRef } from 'react';
+import { useRef, type ReactNode } from 'react';
 import { observer } from 'mobx-react';
 import clsx from 'clsx';
 import {
   lockOpenOutline,
   lockClosedOutline,
   chevronForwardOutline,
-  chevronDownOutline,
 } from 'ionicons/icons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { useToast } from '@flumens';
+import { BlockT, useToast } from '@flumens';
+import {
+  OnChange,
+  onChange as onChangeOrig,
+} from '@flumens/tailwind/dist/components/Block';
 import {
   IonItemSliding,
   IonItemOptions,
@@ -19,55 +22,75 @@ import {
 import appModel from 'models/app';
 import Occurrence from 'models/occurrence';
 import Sample from 'models/sample';
-import MenuAttr from '..';
+import MenuAttr, { Props as MenuAttrProps } from '..';
 import './styles.scss';
+import { LockConfig } from './types';
 
 type Props = {
+  survey: string;
+  taxa?: string;
   model: Sample | Occurrence;
-  attr: string;
-  children: any;
-};
+  children: ReactNode;
+  block: BlockT & { lock?: LockConfig };
+} & MenuAttrProps;
 
-const Lock = ({ model, attr, children }: Props) => {
+const Lock = observer(({ survey, taxa, model, block, children }: Props) => {
   const toast = useToast();
 
-  let value = (model.data as any)[attr];
-  const survey = model.getSurvey();
-  if (!value && survey.attrs?.[attr]?.menuProps?.getLock) {
-    value = survey.attrs[attr].menuProps?.getLock?.(model);
+  let value = model.data[block.id];
+  if (!value && block.lock?.get) {
+    value = block.lock?.get?.({ record: model.data, block, survey, taxa });
   }
 
   const allowLocking = !!value;
 
-  const sliderRef = useRef<any>(null);
+  const sliderRef = useRef<HTMLIonItemSlidingElement>(null);
 
   if (model.isDisabled) return <>{children}</>;
 
-  const isLocked = appModel.isAttrLocked(model, attr);
+  const type = model instanceof Sample ? 'smp' : 'occ';
+
+  let isLocked = appModel.locks.isLocked(survey, taxa, type, block.id, value);
+  if (block.lock?.isLocked) {
+    isLocked = block.lock?.isLocked?.({
+      record: model.data,
+      block,
+      survey,
+      taxa,
+    });
+  }
+
   const toggleLockWrap = async () => {
-    const isOpen = sliderRef.current.classList.contains(
+    const isOpen = sliderRef.current?.classList.contains(
       'item-sliding-active-slide'
     );
     if (!isOpen) return;
 
-    sliderRef.current.close(); // needs to be after the openness check
+    sliderRef.current?.close(); // needs to be after the openness check
 
     isPlatform('hybrid') && Haptics.impact({ style: ImpactStyle.Light });
 
     if (isLocked) {
-      appModel.unsetAttrLock(model, attr);
+      if (block.lock?.unset) {
+        block.lock?.unset?.({ record: model.data, block, survey, taxa });
+        return;
+      }
+
+      appModel.locks.unset(survey, taxa, type, block.id);
       return;
     }
 
     if (value) {
-      appModel.setAttrLock(model, attr, value);
+      if (block.lock?.set) {
+        block.lock?.set?.({ record: model.data, block, value, survey, taxa });
+        return;
+      }
+
+      appModel.locks.set(survey, taxa, type, block.id, value);
 
       toast.success(
         'The attribute value was locked and will be pre-filled for subsequent records.',
-        {
-          color: 'secondary',
-          position: 'bottom',
-        }
+        { color: 'secondary', position: 'bottom' }
       );
     }
   };
@@ -95,80 +118,64 @@ const Lock = ({ model, attr, children }: Props) => {
       </IonItemOptions>
     </IonItemSliding>
   );
-};
-
-export type LockConfig = {
-  /**
-   * For custom locked value checks. Useful for aggregated attrs like number + ranges.
-   */
-  isLocked?: (model: Sample | Occurrence) => any;
-  /**
-   * For custom locked value getting. Useful for aggregated attrs like number + ranges.
-   */
-  getLock?: (model: Sample | Occurrence) => any;
-  /**
-   * For custom locked value unsetting. Useful for aggregated attrs like number + ranges.
-   */
-  setLock?: (model: Sample | Occurrence, attr: string, value?: any) => any;
-  /**
-   * For custom locked value removal. Useful for aggregated attrs like number + ranges.
-   */
-  unsetLock?: (model: Sample | Occurrence, attr: string) => any;
-};
+});
 
 export type MenuAttrWithLockProps = {
+  survey: string;
   model: Sample | Occurrence;
-  attr: string;
-  itemProps?: any;
-  onChange?: any;
+  block: BlockT & { lock?: LockConfig };
+  taxa?: string;
+  link?: string;
+  onChange?: OnChange;
 };
 
 export const WithLock = observer(
   ({
+    survey,
+    taxa,
     model,
-    attr,
-    itemProps: itemPropsProp,
+    block,
+    onChange: onChangeProp,
     ...other
   }: MenuAttrWithLockProps) => {
-    const isLocked = appModel.isAttrLocked(model, attr);
+    const { id } = block;
+
+    const type = model instanceof Sample ? 'smp' : 'occ';
+    const currentVal = model.data[id];
+    let isLocked = appModel.locks.isLocked(survey, taxa, type, id, currentVal);
+    if (block.lock?.isLocked) {
+      isLocked = block.lock?.isLocked?.({
+        record: model.data,
+        block,
+        survey,
+        taxa,
+      });
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    (model.data as any)[attr]; // force rerender on val change
+    model.data[id]; // force rerender on val change
 
-    const onChange = (newValue: any) => {
+    const onChange = (...args: Parameters<typeof onChangeOrig>) => {
+      onChangeProp ? onChangeProp(...args) : onChangeOrig(...args);
+
       if (!isLocked) return;
 
+      const newValue = args[0];
       if (!newValue) {
-        appModel.unsetAttrLock(model, attr);
+        appModel.locks.unset(survey, taxa, type, id);
         return;
       }
 
-      appModel.setAttrLock(model, attr, newValue);
+      appModel.locks.set(survey, taxa, type, id, newValue);
     };
-
-    const itemProps = {
-      ...itemPropsProp,
-
-      // chevronForwardOutline - 'undefined' doesn't work in this case, why?
-      detailIcon: isLocked ? lockClosedOutline : chevronForwardOutline,
-    };
-
-    if (attr === 'date') {
-      itemProps.inputProps = {
-        ...itemProps.inputProps,
-        accordionProps: {
-          toggleIcon: isLocked ? lockClosedOutline : chevronDownOutline,
-        },
-      };
-    }
 
     return (
-      <Lock model={model} attr={attr}>
+      <Lock model={model} block={block} survey={survey} taxa={taxa}>
         <MenuAttr
           model={model}
-          attr={attr}
+          block={block}
           onChange={onChange}
-          itemProps={itemProps}
+          linkIcon={isLocked ? lockClosedOutline : chevronForwardOutline}
           {...other}
         />
       </Lock>
@@ -176,4 +183,4 @@ export const WithLock = observer(
   }
 );
 
-export default observer(Lock);
+export default Lock;

@@ -20,7 +20,12 @@ const getBlockConfig = (attrProps?: AttrProps) => {
     return {
       id: attrProps.attr,
       type: 'choiceInput',
-      choices: attrProps.inputProps.options.map((option: any) => ({
+      choices: (
+        attrProps.inputProps.options as {
+          value: string | number;
+          label?: string;
+        }[]
+      ).map(option => ({
         dataName: `${option.value}`,
         title: option.label || `${option.value}`,
       })),
@@ -38,8 +43,8 @@ const getBlockConfig = (attrProps?: AttrProps) => {
 };
 
 type Props = {
-  config?: AttrProps;
-  onSave: (newValue?: any) => void;
+  config?: AttrProps & { title?: string };
+  onSave: (newValue?: unknown) => void;
 };
 
 const EditModal = ({ config, onSave }: Props) => {
@@ -76,7 +81,7 @@ const EditModal = ({ config, onSave }: Props) => {
             </IonButton>
           </IonButtons>
           <IonTitle class="capitalize">
-            <T>{config?.attr}</T>
+            <T>{config?.title || config?.attr}</T>
           </IonTitle>
           <IonButtons slot="end">
             <IonButton onClick={save}>

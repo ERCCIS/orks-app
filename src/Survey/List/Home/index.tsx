@@ -9,17 +9,17 @@ import {
   device,
   useSample,
   useRemoteSample,
+  HandledError,
 } from '@flumens';
 import { NavContext, isPlatform } from '@ionic/react';
 import distance from '@turf/distance';
 import config from 'common/config';
 import gridAlertService from 'common/helpers/gridAlertService';
+import { hasCoordinates } from 'common/helpers/location';
 import appModel from 'common/models/app';
 import Media from 'common/models/media';
-import Occurrence from 'common/models/occurrence';
 import Sample, { useValidateCheck } from 'models/sample';
 import userModel, { useUserStatusCheck } from 'models/user';
-import { Action } from 'Survey/common/Components/SpeciesList/BulkEdit';
 import SurveyHeaderButton from 'Survey/common/Components/SurveyHeaderButton';
 import TrainingBand from 'Survey/common/Components/TrainingBand';
 import Main from './Main';
@@ -66,44 +66,6 @@ const ListHome = () => {
 
   const onSubSampleDelete = async (subSample: Sample) => subSample.destroy();
 
-  const onBulkEdit = async (
-    action: Action,
-    modelIds: string[],
-    value?: any
-  ) => {
-    if (action === 'delete') {
-      modelIds.forEach(async modelId => {
-        const subSample = sample.samples.find(smp => smp.cid === modelId);
-        if (subSample) await subSample.destroy();
-      });
-      return;
-    }
-
-    if (action === 'stage') {
-      modelIds.forEach(async modelId => {
-        const subSample = sample.samples.find(smp => smp.cid === modelId);
-        if (subSample) (subSample as any).occurrences[0].data.stage = value;
-      });
-      return;
-    }
-
-    if (action === 'sex') {
-      modelIds.forEach(async modelId => {
-        const subSample = sample.samples.find(smp => smp.cid === modelId);
-        if (subSample) (subSample as any).occurrences[0].data.sex = value;
-      });
-      return;
-    }
-
-    if (action === 'comment') {
-      modelIds.forEach(async modelId => {
-        const subSample = sample.samples.find(smp => smp.cid === modelId);
-        if (subSample) (subSample as any).occurrences[0].data.comment = value;
-      });
-      // return;
-    }
-  };
-
   const survey = sample.getSurvey();
 
   const isSaved = sample.metadata.saved;
@@ -121,14 +83,19 @@ const ListHome = () => {
 
   const { location } = sample.data;
 
-  const isLocationFurtherThan5000m = (smp: Sample) =>
-    distance(
-      [location?.latitude, location?.longitude],
-      [smp.data.location?.latitude, smp.data.location?.longitude],
-      {
-        units: 'meters',
-      }
-    ) > 5000;
+  const isLocationFurtherThan5000m = (smp: Sample) => {
+    const childLocation = smp.data.location;
+    if (!hasCoordinates(location) || !hasCoordinates(childLocation))
+      return false;
+
+    return (
+      distance(
+        [location.latitude, location.longitude],
+        [childLocation.latitude, childLocation.longitude],
+        { units: 'meters' }
+      ) > 5000
+    );
+  };
   const showChildSampleDistanceWarning = sample.samples.some(
     isLocationFurtherThan5000m
   );
@@ -143,24 +110,22 @@ const ListHome = () => {
 
     const surveyConfig = sample!.getSurvey();
 
-    const subSamplePromise = images.map(async (img: any) => {
-      const imageModel: any = await Media.getImageModel(
+    const subSamplePromise = images.map(async img => {
+      const imageModel = (await Media.getImageModel(
         isPlatform('hybrid') ? Capacitor.convertFileSrc(img) : img,
         config.dataPath,
         true
-      );
+      )) as Media;
 
       const subSample = await surveyConfig.smp!.create!({
-        Occurrence,
-        Sample,
         surveySample: sample!,
         images: [imageModel],
       });
 
       if (shouldAutoID()) {
         const [occ] = subSample.occurrences;
-        const processError = (error: any) =>
-          !error.isHandled && console.error(error); // don't toast this to user
+        const processError = (error: unknown) =>
+          !(error instanceof HandledError) && console.error(error); // don't toast this to user
         occ.identify().catch(processError);
       }
 
@@ -184,7 +149,6 @@ const ListHome = () => {
       <Main
         sample={sample}
         onDelete={onSubSampleDelete}
-        onBulkEdit={onBulkEdit}
         attachSpeciesImages={onSpeciesImageAttach}
         showChildSampleDistanceWarning={showChildSampleDistanceWarning}
       />

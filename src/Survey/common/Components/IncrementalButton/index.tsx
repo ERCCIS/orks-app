@@ -1,12 +1,12 @@
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { Button } from '@flumens';
+import { Button, limit } from '@flumens';
 import { isPlatform } from '@ionic/react';
 import AnimatedNumber from './AnimatedNumber';
 
 type Props = {
-  onClick: any;
-  onLongClick?: any;
-  value: number;
+  onClick: () => void;
+  onLongClick?: () => void;
+  value?: string | number;
   disabled?: boolean;
 };
 
@@ -16,7 +16,7 @@ const IncrementalButton = ({
   value,
   disabled,
 }: Props) => {
-  const isNumber = Number.isFinite(value);
+  const isNumber = Number.isFinite(Number(value));
 
   const onClick = () => {
     if (disabled || !isNumber) return;
@@ -41,9 +41,9 @@ const IncrementalButton = ({
 
   let valueItem;
   if (isNumber) {
-    valueItem = <AnimatedNumber value={value} />;
+    valueItem = <AnimatedNumber value={Number(value)} />;
   } else if (value) {
-    valueItem = <span className="empty">{value}</span>;
+    valueItem = <span className="empty">{limit(`${value}`, 5)}</span>;
   } else {
     valueItem = <span className="empty">N/A</span>;
   }

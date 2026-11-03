@@ -11,7 +11,6 @@ const Group = () => {
   if (!sample) return null;
 
   const onSelect = async (groupId: string) => {
-    // eslint-disable-next-line no-param-reassign
     sample.data.groupId = groupId;
     await sample.save();
     goBack();
@@ -20,7 +19,7 @@ const Group = () => {
   return (
     <Page id="survey-default-edit-group">
       <Header title="Activity" />
-      <Main>
+      <Main className="pb-ion-s-10">
         <GroupsList onSelect={onSelect} currentValue={sample.data.groupId} />
       </Main>
     </Page>

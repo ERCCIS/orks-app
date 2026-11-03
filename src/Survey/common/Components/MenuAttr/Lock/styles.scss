@@ -6,10 +6,15 @@
       --detail-icon-color: var(--attr-lock-color);
       --detail-icon-opacity: 0.55;
     }
-
-    ion-datetime,
-    *[slot='end'] {
+    ion-icon.lock {
+      opacity: 0.7;
       color: var(--attr-lock-color);
+    }
+
+    .choice-input-block label + span.react-aria-SelectValue,
+    .choice-input-block svg:last-child,
+    *[slot='end'] {
+      color: var(--attr-lock-color) !important;
     }
 
     .switch-input {

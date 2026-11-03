@@ -1,13 +1,20 @@
 import { object, string } from 'zod';
-import gridAlertService from 'common/helpers/gridAlertService';
-import { MachineInvolvement } from 'common/models/occurrence';
-import appModel from 'models/app';
-import AppSample from 'models/sample';
-import userModel from 'models/user';
-import defaultSurvey from 'Survey/Default/config';
 import {
-  coreAttributes,
-  dateAttr,
+  dateFormatISO,
+  type SampleData,
+  type inferAttrConfigTypes,
+} from '@flumens';
+import gridAlertService from 'common/helpers/gridAlertService';
+import appModel from 'models/app';
+import Occurrence, {
+  MachineInvolvement,
+  type Data as AppOccData,
+} from 'models/occurrence';
+import Sample, { type Data as AppSampleData } from 'models/sample';
+import userModel from 'models/user';
+import defaultSurvey, { getTaxaGroupSurvey } from 'Survey/Default/config';
+import { numberAttr } from 'Survey/Default/config/orks';
+import {
   recorderAttr,
   commentAttr,
   Survey,
@@ -16,92 +23,43 @@ import {
   groupIdAttr,
   childGeolocationAttr,
   locationAttrValidator,
+  dateAttr,
 } from 'Survey/common/config';
 
-function appendLockedAttrs(sample: AppSample) {
-  const defaultSurveyLocks = appModel.data.attrLocks.complex || {};
-  const locks = defaultSurveyLocks['default-default'] || {}; // bypassing the API here!
-  const coreLocks = Object.keys(locks).reduce((agg, key) => {
-    if (coreAttributes.includes(key)) {
-      // eslint-disable-next-line no-param-reassign
-      (agg as any)[key] = locks[key];
-    }
-    return agg;
-  }, {});
+export {
+  sensitivityPrecisionAttr,
+  commentAttr,
+  groupIdAttr,
+} from 'Survey/common/config';
+export { defaultSensitivityPrecisionAttr } from 'Survey/Default/config';
 
-  const surveyLocks = appModel.getAllLocks(sample);
+const getTaxon = (sample: Sample) => sample.getSurvey().taxa || null;
 
-  const fullSurveyLocks = { ...coreLocks, ...surveyLocks };
+const SURVEY_ID = 576;
+const SURVEY_WEBFORM = 'enter-app-record-list';
 
-  appModel.appendAttrLocks(sample, fullSurveyLocks, true);
-}
+const attrs = {
+  [locationAttr.id]: locationAttr,
+  [childGeolocationAttr.id]: { block: childGeolocationAttr },
+  [recorderAttr.id]: { block: recorderAttr },
+  [commentAttr.id]: { block: commentAttr },
+  [groupIdAttr.id]: groupIdAttr,
+  [dateAttr.id]: { block: dateAttr },
+};
 
-function autoIncrementAbundance(sample: AppSample) {
-  const sampleSurvey = sample.getSurvey();
-  const { skipAutoIncrement } = sampleSurvey.occ || {};
-  const locks = appModel.getAllLocks(sample);
-  const isNumberLocked = locks['occ:number'];
+export type Data = SampleData & inferAttrConfigTypes<typeof attrs>;
 
-  if (!isNumberLocked && !skipAutoIncrement) {
-    // eslint-disable-next-line no-param-reassign
-    sample.occurrences[0].data.number = 1;
-  }
-}
-
-const survey: Survey = {
+const survey = {
   name: 'list',
   label: 'Species List Survey',
-  id: 576,
+  id: SURVEY_ID,
 
-  webForm: 'enter-app-record-list',
+  webForm: SURVEY_WEBFORM,
 
-  render: [
-    { ...locationAttr, model: 'sample' },
-    { ...childGeolocationAttr, model: 'sample' },
-    { ...dateAttr, model: 'sample' },
-    { ...recorderAttr, model: 'sample' },
-    { ...commentAttr, model: 'sample' },
-  ],
-
-  attrs: {
-    [locationAttr.id]: locationAttr,
-    [childGeolocationAttr.id]: childGeolocationAttr,
-    [recorderAttr.id]: recorderAttr,
-    [commentAttr.id]: commentAttr,
-    [groupIdAttr.id]: groupIdAttr,
-
-    date: {
-      ...dateAttr,
-      menuProps: {
-        ...dateAttr.menuProps,
-        attrProps: {
-          ...dateAttr.menuProps.attrProps,
-
-          set: (value: string, sample: AppSample) => {
-            // eslint-disable-next-line no-param-reassign
-            sample.data.date = value;
-
-            const setDate = (smp: AppSample) => {
-              // eslint-disable-next-line no-param-reassign
-              smp.data.date = value;
-            };
-            sample.samples.forEach(setDate);
-            sample.save();
-          },
-        },
-      },
-    },
-  },
+  attrs,
 
   smp: {
-    async create({ Sample, Occurrence, taxon, images, surveySample }) {
-      const occurrence = new Occurrence({
-        data: {
-          machineInvolvement: MachineInvolvement.NONE,
-        },
-      });
-      if (images) occurrence.media.push(...images);
-
+    async create({ taxon, images, surveySample }) {
       const { groupId } = surveySample.data;
 
       const sample = new Sample({
@@ -111,71 +69,113 @@ const survey: Survey = {
           forceSurveyId: defaultSurvey.id, // not list since it looks for taxa specific attrs
         },
         data: {
-          surveyId: survey.id,
-          inputForm: survey.webForm,
+          surveyId: SURVEY_ID,
+          inputForm: SURVEY_WEBFORM,
           enteredSrefSystem: 4326,
           location: {},
           groupId,
         },
       });
 
+      const occurrence = await survey.smp.occ.create({ images, taxon });
+
       sample.occurrences.push(occurrence);
 
-      if (taxon) sample.setTaxon(taxon);
+      if (taxon) sample.setTaxon(taxon, occurrence.id, true);
 
-      appendLockedAttrs(sample);
-      autoIncrementAbundance(sample);
+      const locks = appModel.locks.getAll('list', getTaxon(sample));
+      Object.assign(sample.data, locks.smp);
 
-      if (surveySample.data.childGeolocation) {
-        const ignoreError = () => {};
-        sample.startGPS().catch(ignoreError);
-      }
+      if (surveySample.data.childGeolocation) sample.startGPS().catch(() => {});
 
       return sample;
     },
 
-    // occ config is taxa specific
+    occ: {
+      attrs: {
+        // occ config is taxa specific
+      },
+
+      getDefaultValues: ({ data }) =>
+        data.taxon && data[numberAttr.id] == null ? { [numberAttr.id]: 1 } : {},
+
+      async create({ images, taxon }) {
+        const groupSurvey = taxon ? getTaxaGroupSurvey(taxon.group) : undefined;
+        const groupCreate = taxon ? groupSurvey?.occ?.create : undefined;
+        if (groupCreate)
+          return groupCreate({ images, taxon, isListSurvey: true });
+
+        const occurrence = new Occurrence<AppOccData>({
+          data: {
+            machineInvolvement: MachineInvolvement.NONE,
+            taxon,
+          },
+          media: images,
+        });
+
+        if (taxon) {
+          const taxa = groupSurvey?.taxa || 'default';
+          const locks = appModel.locks.getAll('list', taxa);
+          Object.assign(occurrence.data, locks.occ);
+
+          // For a photo-first approach we don't want to default to 1
+          Object.assign(
+            occurrence.data,
+            survey.smp.occ.getDefaultValues({ data: occurrence.data })
+          );
+        }
+
+        return occurrence;
+      },
+    },
   },
 
-  verify: (attrs: any) =>
+  verify: values =>
     object({
-      location: locationAttrValidator({
-        name: string({ error: 'Location name is missing' }).min(
-          1,
-          'Location name is missing'
-        ),
-      }),
+      location: locationAttrValidator(),
+      locationName: string({ error: 'Location name is missing' }).min(
+        1,
+        'Location name is missing'
+      ),
       date: string({ error: 'Date is missing.' }).nullable(),
-      recorder: string({
+      [recorderAttr.id]: string({
         error: 'Recorder field is missing.',
       })
         .min(1, 'Recorder field is missing.')
         .nullable(),
-    }).safeParse(attrs).error,
+    }).safeParse(values).error,
 
-  create({ Sample, alert }) {
+  create({ alert }) {
     // add currently logged in user as one of the recorders
     let recorder = '';
     if (userModel.isLoggedIn()) {
       recorder = userModel.getPrettyName();
     }
 
-    const groupId = appModel.getAttrLock('smp', 'groupId');
+    // get the groupId from the appModel, which is locked to the default value for this survey
+    const lockedGroupId = appModel.locks.get(
+      'default',
+      'all',
+      'smp',
+      'groupId'
+    );
+    const groupId =
+      typeof lockedGroupId === 'string' ? lockedGroupId : undefined;
 
-    const sample = new Sample({
-      data: {
-        surveyId: survey.id,
-        inputForm: survey.webForm,
-        date: new Date().toISOString(),
-        enteredSrefSystem: 4326,
-        location: {},
-        recorder,
-        groupId,
-      },
-    });
+    const data: AppSampleData = {
+      surveyId: SURVEY_ID,
+      inputForm: SURVEY_WEBFORM,
+      date: dateFormatISO.format(new Date()),
+      enteredSrefSystem: 4326,
+      location: {},
+      groupId,
+    };
+    const sample = new Sample({ data });
+    sample.data[recorderAttr.id] = recorder;
 
     const { useGridNotifications } = appModel.data;
-    if (useGridNotifications) gridAlertService.start(sample.cid, alert);
+    if (useGridNotifications && alert)
+      gridAlertService.start(sample.cid, alert);
 
     return Promise.resolve(sample);
   },
@@ -185,6 +185,6 @@ const survey: Survey = {
 
     return submission;
   },
-};
+} as const satisfies Survey;
 
 export default survey;

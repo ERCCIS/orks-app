@@ -1,16 +1,14 @@
-import { useEffect, useContext } from 'react';
+import { useEffect, useContext, type ComponentType } from 'react';
 import { useRouteMatch } from 'react-router';
 import { useAlert } from '@flumens';
 import { NavContext, IonPage } from '@ionic/react';
 import samples from 'models/collections/samples';
-import Occurrence from 'models/occurrence';
-import Sample from 'models/sample';
 import { Survey } from 'Survey/common/config';
 import './styles.scss';
 
 type Props = {
   survey: Survey;
-  SurveyCreatePage?: any;
+  SurveyCreatePage?: ComponentType;
 };
 
 function StartNewSurvey({ survey, SurveyCreatePage }: Props) {
@@ -22,7 +20,7 @@ function StartNewSurvey({ survey, SurveyCreatePage }: Props) {
     const createSample = async () => {
       if (SurveyCreatePage) return;
 
-      const sample = await survey.create({ Sample, Occurrence, alert });
+      const sample = await survey.create({ alert });
       await sample.save();
 
       samples.push(sample);
@@ -39,13 +37,9 @@ function StartNewSurvey({ survey, SurveyCreatePage }: Props) {
   return <IonPage id="start-new-survey" />;
 }
 
-StartNewSurvey.with = (survey: Survey, SurveyCreatePage?: any) => {
-  const StartNewSurveyWithRouter = (params: any) => (
-    <StartNewSurvey
-      survey={survey}
-      SurveyCreatePage={SurveyCreatePage}
-      {...params}
-    />
+StartNewSurvey.with = (survey: Survey, SurveyCreatePage?: ComponentType) => {
+  const StartNewSurveyWithRouter = () => (
+    <StartNewSurvey survey={survey} SurveyCreatePage={SurveyCreatePage} />
   );
   return StartNewSurveyWithRouter;
 };

@@ -9,7 +9,10 @@ import Occurrence from 'models/occurrence';
 import Sample from 'models/sample';
 import userModel from 'models/user';
 import defaultSurvey, { taxonGroupSurveys } from 'Survey/Default/config';
-import plantsSurvey from 'Survey/Plant/config';
+import mothSurvey, { numberAttr as mothNumberAttr } from 'Survey/Moth/config';
+import { updateChildrenLocations } from 'Survey/Plant/Location';
+import plantsSurvey, { abundanceAttr } from 'Survey/Plant/config';
+import { setModelLocation } from 'Survey/common/Components/ModelLocation';
 import { coreAttributes, systemAttrs } from 'Survey/common/config';
 
 i18n.use(initReactI18next).init({ lng: 'en' });
@@ -33,6 +36,7 @@ describe('Sample', () => {
 
   afterEach(() => {
     sampleRemoteCreateStub.restore();
+    jest.restoreAllMocks();
   });
 
   it('should set training mode', async () => {
@@ -73,7 +77,7 @@ describe('Sample', () => {
   });
 
   describe('removeOldTaxonAttributes', () => {
-    it('should remove all non core attributes on survey change', async () => {
+    it('should preserve ORKS fields when changing taxon groups', async () => {
       // Given
       const dragonfly = { group: taxonGroupSurveys.dragonflies.taxaGroups[0] };
       const sample = await getDefaultSample(dragonfly);
@@ -84,11 +88,11 @@ describe('Sample', () => {
 
       // When
       const bryophyte = { group: taxonGroupSurveys.bryophytes.taxaGroups[0] };
-      sample.removeOldTaxonAttributes(occ, bryophyte);
+      sample.setTaxon(bryophyte);
 
       // Then
-      expect(sample.data.non_core_attr).toBeUndefined();
-      expect(occ.data.non_core_attr).toBeUndefined();
+      expect(sample.data.non_core_attr).toBe(1);
+      expect(occ.data.non_core_attr).toBe(1);
     });
 
     it('should retain all core attributes on survey change', async () => {
@@ -117,7 +121,7 @@ describe('Sample', () => {
 
       // When
       const bryophyte = { group: taxonGroupSurveys.bryophytes.taxaGroups[0] };
-      sample.removeOldTaxonAttributes(occ, bryophyte);
+      sample.setTaxon(bryophyte);
 
       // Then
       sampleKeys.forEach(key => {
@@ -198,6 +202,13 @@ describe('Sample', () => {
   });
 
   describe('toDTO', () => {
+    it('should submit the location name from sample data', async () => {
+      const sample = await getDefaultSample();
+      sample.data.locationName = 'Test site';
+
+      expect(sample.toDTO().values.location_name).toBe('Test site');
+    });
+
     it('should add a system attributes', async () => {
       // Given
       config.version = '1';
@@ -218,6 +229,32 @@ describe('Sample', () => {
         '1'
       );
     });
+
+    it('should submit Irish Plant grid references using OSIE', async () => {
+      const location = {
+        gridref: 'H3382',
+        latitude: 54.685,
+        longitude: -7.489,
+        accuracy: 500,
+        source: 'gridref',
+      };
+      const sample = await plantsSurvey.create({});
+      await setModelLocation(sample, location);
+
+      const subSample = await plantsSurvey.smp.create({
+        surveySample: sample,
+        taxon: validTaxon,
+      });
+      expect(subSample.data.enteredSrefSystem).toBe('OSIE');
+
+      sample.samples.push(subSample);
+      updateChildrenLocations(sample);
+
+      const submission = sample.toDTO();
+
+      expect(submission.values.entered_sref_system).toBe('OSIE');
+      expect(submission.samples[0].values.entered_sref_system).toBe('OSIE');
+    });
   });
 
   describe('getSurvey', () => {
@@ -237,7 +274,7 @@ describe('Sample', () => {
       expect(survey.occ.attrs.microscopicallyChecked).toBeUndefined();
     });
 
-    it('should match default species specific', async () => {
+    it('should retain the ORKS config for every species group', async () => {
       // Given
       const bird = { group: taxonGroupSurveys.birds.taxaGroups[0] };
       const sample = await getDefaultSample(bird);
@@ -247,16 +284,12 @@ describe('Sample', () => {
 
       // Then
       expect(survey.name).toBe('default');
-      expect(survey.taxa).toBe('birds');
-      expect(survey.taxaGroups).toStrictEqual(
-        taxonGroupSurveys.birds.taxaGroups
-      );
-      expect(survey.render).toStrictEqual(taxonGroupSurveys.birds.render);
+      expect(survey.taxa).toBe('default');
+      expect(survey.id).toBe(490);
+      expect(survey.taxaGroups).toStrictEqual([]);
+      expect(survey.occ.render).toStrictEqual(defaultSurvey.occ.render);
       expect(survey.attrs).toStrictEqual(defaultSurvey.attrs);
-      // merged attrs
-      expect(survey.occ.attrs.breeding).toStrictEqual(
-        taxonGroupSurveys.birds.occ.attrs.breeding
-      );
+      expect(survey.occ.attrs['occAttr:823']).toBeUndefined();
       expect(survey.occ.attrs.comment).toStrictEqual(
         defaultSurvey.occ.attrs.comment
       );
@@ -274,9 +307,99 @@ describe('Sample', () => {
       expect(survey.taxaGroups).toStrictEqual(plantsSurvey.taxaGroups);
       expect(survey.attrs).toStrictEqual(plantsSurvey.attrs);
     });
+
+    it('should validate Plant Survey abundance', () => {
+      const { verify } = plantsSurvey.smp.occ;
+
+      expect(verify({ taxon: {} })).toBeUndefined();
+      expect(verify({ taxon: {}, 'occAttr:610': '12' })).toBeUndefined();
+      expect(verify({ taxon: {}, 'occAttr:610': 'invalid' })).toBeDefined();
+    });
+
+    it('should use bryophyte attributes only for bryophytes in plant surveys', async () => {
+      const sample = await plantsSurvey.create({ Sample });
+      const bryophyte = {
+        group: taxonGroupSurveys.bryophytes.taxaGroups[0],
+      };
+      const vascularPlant = {
+        group: taxonGroupSurveys['plants-fungi'].taxaGroups[0],
+      };
+      const bryophyteSample = await plantsSurvey.smp.create({
+        surveySample: sample,
+        taxon: bryophyte,
+      });
+      const vascularPlantSample = await plantsSurvey.smp.create({
+        surveySample: sample,
+        taxon: vascularPlant,
+      });
+      sample.samples.push(bryophyteSample, vascularPlantSample);
+
+      const bryophyteSurvey = bryophyteSample.getSurvey();
+      expect(bryophyteSurvey.taxa).toBe('bryophytes');
+      expect(bryophyteSurvey.attrs['smpAttr:208']).toBeDefined();
+      expect(bryophyteSurvey.occ.attrs['occAttr:816']).toBeDefined();
+      expect(bryophyteSurvey.occ.attrs['occAttr:577']).toBeDefined();
+      expect(bryophyteSurvey.occ.attrs['occAttr:125']).toBeDefined();
+      expect(bryophyteSurvey.occ.attrs['occAttr:470']).toBeDefined();
+
+      const vascularPlantSurvey = vascularPlantSample.getSurvey();
+      expect(vascularPlantSurvey.taxa).toBe('default');
+      expect(vascularPlantSurvey.attrs['smpAttr:208']).toBeUndefined();
+      expect(vascularPlantSurvey.occ.attrs['occAttr:816']).toBeUndefined();
+      expect(vascularPlantSurvey.occ.attrs['occAttr:577']).toBeDefined();
+      expect(vascularPlantSurvey.occ.attrs['occAttr:610']).toBeDefined();
+      expect(vascularPlantSurvey.occ.attrs['occAttr:470']).toBeUndefined();
+
+      bryophyteSample.occurrences[0].data['occAttr:470'] = true;
+      bryophyteSample.setTaxon(vascularPlant);
+      expect(bryophyteSample.getSurvey().taxa).toBe('default');
+      expect(
+        bryophyteSample.occurrences[0].data['occAttr:470']
+      ).toBeUndefined();
+    });
   });
 
   describe('setTaxon', () => {
+    it.each([0, 5])(
+      'preserves an edited moth count of %s on first species selection',
+      count => {
+        const getLocks = jest.spyOn(appModel.locks, 'getAll').mockReturnValue({
+          smp: {},
+          occ: { [mothNumberAttr.id]: 1 },
+        });
+        const sample = new Sample({ data: { surveyId: mothSurvey.id } });
+        const occurrence = mothSurvey.occ.create({});
+        sample.occurrences.push(occurrence);
+        occurrence.data[mothNumberAttr.id] = count;
+        getLocks.mockClear();
+
+        occurrence.setTaxon({ group: taxonGroupSurveys.moths.taxaGroups[0] });
+
+        expect(getLocks).not.toHaveBeenCalled();
+        expect(occurrence.data[mothNumberAttr.id]).toBe(count);
+      }
+    );
+
+    it('preserves edited plant abundance on first species selection', async () => {
+      const getLocks = jest.spyOn(appModel.locks, 'getAll').mockReturnValue({
+        smp: {},
+        occ: { [abundanceAttr.id]: '1' },
+      });
+      const surveySample = new Sample({ data: { surveyId: plantsSurvey.id } });
+      const sample = await plantsSurvey.smp.create({ surveySample });
+      surveySample.samples.push(sample);
+      const [occurrence] = sample.occurrences;
+      occurrence.data[abundanceAttr.id] = '5';
+      getLocks.mockClear();
+
+      occurrence.setTaxon({
+        group: taxonGroupSurveys['plants-fungi'].taxaGroups[0],
+      });
+
+      expect(getLocks).not.toHaveBeenCalled();
+      expect(occurrence.data[abundanceAttr.id]).toBe('5');
+    });
+
     it('should set taxon', async () => {
       // Given
       const sample = await getDefaultSample();
@@ -330,16 +453,14 @@ describe('Sample', () => {
       expect(() => sample.setTaxon(newTaxon, '123')).toThrow(); // missing specific occurrence
     });
 
-    it('should set taxon group in sample metadata', async () => {
-      // Given
+    it('should keep the ORKS config when updating the species', async () => {
       const sample = await getDefaultSample();
       const newTaxon = { group: taxonGroupSurveys.birds.taxaGroups[0] };
 
-      // When
       sample.setTaxon(newTaxon);
 
-      // Then
-      expect(sample.metadata.taxa).toEqual('birds');
+      expect(sample.getSurvey().taxa).toEqual('default');
+      expect(sample.occurrences[0].data.taxon).toEqual(newTaxon);
     });
   });
 });

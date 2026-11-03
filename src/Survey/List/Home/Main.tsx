@@ -4,20 +4,64 @@ import { camera, searchOutline } from 'ionicons/icons';
 import { useRouteMatch } from 'react-router';
 import { Button, InfoMessage, Main } from '@flumens';
 import { IonIcon, IonList, NavContext } from '@ionic/react';
+import Occurrence from 'common/models/occurrence';
 import Sample from 'models/sample';
+import { butterflyNumberRangesAttr } from 'Survey/Default/config/butterflies';
+import { numberAttr, numberRangesAttr } from 'Survey/Default/config/common';
+import { abundanceAttr } from 'Survey/Plant/config/common';
 import DisabledRecordMessage from 'Survey/common/Components/DisabledRecordMessage';
 import MenuAttr from 'Survey/common/Components/MenuAttr';
-import MenuDynamicAttr from 'Survey/common/Components/MenuDynamicAttrs';
+import MenuLocation from 'Survey/common/Components/MenuLocation';
 import { usePromptImageSource } from 'Survey/common/Components/PhotoPicker';
 import SpeciesList from 'Survey/common/Components/SpeciesList';
-import { Action } from 'Survey/common/Components/SpeciesList/BulkEdit';
+import {
+  childGeolocationAttr,
+  commentAttr,
+  dateAttr,
+  recorderAttr,
+  type Attrs,
+} from 'Survey/common/config';
+import { groupIdAttr } from '../config';
+
+const getActionConfig = (attrs: Attrs, action: string) => {
+  if (action in attrs) return attrs[action];
+
+  return Object.values(attrs).find(
+    config =>
+      config &&
+      ('block' in config ? config.block.title : undefined)?.toLowerCase() ===
+        action
+  );
+};
+
+export const getBulkEditAttrs = (models: (Sample | Occurrence)[]) => {
+  const defaultAttrs = { comment: commentAttr };
+  const selectedModelWithoutTaxa = models.some(
+    model => !(model as Sample).occurrences[0]?.data.taxon
+  );
+  if (selectedModelWithoutTaxa) return defaultAttrs;
+
+  const surveys = models.map(model => model.getSurvey());
+  const [survey] = surveys;
+  if (!survey || surveys.some(config => config.taxa !== survey.taxa))
+    return defaultAttrs;
+
+  const attrs = survey.occ?.attrs || {};
+  const stage = getActionConfig(attrs, 'stage');
+  const sex = getActionConfig(attrs, 'sex');
+
+  return {
+    ...(stage && { stage }),
+    ...(sex && { sex }),
+    ...defaultAttrs,
+  };
+};
 
 type Props = {
   sample: Sample;
-  onDelete: any;
-  attachSpeciesImages: any;
+  onDelete: (sample: Sample) => void;
+  attachSpeciesImages: (useCamera: boolean) => void;
   showChildSampleDistanceWarning: boolean;
-  onBulkEdit?: (action: Action, modelIds: string[], value?: any) => void;
 };
 
 const HomeMain = ({
@@ -25,22 +69,14 @@ const HomeMain = ({
   onDelete,
   showChildSampleDistanceWarning,
   attachSpeciesImages,
-  onBulkEdit,
 }: Props) => {
   const { url } = useRouteMatch();
   const { navigate } = useContext(NavContext);
   const promptImageSource = usePromptImageSource();
 
-  const surveyConfig = sample.getSurvey();
-
   const { groupId } = sample.data;
 
   const { isDisabled } = sample;
-
-  const renderArray =
-    typeof surveyConfig.render === 'function'
-      ? surveyConfig.render(sample)
-      : surveyConfig.render;
 
   const attachSpeciesImagesWrap = async () => {
     const shouldUseCamera = await promptImageSource();
@@ -51,10 +87,10 @@ const HomeMain = ({
   };
 
   return (
-    <Main>
+    <Main className="pb-ion-s-10">
       <IonList lines="full" className="mb-2 flex! flex-col gap-4">
         {isDisabled && (
-          <div className="rounded-list mb-2">
+          <div className="rounded-list mb-4">
             <DisabledRecordMessage sample={sample} />
           </div>
         )}
@@ -62,7 +98,12 @@ const HomeMain = ({
         {/* Only showing if pre-selected */}
         {groupId && (
           <div className="rounded-list">
-            <MenuAttr.WithLock model={sample} attr="groupId" />
+            <MenuAttr.WithLock
+              model={sample}
+              block={groupIdAttr}
+              survey={sample.getSurvey().name}
+              taxa="all"
+            />
           </div>
         )}
 
@@ -73,19 +114,17 @@ const HomeMain = ({
               that this is correct.
             </InfoMessage>
           )}
-          {renderArray?.map((config: any) => (
-            <MenuDynamicAttr
-              key={config.id}
-              model={sample}
-              config={config}
-              skipLocks
-            />
-          ))}
+
+          <MenuLocation sample={sample} />
+          <MenuAttr model={sample} block={childGeolocationAttr} />
+          <MenuAttr model={sample} block={dateAttr} />
+          <MenuAttr model={sample} block={recorderAttr} />
+          <MenuAttr model={sample} block={commentAttr} />
         </div>
       </IonList>
 
       {!isDisabled && (
-        <div className="mx-3 mb-2.5 mt-8 flex items-center justify-center gap-5">
+        <div className="mx-3 mt-8 flex items-center justify-center gap-5">
           <Button
             color="primary"
             onPress={() => navigate(`${url}/taxon`)}
@@ -106,12 +145,20 @@ const HomeMain = ({
         </div>
       )}
 
-      <SpeciesList
-        sample={sample}
-        onDelete={onDelete}
-        onBulkEdit={onBulkEdit}
-        useSubSamples
-      />
+      <div className="mt-4">
+        <SpeciesList
+          sample={sample}
+          onDelete={model => onDelete(model as Sample)}
+          bulkEditAttrs={getBulkEditAttrs}
+          useSubSamples
+          numberAttrs={[
+            numberAttr,
+            numberRangesAttr,
+            butterflyNumberRangesAttr,
+            abundanceAttr,
+          ]}
+        />
+      </div>
     </Main>
   );
 };

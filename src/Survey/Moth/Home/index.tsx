@@ -9,6 +9,7 @@ import {
   device,
   useSample,
   useRemoteSample,
+  HandledError,
 } from '@flumens';
 import { NavContext, isPlatform } from '@ionic/react';
 import config from 'common/config';
@@ -17,7 +18,6 @@ import Media from 'common/models/media';
 import Occurrence from 'common/models/occurrence';
 import Sample, { useValidateCheck } from 'models/sample';
 import userModel, { useUserStatusCheck } from 'models/user';
-import { Action } from 'Survey/common/Components/SpeciesList/BulkEdit';
 import SurveyHeaderButton from 'Survey/common/Components/SurveyHeaderButton';
 import TrainingBand from 'Survey/common/Components/TrainingBand';
 import Main from './Main';
@@ -39,44 +39,6 @@ const MothHome = () => {
   const checkUserStatus = useUserStatusCheck();
 
   if (!sample) return null;
-
-  const onBulkEdit = async (
-    action: Action,
-    modelIds: string[],
-    value?: any
-  ) => {
-    if (action === 'delete') {
-      modelIds.forEach(async modelId => {
-        const occ = sample.occurrences.find(o => o.cid === modelId);
-        if (occ) occ.destroy();
-      });
-      return;
-    }
-
-    if (action === 'stage') {
-      modelIds.forEach(async modelId => {
-        const occ = sample.occurrences.find(o => o.cid === modelId);
-        if (occ) (occ as any).data.stage = value;
-      });
-      return;
-    }
-
-    if (action === 'sex') {
-      modelIds.forEach(async modelId => {
-        const occ = sample.occurrences.find(o => o.cid === modelId);
-        if (occ) (occ as any).data.sex = value;
-      });
-      return;
-    }
-
-    if (action === 'comment') {
-      modelIds.forEach(async modelId => {
-        const occ = sample.occurrences.find(o => o.cid === modelId);
-        if (occ) (occ as any).data.comment = value;
-      });
-      // return;
-    }
-  };
 
   const survey = sample.getSurvey();
 
@@ -107,8 +69,8 @@ const MothHome = () => {
     <SurveyHeaderButton sample={sample} onClick={onFinish} />
   );
 
-  const onSubSampleDelete = async (subSample: Sample) => {
-    await subSample.destroy();
+  const onSubSampleDelete = async (occurrence: Occurrence) => {
+    await occurrence.destroy();
   };
 
   async function onSpeciesImageAttach(shouldUseCamera: boolean) {
@@ -122,21 +84,18 @@ const MothHome = () => {
     const imageArray = Array.isArray(images) ? images : [images];
     const surveyConfig = sample!.getSurvey();
 
-    const occurrencesPromise = imageArray.map(async (img: any) => {
-      const imageModel: any = await Media.getImageModel(
+    const occurrencesPromise = imageArray.map(async img => {
+      const imageModel = (await Media.getImageModel(
         isPlatform('hybrid') ? Capacitor.convertFileSrc(img) : img,
         config.dataPath,
         true
-      );
+      )) as Media;
 
-      const occ = await surveyConfig.occ!.create!({
-        Occurrence,
-        images: [imageModel],
-      });
+      const occ = await surveyConfig.occ!.create!({ images: [imageModel] });
 
       if (shouldAutoID()) {
-        const processError = (error: any) =>
-          !error.isHandled && console.error(error); // don't toast this to user
+        const processError = (error: unknown) =>
+          !(error instanceof HandledError) && console.error(error); // don't toast this to user
         occ.identify().catch(processError);
       }
 
@@ -162,7 +121,6 @@ const MothHome = () => {
       />
       <Main
         sample={sample}
-        onBulkEdit={onBulkEdit}
         onDelete={onSubSampleDelete}
         attachSpeciesImages={onSpeciesImageAttach}
       />
