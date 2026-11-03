@@ -1,7 +1,7 @@
-/* eslint-disable no-restricted-syntax */
-import { useState } from 'react';
+import { useState, type Dispatch, type SetStateAction } from 'react';
 import { observer } from 'mobx-react';
 import { t } from 'i18next';
+import type { MapMouseEvent } from 'react-map-gl/mapbox';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import {
   MapHeader,
@@ -14,13 +14,14 @@ import {
   toggleGPS,
   isValidLocation,
   useToast,
-  Location,
-  RadioOption,
+  type Location,
+  type RadioOption,
   useSample,
 } from '@flumens';
 import { isPlatform } from '@ionic/core';
-import { useIonViewWillLeave } from '@ionic/react';
+import { useIonViewWillLeave, type InputCustomEvent } from '@ionic/react';
 import config from 'common/config';
+import { getGridRefSystem, hasCoordinates } from 'common/helpers/location';
 import locationNameIcon from 'common/images/location-name.svg';
 import appModel from 'models/app';
 import Sample, { getEmptyLocation } from 'models/sample';
@@ -35,7 +36,7 @@ import './styles.scss';
 
 export const setModelLocation = async (
   model: Sample,
-  newLocation: Location
+  newLocation: Partial<Location>
 ) => {
   if (model.isGPSRunning()) model.stopGPS(); // we don't need the GPS running and overwriting the selected location
 
@@ -45,21 +46,39 @@ export const setModelLocation = async (
     Haptics.impact({ style: ImpactStyle.Light });
 
   if (!model.data.location) Object.assign(model.data, { location: {} });
+  const location = model.data.location!;
 
   Object.assign(
-    model.data.location, // carry over name, geocoded etc
+    location,
     getEmptyLocation(), // overwrite core location values
     newLocation
   );
 
+  const usesGridRefSystem =
+    model.data.enteredSrefSystem === 'OSGB' ||
+    model.data.enteredSrefSystem === 'OSIE';
+
+  if (usesGridRefSystem) {
+    Object.assign(model.data, {
+      enteredSrefSystem: getGridRefSystem(newLocation.gridref),
+    });
+  }
+
   model.save();
 
-  if (!isValidLocation(newLocation)) return;
-  appModel.setLocation(model.data.location);
+  if (!hasCoordinates(newLocation)) return;
+  appModel.setLocation({
+    ...(model.data.location as Location),
+    name: model.data.locationName,
+  });
 };
 
 type Styles = 'satellite' | 'os' | 'os_explorer';
-export const useMapStyles = (): [Styles, any, RadioOption[]] => {
+export const useMapStyles = (): [
+  Styles,
+  Dispatch<SetStateAction<Styles>>,
+  RadioOption[],
+] => {
   const layers: RadioOption[] = [
     {
       value: 'Map Type',
@@ -88,9 +107,9 @@ export const useMapStyles = (): [Styles, any, RadioOption[]] => {
 };
 
 type Props = {
-  sample: any;
-  subSample?: any;
-  setLocation?: any;
+  sample?: Sample;
+  subSample?: Sample;
+  setLocation?: (model: Sample, location: Partial<Location>) => void;
   skipLocationName?: boolean;
   skipPastLocations?: boolean;
 };
@@ -108,12 +127,13 @@ const ModelLocationMap = ({
   });
 
   const model = subSample! || sample!;
-  const { isDisabled } = model;
+
   const location = model.data.location || {};
+  const mapLocation = { ...location, geocoded: model.metadata.geocoded };
   const parentLocation = model.parent?.data.location;
 
-  const onManuallyTypedLocationChange = (e: any) => {
-    const value = e?.target?.value;
+  const onManuallyTypedLocationChange = (event: InputCustomEvent) => {
+    const value = String(event.detail.value || '');
     if (!value) {
       setLocation(model, {});
       return;
@@ -122,11 +142,19 @@ const ModelLocationMap = ({
     const newLocation = textToLocation(value);
     if (!isValidLocation(newLocation)) return;
 
-    setLocation(model, newLocation);
+    setLocation(model, newLocation as Location);
   };
 
-  const onLocationNameChange = ({ name, geocoded }: any) => {
-    model.data.location = { ...model.data.location, name, geocoded };
+  const onLocationNameChange = ({
+    name,
+    geocoded: newGeocoded,
+  }: {
+    name: string;
+    geocoded?: { center: [number, number] };
+  }) => {
+    model.metadata.geocoded = newGeocoded;
+    model.data.locationName = name;
+    model.save();
   };
 
   const [showSettings, setShowSettings] = useState(false);
@@ -135,11 +163,19 @@ const ModelLocationMap = ({
 
   const [currentStyle, setCurrentStyle, styles] = useMapStyles();
   const onStyleChange = (newLayer: string) => {
+    if (
+      newLayer !== 'satellite' &&
+      newLayer !== 'os' &&
+      newLayer !== 'os_explorer'
+    )
+      return;
+
     setCurrentStyle(newLayer);
     setShowSettings(false);
   };
 
-  const onMapClick = (e: any) => setLocation(model, mapEventToLocation(e));
+  const onMapClick = (event: MapMouseEvent) =>
+    setLocation(model, mapEventToLocation(event));
 
   const toast = useToast();
   const onGPSClick = async () => {
@@ -163,15 +199,17 @@ const ModelLocationMap = ({
 
   const isMapboxMap = currentStyle !== 'os_explorer';
 
-  const getSampleLocation = (smp: Sample) => smp.data.location;
-  const childLocations =
-    model?.samples?.map(getSampleLocation).filter(isValidLocation) || [];
+  const childLocations = model.samples
+    .map(child => child.data.location)
+    .filter((childLocation): childLocation is Location =>
+      hasCoordinates(childLocation)
+    );
 
   return (
     <Page id="model-location">
       <MapHeader>
         <MapHeader.Location
-          location={location}
+          location={location as Location}
           onChange={onManuallyTypedLocationChange}
           backButtonProps={{ text: t('Back') }}
           useGridRef
@@ -179,7 +217,7 @@ const ModelLocationMap = ({
         {!skipLocationName && (
           <MapHeader.LocationName
             onChange={onLocationNameChange}
-            value={location.name}
+            value={model.data.locationName}
             icon={locationNameIcon}
             placeholder="Site name eg nearby village"
             suggestions={appModel.data.locations || []}
@@ -196,10 +234,10 @@ const ModelLocationMap = ({
       <Main>
         {isMapboxMap && (
           <MapboxMap
-            location={location}
+            location={mapLocation}
             parentLocation={parentLocation}
             childLocations={childLocations}
-            isDisabled={isDisabled}
+            isDisabled={model.isDisabled}
             onMapClick={onMapClick}
             onGPSClick={onGPSClick}
             currentStyle={currentStyle}
@@ -212,7 +250,7 @@ const ModelLocationMap = ({
         {!isMapboxMap && (
           <LeafletMap
             model={model}
-            location={location}
+            location={mapLocation}
             childLocations={childLocations}
             setLocation={setLocation}
             onGPSClick={onGPSClick}
@@ -240,7 +278,7 @@ const ModelLocationMap = ({
   );
 };
 
-(ModelLocationMap as any).WithoutName = (props: Props) => (
+ModelLocationMap.WithoutName = (props: Props) => (
   <ModelLocationMap {...props} skipLocationName />
 );
 

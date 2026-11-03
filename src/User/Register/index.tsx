@@ -36,8 +36,8 @@ const RegisterContainer = () => {
     try {
       await userModel.register(email, password, otherDetails);
 
-      userModel.data.firstName = firstName; // eslint-disable-line
-      userModel.data.lastName = secondName; // eslint-disable-line
+      userModel.data.firstName = firstName;
+      userModel.data.lastName = secondName;
       userModel.save();
 
       alert({
@@ -56,8 +56,8 @@ const RegisterContainer = () => {
           },
         ],
       });
-    } catch (err: any) {
-      toast.error(err);
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error : String(error));
     }
 
     loader.hide();

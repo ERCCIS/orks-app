@@ -6,9 +6,16 @@ import { Main, useAlert } from '@flumens';
 import { IonList, IonIcon, useIonViewDidEnter } from '@ionic/react';
 import appModel from 'models/app';
 import Sample from 'models/sample';
+import {
+  commentAttr,
+  dateAttr,
+  defaultSensitivityPrecisionAttr,
+  groupIdAttr,
+  recorderAttr,
+} from 'Survey/Default/config';
 import DisabledRecordMessage from 'Survey/common/Components/DisabledRecordMessage';
 import MenuAttr from 'Survey/common/Components/MenuAttr';
-import MenuDynamicAttr from 'Survey/common/Components/MenuDynamicAttrs';
+import MenuDynamicAttr from 'Survey/common/Components/MenuDynamicAttr';
 import MenuLocation from 'Survey/common/Components/MenuLocation';
 import MenuTaxonItem from 'Survey/common/Components/MenuTaxonItem';
 import PhotoPicker from 'Survey/common/Components/PhotoPicker';
@@ -29,8 +36,12 @@ const useAttributeLockingTip = (sample: Sample) => {
     if (shownLockingSwipeTip) return;
 
     const [occ] = sample.occurrences;
-    const hasLockableAttributes =
-      occ && (occ.data.comment || occ.data.stage || occ.data.sex);
+    const render = sample.getSurvey().occ?.render;
+    const attrs = typeof render === 'function' ? render(occ) : render;
+    const hasStageOrSex = attrs?.some(
+      attr => ['Stage', 'Sex'].includes(attr.title || '') && occ?.data[attr.id]
+    );
+    const hasLockableAttributes = occ && (occ.data.comment || hasStageOrSex);
 
     if (!hasLockableAttributes) return;
 
@@ -61,35 +72,40 @@ const useAttributeLockingTip = (sample: Sample) => {
 
 const EditMain = ({ sample }: Props) => {
   useAttributeLockingTip(sample);
+  const survey = sample.getSurvey();
   const showSensitivityWarning = useSensitivityTip();
-
-  const surveyConfig = sample.getSurvey();
-
   const { url } = useRouteMatch();
 
+  const surveyConfig = sample.getSurvey();
   const [occ] = sample.occurrences;
   if (!occ) return null;
+
+  const hasTaxon = !!occ.data.taxon;
+
+  const sampleRender =
+    typeof surveyConfig.render === 'function'
+      ? surveyConfig.render(sample)
+      : surveyConfig.render;
+  const occurrenceRender =
+    typeof surveyConfig.occ?.render === 'function'
+      ? surveyConfig.occ.render(occ)
+      : surveyConfig.occ?.render;
 
   const { groupId } = sample.data;
 
   const { isDisabled } = sample;
 
-  const renderArray =
-    typeof surveyConfig.render === 'function'
-      ? surveyConfig.render(sample)
-      : surveyConfig.render;
-
   return (
-    <Main className="[--padding-bottom:30px]">
+    <Main className="pb-ion-s-10">
       <IonList lines="full" className="mb-2 flex! flex-col gap-4">
         {isDisabled && (
-          <div className="rounded-list mb-2">
+          <div className="rounded-list mb-4">
             <VerificationMessage occurrence={occ} />
           </div>
         )}
 
         {isDisabled && (
-          <div className="rounded-list mb-2">
+          <div className="rounded-list mb-4">
             <DisabledRecordMessage sample={sample} />
           </div>
         )}
@@ -97,7 +113,12 @@ const EditMain = ({ sample }: Props) => {
         {/* Only showing if pre-selected */}
         {groupId && (
           <div className="rounded-list">
-            <MenuAttr.WithLock model={sample} attr="groupId" />
+            <MenuAttr.WithLock
+              model={sample}
+              block={groupIdAttr}
+              survey={survey.name}
+              taxa="all"
+            />
           </div>
         )}
 
@@ -107,23 +128,63 @@ const EditMain = ({ sample }: Props) => {
 
         <div className="rounded-list">
           <MenuTaxonItem occ={occ} />
-          <MenuLocation.WithLock sample={sample} />
-          <MenuAttr.WithLock model={sample} attr="date" />
-          <MenuAttr.WithLock model={sample} attr="recorder" />
-          <MenuAttr.WithLock
-            model={occ}
-            attr="comment"
-            itemProps={{
-              routerLink: `${url}/occ/${occ.cid}/comment`,
-            }}
+          <MenuLocation.WithLock
+            sample={sample}
+            survey={survey.name}
+            taxa="all"
           />
-          {renderArray?.map((config: any) => (
-            <MenuDynamicAttr key={config.id} model={sample} config={config} />
-          ))}
+          <MenuAttr.WithLock
+            model={sample}
+            block={dateAttr}
+            survey={survey.name}
+            taxa="all"
+          />
+          <MenuAttr.WithLock
+            model={sample}
+            block={recorderAttr}
+            survey={survey.name}
+            taxa="all"
+          />
+
+          {hasTaxon &&
+            sampleRender?.map(attr => (
+              <MenuDynamicAttr
+                key={attr.id}
+                model={sample}
+                block={attr}
+                survey={survey.name}
+                taxa={survey.taxa}
+              />
+            ))}
+          {hasTaxon &&
+            occurrenceRender?.map(attr => (
+              <MenuDynamicAttr
+                key={attr.id}
+                model={occ}
+                block={attr}
+                useSeparateOccPage
+                survey={survey.name}
+                taxa={survey.taxa}
+              />
+            ))}
           <MenuAttr.WithLock
             model={occ}
-            attr="sensitivityPrecision"
-            onChange={showSensitivityWarning}
+            block={defaultSensitivityPrecisionAttr}
+            onChange={(val, _, { record }) => {
+              Object.assign(record, {
+                [defaultSensitivityPrecisionAttr.id]: val,
+              });
+              showSensitivityWarning(!!val);
+            }}
+            survey={survey.name}
+            taxa="all"
+          />
+          <MenuAttr.WithLock
+            model={occ}
+            block={commentAttr}
+            link={`${url}/occ/${occ.cid}/comment`}
+            survey={survey.name}
+            taxa="all"
           />
         </div>
       </IonList>

@@ -3,16 +3,15 @@ import { locationOutline } from 'ionicons/icons';
 import { Trans as T } from 'react-i18next';
 import { useRouteMatch } from 'react-router';
 import { IonItem, IonIcon, IonLabel } from '@ionic/react';
-import { Badge } from 'common/flumens';
+import { Badge, limit } from 'common/flumens';
 import Sample from 'models/sample';
-import StringHelp from 'helpers/string';
 import GridRefValue from './GridRefValue';
 import Lock from './Lock';
 
 type Props = {
   sample: Sample;
-  detailIcon?: any;
-  className?: any;
+  detailIcon?: string;
+  className?: string;
   skipName?: boolean;
   isRequired?: boolean;
   label?: string;
@@ -28,10 +27,9 @@ const MenuLocation = ({
 }: Props) => {
   const { url } = useRouteMatch();
 
-  const { location } = sample.data;
+  const { location, locationName } = sample.data;
 
   const hasLocation = location?.latitude;
-  const locationName = location?.name;
 
   const locationItem = hasLocation ? (
     <div className="location-value">
@@ -48,9 +46,7 @@ const MenuLocation = ({
   ) : undefined;
 
   const locationNameItem = locationName ? (
-    <div className="location-name-value">
-      {StringHelp.limit(locationName, 25)}
-    </div>
+    <div className="location-name-value">{limit(locationName, 25)}</div>
   ) : (
     noLocationNameBadge
   );
@@ -68,7 +64,7 @@ const MenuLocation = ({
         <T>{label}</T>
       </IonLabel>
 
-      <div slot="end" className="flex flex-col items-end gap-1 py-2">
+      <div className="flex flex-col items-end gap-1 py-2 text-nowrap text-(--form-value-color)">
         {locationItem}
         {!skipName && locationNameItem}
       </div>

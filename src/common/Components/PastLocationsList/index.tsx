@@ -3,17 +3,17 @@ import { observer } from 'mobx-react';
 import clsx from 'clsx';
 import { star, starOutline } from 'ionicons/icons';
 import { Trans as T } from 'react-i18next';
-import { useAlert } from '@flumens';
+import { useAlert, escape } from '@flumens';
 import {
   IonList,
   IonItemOption,
   IonItem,
   IonItemOptions,
   IonItemSliding,
-  IonLabel,
 } from '@ionic/react';
+import { printLocation } from 'common/helpers/location';
 import appModel from 'models/app';
-import StringHelp from 'helpers/string';
+import type { FullLocation } from 'models/app/pastLocExt';
 import InfoBackgroundMessage from 'Components/InfoBackgroundMessage';
 import EditModal from './EditModal';
 import './styles.scss';
@@ -21,13 +21,13 @@ import './styles.scss';
 /**
  * Sort the past locations placing favourites to the top.
  */
-const sortFavLocationsToTop = (a: Location, b: Location) =>
+const sortFavLocationsToTop = (a: FullLocation, b: FullLocation) =>
   a.favourite === b.favourite ? 0 : a.favourite ? -1 : 1; // eslint-disable-line
 
 function useShowDeletePopup() {
   const alert = useAlert();
 
-  const showDeletePopup = (onDelete: any) =>
+  const showDeletePopup = (onDelete: () => void) =>
     alert({
       header: 'Delete',
       message: 'Are you sure you want to delete the saved location?',
@@ -47,15 +47,14 @@ function useShowDeletePopup() {
   return showDeletePopup;
 }
 
-type Location = any;
-type LocationID = any;
+type LocationID = number;
 
 type Props = {
-  onSelect?: any;
+  onSelect?: (location: FullLocation) => void;
 };
 
 const PastLocations = ({ onSelect }: Props) => {
-  const [editLocation, setEditLocation] = useState<Location>(null);
+  const [editLocation, setEditLocation] = useState<FullLocation | null>(null);
 
   const showDeletePopup = useShowDeletePopup();
 
@@ -66,12 +65,14 @@ const PastLocations = ({ onSelect }: Props) => {
 
   const locations = appModel.data.locations || [];
 
-  const listRef = createRef<any>();
+  const listRef = createRef<HTMLIonListElement>();
 
   const selectLocation = (locationId: LocationID) => {
     if (!onSelect) return;
 
     const location = locations.find(loc => loc.id === locationId);
+    if (!location) return;
+
     const locationCopy = { ...location };
     delete locationCopy.id;
     delete locationCopy.favourite;
@@ -80,20 +81,20 @@ const PastLocations = ({ onSelect }: Props) => {
   };
 
   const onEdit = (locationId: LocationID) => {
-    listRef.current.closeSlidingItems();
+    listRef.current?.closeSlidingItems();
 
     const location = locations.find(({ id }) => id === locationId);
-    setEditLocation({ ...location });
+    if (location) setEditLocation({ ...location });
   };
 
-  const onSave = (name: string, favourite: boolean) => {
-    if (!name) {
+  const onSave = (name?: string, favourite?: boolean) => {
+    if (!name || !editLocation) {
       setEditLocation(null);
       return;
     }
 
     const updatedLocation = { ...editLocation };
-    updatedLocation.name = StringHelp.escape(name);
+    updatedLocation.name = escape(name);
     updatedLocation.favourite = favourite;
 
     appModel.setLocation(updatedLocation);
@@ -110,12 +111,10 @@ const PastLocations = ({ onSelect }: Props) => {
         </InfoBackgroundMessage>
       );
 
-    function getPastLocation(location: Location) {
-      const locationStr = appModel.printLocation(location);
-      const { id, name, favourite, source, latitude, longitude } = location;
+    function getPastLocation(location: FullLocation) {
+      const locationStr = printLocation(location);
+      const { id, name, favourite, source } = location;
 
-      const lat = parseFloat(latitude).toFixed(3);
-      const lon = parseFloat(longitude).toFixed(3);
       return (
         <IonItemSliding
           className={clsx('location', favourite && 'favourite')}
@@ -124,30 +123,28 @@ const PastLocations = ({ onSelect }: Props) => {
           <IonItem
             detail
             detailIcon={favourite ? star : starOutline}
-            onClick={() => selectLocation(id)}
+            onClick={() => id !== undefined && selectLocation(id)}
+            className="[--padding-top:0]!"
           >
-            <IonLabel className="details" position="stacked" mode="ios">
-              <IonLabel slot="start" className="font-medium">
-                {name}
-              </IonLabel>
-              <IonLabel slot="start">{locationStr}</IonLabel>
-              <IonLabel slot="start" className="location-raw">
-                {`${lat}, ${lon}`}
-              </IonLabel>
-            </IonLabel>
-
-            <IonLabel slot="end" position="stacked" mode="ios">
-              <span className="location-source">
-                <T>source</T>: <T>{source}</T>
-              </span>
-            </IonLabel>
+            <div className="flex flex-col gap-1  w-full py-2">
+              <div className="font-semibold line-clamp-1">{name}</div>
+              <div className="flex gap-2 opacity-70 text-xs justify-between items-center">
+                <div>{locationStr}</div>
+                <div>
+                  <T>source</T>: <T>{source}</T>
+                </div>
+              </div>
+            </div>
           </IonItem>
 
           <IonItemOptions side="end">
-            <IonItemOption color="danger" onClick={() => deleteLocation(id)}>
+            <IonItemOption
+              color="danger"
+              onClick={() => id !== undefined && deleteLocation(id)}
+            >
               <T>Delete</T>
             </IonItemOption>
-            <IonItemOption onClick={() => onEdit(id)}>
+            <IonItemOption onClick={() => id !== undefined && onEdit(id)}>
               <T>Edit</T>
             </IonItemOption>
           </IonItemOptions>

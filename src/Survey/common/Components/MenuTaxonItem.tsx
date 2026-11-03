@@ -14,10 +14,7 @@ const MenuTaxonItem = ({ occ }: Props) => {
 
   const { taxon } = occ.data;
 
-  const scientificName =
-    taxon?.scientificName ||
-    // backwards compatible
-    (taxon as any)?.scientific_name;
+  const scientificName = taxon?.scientificName;
 
   let commonName = '';
 
@@ -25,9 +22,9 @@ const MenuTaxonItem = ({ occ }: Props) => {
     commonName = taxon.commonNames[taxon.foundInName as number];
   }
 
-  if ((taxon as any)?.commonName) {
+  if (taxon?.commonName) {
     // in case pulling from warehouse, it is different format
-    commonName = (taxon as any).commonName;
+    commonName = taxon.commonName;
   }
 
   const empty = !commonName && !scientificName;
@@ -42,7 +39,7 @@ const MenuTaxonItem = ({ occ }: Props) => {
     >
       <div
         slot="end"
-        className="flex w-full !max-w-none flex-col items-end py-2"
+        className="flex w-full max-w-none! flex-col items-end py-2 text-(--form-value-color)"
       >
         {empty && <Badge color="warning">Species missing</Badge>}
         {commonName && <div className="long">{commonName}</div>}

@@ -3,11 +3,16 @@ import { observer } from 'mobx-react';
 import { filterOutline } from 'ionicons/icons';
 import { Trans as T } from 'react-i18next';
 import { InfoBackgroundMessage, useToast } from '@flumens';
+import type {
+  ChoiceInputConf,
+  NumberInputConf,
+  TextInputConf,
+} from '@flumens/tailwind/dist/Survey';
 import { IonList, IonIcon } from '@ionic/react';
 import appModel from 'models/app';
 import Occurrence from 'models/occurrence';
 import Sample from 'models/sample';
-import BulkEdit, { Action } from './BulkEdit';
+import BulkEdit, { BulkEditAttrs, OnBulkEdit } from './BulkEdit';
 import SpeciesListItem from './SpeciesListItem';
 
 const speciesNameSort = (occ1: Occurrence, occ2: Occurrence) =>
@@ -25,25 +30,13 @@ const speciesOccAddedTimeSort = (
   return date2.getTime() - date1.getTime();
 };
 
-function increaseCount(occ: Occurrence, is5x: boolean) {
-  if (Number.isNaN(occ.data.number)) return;
-
-  const addOneCount = () => (occ.data.number as number)++; // eslint-disable-line no-param-reassign
-
-  if (is5x) {
-    [...Array(5)].forEach(addOneCount);
-  } else {
-    addOneCount();
-  }
-
-  occ.save();
-}
-
 type Props = {
   sample: Sample;
-  onDelete: any;
-  onBulkEdit?: (action: Action, modelIds: string[], value?: any) => void;
+  onDelete: (model: Sample | Occurrence) => void;
+  onBulkEdit?: OnBulkEdit;
+  bulkEditAttrs?: BulkEditAttrs;
   useSubSamples?: boolean;
+  numberAttrs?: (ChoiceInputConf | NumberInputConf | TextInputConf)[];
 };
 
 const SpeciesList = ({
@@ -51,17 +44,24 @@ const SpeciesList = ({
   sample,
   useSubSamples,
   onBulkEdit,
+  bulkEditAttrs = {},
+  numberAttrs,
 }: Props) => {
   const [isBulkEditing, setIsBulkEditing] = useState(false);
   const toast = useToast();
 
-  const models = useSubSamples ? sample.samples : sample.occurrences;
+  const models: (Sample | Occurrence)[] = useSubSamples
+    ? [...sample.samples]
+    : [...sample.occurrences];
   if (!models.length)
     return <InfoBackgroundMessage>No species added</InfoBackgroundMessage>;
 
   const { speciesListSortedByTime } = appModel.data;
 
-  const nameSort = useSubSamples ? speciesNameSortForSamples : speciesNameSort;
+  const nameSort = (first: Sample | Occurrence, second: Sample | Occurrence) =>
+    useSubSamples
+      ? speciesNameSortForSamples(first as Sample, second as Sample)
+      : speciesNameSort(first as Occurrence, second as Occurrence);
 
   const sort = speciesListSortedByTime ? speciesOccAddedTimeSort : nameSort;
 
@@ -81,8 +81,23 @@ const SpeciesList = ({
     });
   };
 
+  function increaseCount(occ: Occurrence, is5x: boolean) {
+    const numberAttr = numberAttrs?.[0];
+    if (!numberAttr) return;
+
+    const { data } = occ;
+    const currentValueRaw = data[numberAttr.id];
+    const isString = typeof currentValueRaw === 'string';
+    const currentValue = Number(currentValueRaw);
+    if (!Number.isFinite(currentValue)) return;
+
+    const newValue = currentValue + (is5x ? 5 : 1);
+    data[numberAttr.id] = isString ? `${newValue}` : newValue;
+    occ.save();
+  }
+
   const speciesList = [...models]
-    .sort(sort as any)
+    .sort(sort)
     .map(model => (
       <SpeciesListItem
         key={model.cid}
@@ -91,15 +106,18 @@ const SpeciesList = ({
         onDelete={() => onDelete(model)}
         useSubSamples={useSubSamples}
         isBulkEditing={isBulkEditing}
+        numberAttrs={numberAttrs}
       />
     ));
 
   return (
     <div className="w-full">
       <BulkEdit
+        attrs={bulkEditAttrs}
         onBulkEdit={onBulkEdit}
         onEditChange={setIsBulkEditing}
         models={models}
+        isDisabled={sample.isDisabled}
       >
         <IonList id="list" lines="full" className="w-full">
           <div className="rounded-list">

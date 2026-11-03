@@ -5,15 +5,14 @@ import { Page, Header, Main } from '@flumens';
 import { NavContext } from '@ionic/react';
 import appModel from 'models/app';
 import samples from 'models/collections/samples';
-import Occurrence from 'models/occurrence';
-import Sample from 'models/sample';
+import type { Taxon as TaxonType } from 'models/occurrence';
 import surveyConfig from 'Survey/Default/config';
 import TaxonSearch, {
   TaxonSearchFilters,
 } from 'Survey/common/Components/TaxonSearch';
 
-const getNewSample = async (taxon: any) => {
-  const newSample = await surveyConfig.create({ Sample, Occurrence, taxon });
+const getNewSample = async (taxon: TaxonType) => {
+  const newSample = await surveyConfig.create({ taxon });
   newSample.save();
   samples.push(newSample);
   return newSample;
@@ -23,7 +22,7 @@ const Taxon = () => {
   const { navigate } = useContext(NavContext);
   const match = useRouteMatch();
 
-  const onSpeciesSelected = async (taxon: any) => {
+  const onSpeciesSelected = async (taxon: TaxonType) => {
     const newSample = await getNewSample(taxon);
     const url = match.url.replace('/new', '');
     navigate(`${url}/${newSample.cid}`, undefined, 'replace');
@@ -36,7 +35,7 @@ const Taxon = () => {
   return (
     <Page id="taxon">
       <Header title="Species" rightSlot={<TaxonSearchFilters />} />
-      <Main>
+      <Main className="pb-ion-s-10">
         <TaxonSearch
           onSpeciesSelected={onSpeciesSelected}
           namesFilter={searchNamesOnly}

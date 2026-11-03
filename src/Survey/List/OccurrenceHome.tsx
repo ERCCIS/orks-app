@@ -4,35 +4,44 @@ import { Page, Header, Main, useSample } from '@flumens';
 import { IonList } from '@ionic/react';
 import Sample from 'common/models/sample';
 import MenuAttr from 'Survey/common/Components/MenuAttr';
-import MenuDynamicAttr from 'Survey/common/Components/MenuDynamicAttrs';
+import MenuDynamicAttr from 'Survey/common/Components/MenuDynamicAttr';
 import MenuLocation from 'Survey/common/Components/MenuLocation';
 import MenuTaxonItem from 'Survey/common/Components/MenuTaxonItem';
 import PhotoPicker from 'Survey/common/Components/PhotoPicker';
 import VerificationMessage from 'Survey/common/Components/VerificationMessage';
 import useSensitivityTip from 'Survey/common/Components/hooks';
+import { commentAttr, defaultSensitivityPrecisionAttr } from './config';
 
 const ListOccurrenceHome = () => {
   const { url } = useRouteMatch();
   const showSensitivityWarning = useSensitivityTip();
 
-  const { subSample } = useSample<Sample>();
-  if (!subSample) return null;
+  const { sample, subSample } = useSample<Sample, Sample>();
+  if (!subSample || !sample) return null;
 
-  const surveyConfig = subSample.getSurvey();
+  const survey = sample.getSurvey();
+  const subSampleSurvey = subSample.getSurvey();
 
   const [occ] = subSample.occurrences;
-  const { isDisabled } = subSample;
+  if (!occ) return null;
 
-  const renderArray =
-    typeof surveyConfig.render === 'function'
-      ? surveyConfig.render(subSample)
-      : surveyConfig.render;
+  const hasTaxon = !!occ.data.taxon;
+
+  const sampleRender =
+    typeof subSampleSurvey.render === 'function'
+      ? subSampleSurvey.render(subSample)
+      : subSampleSurvey.render;
+  const occurrenceRender =
+    typeof subSampleSurvey.occ?.render === 'function'
+      ? subSampleSurvey.occ.render(occ)
+      : subSampleSurvey.occ?.render;
+  const { isDisabled } = subSample;
 
   return (
     <Page id="survey-default-edit">
       <Header title="Edit" />
 
-      <Main className="[--padding-bottom:30px]">
+      <Main className="pb-ion-s-10">
         <IonList lines="full" className="mb-2 flex! flex-col gap-4">
           {isDisabled && (
             <div className="rounded-list">
@@ -46,25 +55,44 @@ const ListOccurrenceHome = () => {
           <div className="rounded-list">
             <MenuTaxonItem occ={occ} />
             <MenuLocation sample={subSample} skipName isRequired={false} />
-            <MenuAttr
+
+            {hasTaxon &&
+              sampleRender?.map(attr => (
+                <MenuDynamicAttr
+                  key={attr.id}
+                  model={subSample}
+                  block={attr}
+                  survey={survey.name}
+                  taxa={subSampleSurvey.taxa}
+                />
+              ))}
+            {hasTaxon &&
+              occurrenceRender?.map(attr => (
+                <MenuDynamicAttr
+                  key={attr.id}
+                  model={occ}
+                  block={attr}
+                  useSeparateOccPage
+                  survey={survey.name}
+                  taxa={subSampleSurvey.taxa}
+                />
+              ))}
+            <MenuAttr.WithLock
               model={occ}
-              attr="comment"
-              itemProps={{
-                routerLink: `${url}/occ/${occ.cid}/comment`,
+              block={defaultSensitivityPrecisionAttr}
+              onChange={(val, _, { record }) => {
+                record[defaultSensitivityPrecisionAttr.id] = val; // eslint-disable-line no-param-reassign
+                showSensitivityWarning(val);
               }}
+              survey={survey.name}
+              taxa="all"
             />
-            {renderArray?.map((config: any) => (
-              <MenuDynamicAttr
-                key={config.id}
-                model={subSample}
-                config={config}
-                skipLocks
-              />
-            ))}
-            <MenuAttr
+            <MenuAttr.WithLock
               model={occ}
-              attr="sensitivityPrecision"
-              onChange={showSensitivityWarning}
+              block={commentAttr}
+              link={`${url}/occ/${occ.cid}/comment`}
+              survey={survey.name}
+              taxa="all"
             />
           </div>
         </IonList>

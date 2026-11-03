@@ -1,3 +1,21 @@
+## 6.5.3
+
+- Merged iRecord v6.5.3-252, retaining ORKS branding and survey fields.
+- Migrated existing ORKS records and attribute locks to the new form schema.
+- Fixed List survey default abundance values.
+- Bug fixes.
+
+## 6.5.2
+
+- Fixed Plant survey Irish grid refs.
+
+## 6.5.0
+
+- Updated survey forms, including Plant and bryophyte attributes.
+- Improved taxon-specific bulk editing and attribute locking.
+- Fixed Plant Survey geolocation being enabled without a parent location.
+- Improved recorder name formatting.
+
 ## 6.4.0
 
 - Updated libraries.

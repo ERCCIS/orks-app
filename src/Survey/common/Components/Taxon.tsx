@@ -11,7 +11,7 @@ import TaxonSearch, { TaxonSearchFilters } from './TaxonSearch';
 
 const Taxon = () => {
   const { navigate, goBack } = useContext(NavContext);
-  const { url } = useRouteMatch<any>();
+  const { url } = useRouteMatch();
   const toast = useToast();
   const { t } = useTranslation();
 
@@ -20,12 +20,8 @@ const Taxon = () => {
   const surveyConfig = (subSample || sample)!.getSurvey();
   const shouldCreateOccurrences = !!surveyConfig.occ?.create;
 
-  const createNewOccurrenceModel = async (taxon: any) => {
-    const newOccurrence = (await surveyConfig.occ?.create?.({
-      Occurrence,
-      taxon,
-    })) as Occurrence;
-
+  const createNewOccurrenceModel = async (taxon: TaxonI) => {
+    const newOccurrence = await surveyConfig.occ!.create!({ taxon });
     sample!.occurrences.push(newOccurrence);
     sample!.save();
 
@@ -34,8 +30,6 @@ const Taxon = () => {
 
   const createNewSampleModel = async (taxon: TaxonI) => {
     const newSample = (await surveyConfig.smp?.create?.({
-      Sample,
-      Occurrence,
       taxon,
       surveySample: sample!,
     })) as Sample;
@@ -84,6 +78,13 @@ const Taxon = () => {
 
   const { searchNamesOnly, taxonSearchGroupFilters } = appModel.data;
 
+  const recordedTaxa = [
+    ...sample!.occurrences,
+    ...sample!.samples.flatMap(smp => smp.occurrences),
+  ]
+    .map(occ => occ.data.taxon?.warehouseId)
+    .filter(Boolean) as number[];
+
   const isSpeciesRestrictedSurvey =
     surveyConfig.name !== 'default' && surveyConfig.taxaGroups;
   const rightSlot = !isSpeciesRestrictedSurvey && <TaxonSearchFilters />;
@@ -96,9 +97,10 @@ const Taxon = () => {
   return (
     <Page id="taxon">
       <Header title="Species" rightSlot={rightSlot} />
-      <Main>
+      <Main className="pb-ion-s-10">
         <TaxonSearch
           onSpeciesSelected={onSpeciesSelected}
+          recordedTaxa={recordedTaxa}
           resetOnSelect
           showEditButton={!editingExisting}
           selectedFilters={informalGroups}

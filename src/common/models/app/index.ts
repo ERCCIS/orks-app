@@ -1,20 +1,21 @@
-import { Model, ModelData } from '@flumens';
+import { Model, type ModelData, type ModelOptions } from '@flumens';
 import { mainStore } from 'models/store';
-import AttributeLockExtension from './attrLockExt';
-import PastLocationsExtension from './pastLocExt';
+import lockExtension, { type AttrLocks } from './attrLockExt';
+import PastLocationsExtension, { type FullLocation } from './pastLocExt';
 
 export type Data = ModelData & {
   showWelcome: boolean;
   language: string;
 
-  locations: any[];
-  attrLocks: any;
+  locations: FullLocation[];
+  _attrLocks: AttrLocks;
+  attrLocks?: Record<string, Record<string, Record<string, unknown>>>;
   autosync: boolean;
   useTraining: boolean;
 
   useExperiments: boolean;
   useGridNotifications: boolean;
-  gridSquareUnit: 'monad';
+  gridSquareUnit: 'monad' | 'tetrad';
   speciesListSortedByTime: boolean;
 
   showSurveysDeleteTip: boolean;
@@ -30,11 +31,6 @@ export type Data = ModelData & {
 
   useSpeciesImageClassifier: boolean;
 
-  /**
-   * Reset attribute locks.
-   */
-  attrLocksCleanedV620: boolean; // TODO: remove
-
   showVerifiedRecordsNotification: boolean;
   verifiedRecordsTimestamp: null | number;
 };
@@ -44,8 +40,7 @@ export const defaults: Data = {
   language: 'EN',
 
   locations: [],
-  attrLocks: { default: {}, complex: {} },
-  attrLocksCleanedV620: false,
+  _attrLocks: {},
   autosync: true,
   useTraining: false,
 
@@ -72,37 +67,22 @@ export const defaults: Data = {
 };
 
 export class AppModel extends Model<Data> {
-  isAttrLocked: any; // from extension
+  locks = lockExtension(
+    () => this.data._attrLocks,
+    () => this.save()
+  );
 
-  getAttrLock: any; // from extension
+  declare setLocation: (
+    newLocation: FullLocation,
+    allowedMaxSaved?: number
+  ) => Promise<void>;
 
-  setAttrLock: any; // from extension
+  declare removeLocation: (locationId: number) => Promise<void>;
 
-  unsetAttrLock: any; // from extension
-
-  appendAttrLocks: any; // from extension
-
-  getAllLocks: any; // from extension
-
-  setLocation!: (newLocation: any) => void; // from extension
-
-  removeLocation: any; // from extension
-
-  printLocation: any; // from extension
-
-  constructor(options: any) {
+  constructor(options: ModelOptions<Data>) {
     super({ ...options, data: { ...defaults, ...options.data } });
 
-    this.ready.then(() => {
-      if (!this.data.attrLocksCleanedV620) {
-        this.data.attrLocks = { default: {}, complex: {} };
-        this.data.attrLocksCleanedV620 = true;
-        this.save();
-      }
-    });
-
     Object.assign(this, PastLocationsExtension);
-    Object.assign(this, AttributeLockExtension);
   }
 
   reset() {

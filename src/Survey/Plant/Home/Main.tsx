@@ -5,19 +5,28 @@ import { useRouteMatch } from 'react-router';
 import { Button, InfoMessage, Main, useToast } from '@flumens';
 import { IonIcon, IonList, NavContext } from '@ionic/react';
 import Sample from 'models/sample';
+import { getBulkEditAttrs } from 'Survey/List/Home/Main';
 import DisabledRecordMessage from 'Survey/common/Components/DisabledRecordMessage';
 import MenuAttr from 'Survey/common/Components/MenuAttr';
 import MenuLocation from 'Survey/common/Components/MenuLocation';
 import { usePromptImageSource } from 'Survey/common/Components/PhotoPicker';
 import SpeciesList from 'Survey/common/Components/SpeciesList';
-import { Action } from 'Survey/common/Components/SpeciesList/BulkEdit';
+import {
+  abundanceAttr,
+  childGeolocationAttr,
+  commentAttr,
+  dateAttr,
+  recordersAttr,
+  recordersCountAttr,
+  timeSurveyingAttr,
+  viceCountyAttr,
+} from '../config';
 
 type Props = {
   sample: Sample;
-  onDelete: any;
-  attachSpeciesImages: any;
+  onDelete: (sample: Sample) => void;
+  attachSpeciesImages: (useCamera: boolean) => void;
   showChildSampleDistanceWarning: boolean;
-  onBulkEdit?: (action: Action, modelIds: string[], value?: any) => void;
 };
 
 const PlantHomeMain = ({
@@ -25,7 +34,6 @@ const PlantHomeMain = ({
   onDelete,
   showChildSampleDistanceWarning,
   attachSpeciesImages,
-  onBulkEdit,
 }: Props) => {
   const toast = useToast();
   const { url } = useRouteMatch();
@@ -43,10 +51,10 @@ const PlantHomeMain = ({
   };
 
   return (
-    <Main>
+    <Main className="pb-ion-s-10">
       <IonList lines="full">
         {isDisabled && (
-          <div className="rounded-list mb-2">
+          <div className="rounded-list mb-4">
             <DisabledRecordMessage sample={sample} />
           </div>
         )}
@@ -61,31 +69,26 @@ const PlantHomeMain = ({
           <MenuLocation sample={sample} label="Square" />
           <MenuAttr
             model={sample}
-            attr="childGeolocation"
-            className="menu-attr-item"
+            block={childGeolocationAttr}
             onChange={(val: boolean) => {
-              if (!val || sample?.data?.location?.gridref) return;
-              sample.data.childGeolocation = false; // eslint-disable-line no-param-reassign
+              sample.data[childGeolocationAttr.id] = val; // eslint-disable-line no-param-reassign
+              if (!val || sample.data.location?.gridref) return;
+
+              sample.data[childGeolocationAttr.id] = false; // eslint-disable-line no-param-reassign
               toast.warn('Parent location must be selected first.');
             }}
           />
-          <MenuAttr
-            model={sample}
-            attr="vice-county"
-            className="menu-attr-item"
-          />
-          <MenuAttr model={sample} attr="date" className="menu-attr-item" />
-          <MenuAttr
-            model={sample}
-            attr="recorders"
-            className="menu-attr-item"
-          />
-          <MenuAttr model={sample} attr="comment" className="menu-attr-item" />
+          <MenuAttr model={sample} block={viceCountyAttr} />
+          <MenuAttr model={sample} block={dateAttr} />
+          <MenuAttr model={sample} block={recordersAttr} />
+          <MenuAttr model={sample} block={recordersCountAttr} />
+          <MenuAttr model={sample} block={timeSurveyingAttr} />
+          <MenuAttr model={sample} block={commentAttr} />
         </div>
       </IonList>
 
       {!isDisabled && (
-        <div className="mx-3 mb-2.5 mt-8 flex items-center justify-center gap-5">
+        <div className="mx-3 mt-8 flex items-center justify-center gap-5">
           <Button
             color="primary"
             onPress={() => navigate(`${url}/taxon`)}
@@ -106,12 +109,15 @@ const PlantHomeMain = ({
         </div>
       )}
 
-      <SpeciesList
-        sample={sample}
-        onDelete={onDelete}
-        useSubSamples
-        onBulkEdit={onBulkEdit}
-      />
+      <div className="mt-4">
+        <SpeciesList
+          sample={sample}
+          onDelete={model => onDelete(model as Sample)}
+          useSubSamples
+          bulkEditAttrs={getBulkEditAttrs}
+          numberAttrs={[abundanceAttr]}
+        />
+      </div>
     </Main>
   );
 };
